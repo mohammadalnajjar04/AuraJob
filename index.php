@@ -6,21 +6,30 @@
   <title>HirePeak — Find the right opportunity. Reach your peak.</title>
   <meta name="description" content="HirePeak is a modern recruitment platform connecting talented candidates with employers, with clear application tracking and a straightforward hiring workflow.">
   <meta name="theme-color" content="#ffffff">
-  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 2.8 21 20.4H3Z' fill='%234F46E5'/%3E%3C/svg%3E">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect x='1' y='1' width='22' height='22' rx='7' fill='%234F46E5'/%3E%3Cpath d='M12 4.8 18 16H6Z' fill='%23FFFFFF' stroke='%23FFFFFF' stroke-width='3' stroke-linejoin='round'/%3E%3Cpath d='M12 6.6 8.8 16H5.9Z' fill='%23EEF2FF' stroke='%23EEF2FF' stroke-width='3' stroke-linejoin='round'/%3E%3C/svg%3E">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="src/css/style.css">
 </head>
 <body>
+  <svg class="svg-defs" aria-hidden="true">
+    <defs>
+      <symbol id="mark-peak" viewBox="0 0 24 24">
+        <rect x="1" y="1" width="22" height="22" rx="7" fill="#4F46E5"/>
+        <path d="M12 4.8 18 16H6Z" fill="#FFFFFF" stroke="#FFFFFF" stroke-width="3" stroke-linejoin="round"/>
+        <path d="M12 6.6 8.8 16H5.9Z" fill="#EEF2FF" stroke="#EEF2FF" stroke-width="3" stroke-linejoin="round"/>
+      </symbol>
+    </defs>
+  </svg>
+
   <a class="skip-link" href="#main">Skip to content</a>
 
   <header class="site-header">
     <div class="container site-header__inner">
       <a class="brand" href="index.php" aria-label="HirePeak home">
-        <svg class="brand__mark" width="26" height="26" viewBox="0 0 24 24" aria-hidden="true">
-          <path d="M12 2.8 21 20.4H3L12 2.8Z" fill="#4F46E5"/>
-          <path d="M12 9.8 16.4 20.4H7.6L12 9.8Z" fill="#EEF2FF"/>
+        <svg class="brand__mark" width="26" height="26" aria-hidden="true">
+          <use href="#mark-peak"/>
         </svg>
         <span class="brand__name">HirePeak</span>
       </a>
@@ -43,9 +52,8 @@
       <nav class="site-nav" id="site-nav" data-drawer aria-hidden="true" aria-label="Main">
         <div class="site-nav__head">
           <span class="brand">
-            <svg class="brand__mark" width="26" height="26" viewBox="0 0 24 24" aria-hidden="true">
-              <path d="M12 2.8 21 20.4H3L12 2.8Z" fill="#4F46E5"/>
-              <path d="M12 9.8 16.4 20.4H7.6L12 9.8Z" fill="#EEF2FF"/>
+            <svg class="brand__mark" width="26" height="26" aria-hidden="true">
+              <use href="#mark-peak"/>
             </svg>
             <span class="brand__name">HirePeak</span>
           </span>
@@ -120,11 +128,27 @@
             <li><button type="button" class="chip" data-chip="Remote">Remote</button></li>
             <li><button type="button" class="chip" data-chip="Finance">Finance</button></li>
           </ul>
+</div>
+      </div>
+
+      <div class="hero-preview" aria-hidden="true">
+        <div class="hero-preview__job">
+          <span class="hero-preview__tile">BD</span>
+          <div>
+            <p class="hero-preview__title">Backend Developer</p>
+            <p class="hero-preview__company">Northstar Labs &middot; Amman &middot; Hybrid</p>
+          </div>
+        </div>
+        <div class="hero-preview__track">
+          <span class="hero-preview__step is-done"><span class="hero-preview__dot"></span>Applied</span>
+          <span class="hero-preview__step is-current"><span class="hero-preview__dot"></span>Under Review <span class="hero-preview__now">now</span></span>
+          <span class="hero-preview__step is-next"><span class="hero-preview__dot"></span>Interview</span>
         </div>
       </div>
-    </section>
+    </div>
+  </section>
 
-    <section class="section" aria-labelledby="latest-jobs-title">
+  <section class="section" aria-labelledby="latest-jobs-title">
       <div class="container">
         <div class="section-head">
           <h2 class="section-title" id="latest-jobs-title">Latest jobs</h2>
@@ -501,9 +525,8 @@
       <div class="footer-grid">
         <div class="footer-brand">
           <a class="brand" href="index.php" aria-label="HirePeak home">
-            <svg class="brand__mark" width="26" height="26" viewBox="0 0 24 24" aria-hidden="true">
-              <path d="M12 2.8 21 20.4H3L12 2.8Z" fill="#4F46E5"/>
-              <path d="M12 9.8 16.4 20.4H7.6L12 9.8Z" fill="#EEF2FF"/>
+            <svg class="brand__mark" width="26" height="26" aria-hidden="true">
+              <use href="#mark-peak"/>
             </svg>
             <span class="brand__name">HirePeak</span>
           </a>

@@ -35,7 +35,7 @@
       </a>
 
       <div class="site-header__actions">
-        <a class="btn btn--primary btn--sm site-header__mobile-cta" href="#">Get Started</a>
+        <a class="btn btn--primary btn--sm site-header__mobile-cta" href="register.php">Get Started</a>
         <button class="icon-button nav-toggle" type="button" data-drawer-toggle aria-expanded="false" aria-controls="site-nav" aria-label="Open menu">
           <svg class="nav-toggle__icon-open" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
             <path d="M4 7h16"/>
@@ -72,8 +72,8 @@
         </ul>
 
         <div class="site-nav__auth">
-          <a class="btn btn--ghost" href="#">Sign In</a>
-          <a class="btn btn--primary" href="#">Create Account</a>
+          <a class="btn btn--ghost" href="login.php">Sign In</a>
+          <a class="btn btn--primary" href="register.php">Create Account</a>
         </div>
       </nav>
     </div>
@@ -213,7 +213,7 @@
               <div class="job-card--row__main">
                 <span class="job-card__logo job-card__logo--nl" aria-hidden="true">NL</span>
                 <div class="job-card--row__body">
-                  <h3 class="job-card__title"><a href="#">Backend Developer</a></h3>
+                  <h3 class="job-card__title"><a href="job-details.php?id=1">Backend Developer</a></h3>
                   <p class="job-card--row__company">Northstar Labs <span class="job-card__dot" aria-hidden="true">&middot;</span> Amman <span class="job-card__dot" aria-hidden="true">&middot;</span> Hybrid</p>
                   <p class="job-card--row__meta">Full Time <span class="job-card__dot" aria-hidden="true">&middot;</span> Senior</p>
                   <p class="job-card--row__salary">800 <span aria-hidden="true">&ndash;</span> 1,100 JOD <span class="job-card--row__period">/ month</span></p>
@@ -226,7 +226,7 @@
                     <path d="M19 21 12 16 5 21V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2Z"/>
                   </svg>
                 </button>
-                <a class="btn btn--outline btn--sm" href="#">View Job</a>
+                <a class="btn btn--outline btn--sm" href="job-details.php?id=1">View Job</a>
               </div>
             </article>
 
@@ -234,7 +234,7 @@
               <div class="job-card--row__main">
                 <span class="job-card__logo job-card__logo--vd" aria-hidden="true">VD</span>
                 <div class="job-card--row__body">
-                  <h3 class="job-card__title"><a href="#">Product Designer</a></h3>
+                  <h3 class="job-card__title"><a href="job-details.php?id=2">Product Designer</a></h3>
                   <p class="job-card--row__company">Vertex Digital <span class="job-card__dot" aria-hidden="true">&middot;</span> Worldwide <span class="job-card__dot" aria-hidden="true">&middot;</span> Remote</p>
                   <p class="job-card--row__meta">Full Time <span class="job-card__dot" aria-hidden="true">&middot;</span> Mid Level</p>
                   <p class="job-card--row__salary">700 <span aria-hidden="true">&ndash;</span> 950 JOD <span class="job-card--row__period">/ month</span></p>
@@ -247,7 +247,7 @@
                     <path d="M19 21 12 16 5 21V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2Z"/>
                   </svg>
                 </button>
-                <a class="btn btn--outline btn--sm" href="#">View Job</a>
+                <a class="btn btn--outline btn--sm" href="job-details.php?id=2">View Job</a>
               </div>
             </article>
 
@@ -255,7 +255,7 @@
               <div class="job-card--row__main">
                 <span class="job-card__logo job-card__logo--as" aria-hidden="true">AS</span>
                 <div class="job-card--row__body">
-                  <h3 class="job-card__title"><a href="#">QA Engineer</a></h3>
+                  <h3 class="job-card__title"><a href="job-details.php?id=3">QA Engineer</a></h3>
                   <p class="job-card--row__company">Atlas Systems <span class="job-card__dot" aria-hidden="true">&middot;</span> Amman <span class="job-card__dot" aria-hidden="true">&middot;</span> On-site</p>
                   <p class="job-card--row__meta">Full Time <span class="job-card__dot" aria-hidden="true">&middot;</span> Junior</p>
                   <p class="job-card--row__salary">500 <span aria-hidden="true">&ndash;</span> 650 JOD <span class="job-card--row__period">/ month</span></p>
@@ -268,7 +268,7 @@
                     <path d="M19 21 12 16 5 21V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2Z"/>
                   </svg>
                 </button>
-                <a class="btn btn--outline btn--sm" href="#">View Job</a>
+                <a class="btn btn--outline btn--sm" href="job-details.php?id=3">View Job</a>
               </div>
             </article>
 
@@ -276,7 +276,7 @@
               <div class="job-card--row__main">
                 <span class="job-card__logo job-card__logo--nw" aria-hidden="true">NW</span>
                 <div class="job-card--row__body">
-                  <h3 class="job-card__title"><a href="#">Marketing Specialist</a></h3>
+                  <h3 class="job-card__title"><a href="job-details.php?id=4">Marketing Specialist</a></h3>
                   <p class="job-card--row__company">NovaWorks <span class="job-card__dot" aria-hidden="true">&middot;</span> Amman <span class="job-card__dot" aria-hidden="true">&middot;</span> On-site</p>
                   <p class="job-card--row__meta">Full Time <span class="job-card__dot" aria-hidden="true">&middot;</span> Entry Level</p>
                   <p class="job-card--row__salary">500 <span aria-hidden="true">&ndash;</span> 650 JOD <span class="job-card--row__period">/ month</span></p>
@@ -289,7 +289,7 @@
                     <path d="M19 21 12 16 5 21V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2Z"/>
                   </svg>
                 </button>
-                <a class="btn btn--outline btn--sm" href="#">View Job</a>
+                <a class="btn btn--outline btn--sm" href="job-details.php?id=4">View Job</a>
               </div>
             </article>
 
@@ -297,7 +297,7 @@
               <div class="job-card--row__main">
                 <span class="job-card__logo job-card__logo--ol" aria-hidden="true">OL</span>
                 <div class="job-card--row__body">
-                  <h3 class="job-card__title"><a href="#">Frontend Developer</a></h3>
+                  <h3 class="job-card__title"><a href="job-details.php?id=5">Frontend Developer</a></h3>
                   <p class="job-card--row__company">Orbit Labs <span class="job-card__dot" aria-hidden="true">&middot;</span> Worldwide <span class="job-card__dot" aria-hidden="true">&middot;</span> Remote</p>
                   <p class="job-card--row__meta">Contract <span class="job-card__dot" aria-hidden="true">&middot;</span> Mid Level</p>
                   <p class="job-card--row__salary">700 <span aria-hidden="true">&ndash;</span> 950 JOD <span class="job-card--row__period">/ month</span></p>
@@ -310,7 +310,7 @@
                     <path d="M19 21 12 16 5 21V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2Z"/>
                   </svg>
                 </button>
-                <a class="btn btn--outline btn--sm" href="#">View Job</a>
+                <a class="btn btn--outline btn--sm" href="job-details.php?id=5">View Job</a>
               </div>
             </article>
 
@@ -318,7 +318,7 @@
               <div class="job-card--row__main">
                 <span class="job-card__logo job-card__logo--bp" aria-hidden="true">BP</span>
                 <div class="job-card--row__body">
-                  <h3 class="job-card__title"><a href="#">Financial Analyst</a></h3>
+                  <h3 class="job-card__title"><a href="job-details.php?id=6">Financial Analyst</a></h3>
                   <p class="job-card--row__company">BridgePoint <span class="job-card__dot" aria-hidden="true">&middot;</span> Amman <span class="job-card__dot" aria-hidden="true">&middot;</span> On-site</p>
                   <p class="job-card--row__meta">Full Time <span class="job-card__dot" aria-hidden="true">&middot;</span> Junior</p>
                   <p class="job-card--row__salary">600 <span aria-hidden="true">&ndash;</span> 800 JOD <span class="job-card--row__period">/ month</span></p>
@@ -331,7 +331,7 @@
                     <path d="M19 21 12 16 5 21V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2Z"/>
                   </svg>
                 </button>
-                <a class="btn btn--outline btn--sm" href="#">View Job</a>
+                <a class="btn btn--outline btn--sm" href="job-details.php?id=6">View Job</a>
               </div>
             </article>
 
@@ -339,7 +339,7 @@
               <div class="job-card--row__main">
                 <span class="job-card__logo job-card__logo--lt" aria-hidden="true">LT</span>
                 <div class="job-card--row__body">
-                  <h3 class="job-card__title"><a href="#">Customer Success Specialist</a></h3>
+                  <h3 class="job-card__title"><a href="job-details.php?id=7">Customer Success Specialist</a></h3>
                   <p class="job-card--row__company">Lumina Technologies <span class="job-card__dot" aria-hidden="true">&middot;</span> Irbid <span class="job-card__dot" aria-hidden="true">&middot;</span> Hybrid</p>
                   <p class="job-card--row__meta">Full Time <span class="job-card__dot" aria-hidden="true">&middot;</span> Entry Level</p>
                   <p class="job-card--row__salary">500 <span aria-hidden="true">&ndash;</span> 650 JOD <span class="job-card--row__period">/ month</span></p>
@@ -352,7 +352,7 @@
                     <path d="M19 21 12 16 5 21V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2Z"/>
                   </svg>
                 </button>
-                <a class="btn btn--outline btn--sm" href="#">View Job</a>
+                <a class="btn btn--outline btn--sm" href="job-details.php?id=7">View Job</a>
               </div>
             </article>
 
@@ -360,7 +360,7 @@
               <div class="job-card--row__main">
                 <span class="job-card__logo job-card__logo--cd" aria-hidden="true">CD</span>
                 <div class="job-card--row__body">
-                  <h3 class="job-card__title"><a href="#">Junior Software Engineer</a></h3>
+                  <h3 class="job-card__title"><a href="job-details.php?id=8">Junior Software Engineer</a></h3>
                   <p class="job-card--row__company">Cedar Digital <span class="job-card__dot" aria-hidden="true">&middot;</span> Zarqa <span class="job-card__dot" aria-hidden="true">&middot;</span> On-site</p>
                   <p class="job-card--row__meta">Full Time <span class="job-card__dot" aria-hidden="true">&middot;</span> Junior</p>
                   <p class="job-card--row__salary">600 <span aria-hidden="true">&ndash;</span> 800 JOD <span class="job-card--row__period">/ month</span></p>
@@ -373,7 +373,7 @@
                     <path d="M19 21 12 16 5 21V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2Z"/>
                   </svg>
                 </button>
-                <a class="btn btn--outline btn--sm" href="#">View Job</a>
+                <a class="btn btn--outline btn--sm" href="job-details.php?id=8">View Job</a>
               </div>
             </article>
 
@@ -381,7 +381,7 @@
               <div class="job-card--row__main">
                 <span class="job-card__logo job-card__logo--as" aria-hidden="true">AS</span>
                 <div class="job-card--row__body">
-                  <h3 class="job-card__title"><a href="#">Data Engineer</a></h3>
+                  <h3 class="job-card__title"><a href="job-details.php?id=9">Data Engineer</a></h3>
                   <p class="job-card--row__company">Atlas Systems <span class="job-card__dot" aria-hidden="true">&middot;</span> Amman <span class="job-card__dot" aria-hidden="true">&middot;</span> Hybrid</p>
                   <p class="job-card--row__meta">Full Time <span class="job-card__dot" aria-hidden="true">&middot;</span> Senior</p>
                   <p class="job-card--row__salary">900 <span aria-hidden="true">&ndash;</span> 1,200 JOD <span class="job-card--row__period">/ month</span></p>
@@ -394,7 +394,7 @@
                     <path d="M19 21 12 16 5 21V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2Z"/>
                   </svg>
                 </button>
-                <a class="btn btn--outline btn--sm" href="#">View Job</a>
+                <a class="btn btn--outline btn--sm" href="job-details.php?id=9">View Job</a>
               </div>
             </article>
           </div>
@@ -468,7 +468,7 @@
               <li><a href="jobs.php">Find Jobs</a></li>
               <li><a href="jobs.php">Browse Categories</a></li>
               <li><a href="index.php#why-hirepeak">How It Works</a></li>
-              <li><a href="#">Create Account</a></li>
+              <li><a href="register.php">Create Account</a></li>
             </ul>
           </div>
 

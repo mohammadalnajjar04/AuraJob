@@ -35,7 +35,7 @@
       </a>
 
       <div class="site-header__actions">
-        <a class="btn btn--primary btn--sm site-header__mobile-cta" href="#">Get Started</a>
+        <a class="btn btn--primary btn--sm site-header__mobile-cta" href="register.php">Get Started</a>
         <button class="icon-button nav-toggle" type="button" data-drawer-toggle aria-expanded="false" aria-controls="site-nav" aria-label="Open menu">
           <svg class="nav-toggle__icon-open" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
             <path d="M4 7h16"/>
@@ -72,8 +72,8 @@
         </ul>
 
         <div class="site-nav__auth">
-          <a class="btn btn--ghost" href="#">Sign In</a>
-          <a class="btn btn--primary" href="#">Create Account</a>
+          <a class="btn btn--ghost" href="login.php">Sign In</a>
+          <a class="btn btn--primary" href="register.php">Create Account</a>
         </div>
       </nav>
     </div>
@@ -171,7 +171,7 @@
                 </svg>
               </button>
             </div>
-            <h3 class="job-card__title"><a href="#">Senior PHP Developer</a></h3>
+            <h3 class="job-card__title"><a href="job-details.php?id=1">Senior PHP Developer</a></h3>
             <p class="job-card__company">Northstar Labs &middot; Makati</p>
             <ul class="job-card__meta" aria-label="Job type and work mode">
               <li class="chip">Full-time</li>
@@ -190,7 +190,7 @@
                 </svg>
               </button>
             </div>
-            <h3 class="job-card__title"><a href="#">Product Designer</a></h3>
+            <h3 class="job-card__title"><a href="job-details.php?id=1">Product Designer</a></h3>
             <p class="job-card__company">Vertex Digital &middot; Remote</p>
             <ul class="job-card__meta" aria-label="Job type and work mode">
               <li class="chip">Full-time</li>
@@ -209,7 +209,7 @@
                 </svg>
               </button>
             </div>
-            <h3 class="job-card__title"><a href="#">Marketing Specialist</a></h3>
+            <h3 class="job-card__title"><a href="job-details.php?id=1">Marketing Specialist</a></h3>
             <p class="job-card__company">NovaWorks &middot; Quezon City</p>
             <ul class="job-card__meta" aria-label="Job type and work mode">
               <li class="chip">Full-time</li>
@@ -513,7 +513,7 @@
         <h2 class="cta__title" id="cta-title">Ready to reach your peak?</h2>
         <p class="cta__text">Create your account for free and start exploring opportunities today.</p>
         <div class="cta__actions">
-          <a class="btn btn--primary" href="#">Create Account</a>
+          <a class="btn btn--primary" href="register.php">Create Account</a>
           <a class="btn btn--ghost" href="jobs.php">Explore jobs</a>
         </div>
       </div>
@@ -540,7 +540,7 @@
               <li><a href="jobs.php">Find Jobs</a></li>
               <li><a href="jobs.php">Browse Categories</a></li>
               <li><a href="#why-hirepeak">How It Works</a></li>
-              <li><a href="#">Create Account</a></li>
+              <li><a href="register.php">Create Account</a></li>
             </ul>
           </div>
 

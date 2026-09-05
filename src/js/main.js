@@ -131,18 +131,4 @@
   if (year) {
     year.textContent = String(new Date().getFullYear());
   }
-
-  var passwordToggles = document.querySelectorAll('[data-password-toggle]');
-
-  Array.prototype.forEach.call(passwordToggles, function (btn) {
-    btn.addEventListener('click', function () {
-      var control = document.getElementById(btn.getAttribute('aria-controls'));
-      if (!control) return;
-      var show = btn.getAttribute('aria-pressed') === 'true';
-      var next = show ? 'false' : 'true';
-      control.setAttribute('type', show ? 'password' : 'text');
-      btn.setAttribute('aria-pressed', next);
-      btn.setAttribute('aria-label', show ? 'Show password' : 'Hide password');
-    });
-  });
 })();

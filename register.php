@@ -87,8 +87,8 @@
         <h1 class="auth-title">Create your HirePeak account</h1>
         <p class="auth-sub">Choose how you'll use HirePeak and get started.</p>
 
-        <form class="auth-form" action="register.php" method="post" data-auth-form novalidate>
-          <fieldset class="auth-roles">
+        <form class="auth-form" id="register-form" action="register.php" method="post" data-auth-form novalidate>
+          <fieldset class="auth-roles" id="reg-roles">
             <legend class="auth-roles__legend">I want to</legend>
 
             <label class="role-card">
@@ -109,15 +109,19 @@
               </span>
             </label>
           </fieldset>
+          <p class="auth-roles__note" id="reg-role-note" aria-live="polite"></p>
+          <p class="field__error auth-roles__error" id="reg-role-error" hidden></p>
 
           <div class="field">
             <label class="field__label" for="reg-name">Full name</label>
             <input class="field__input" id="reg-name" name="name" type="text" autocomplete="name" placeholder="Jordan Kamel">
+            <p class="field__error" id="reg-name-error" hidden></p>
           </div>
 
           <div class="field">
             <label class="field__label" for="reg-email">Email</label>
             <input class="field__input" id="reg-email" name="email" type="email" inputmode="email" autocomplete="email" placeholder="you@example.com">
+            <p class="field__error" id="reg-email-error" hidden></p>
           </div>
 
           <div class="field">
@@ -138,6 +142,7 @@
               </button>
             </div>
             <p class="field__hint">Use at least 8 characters.</p>
+            <p class="field__error" id="reg-password-error" hidden></p>
           </div>
 
           <div class="field">
@@ -157,14 +162,25 @@
                 </svg>
               </button>
             </div>
+            <p class="field__error" id="reg-confirm-error" hidden></p>
           </div>
 
           <label class="auth-check">
-            <input type="checkbox" name="terms" value="1">
+            <input type="checkbox" id="reg-terms" name="terms" value="1">
             <span>I agree to the <a class="auth-check__link" href="#">Terms</a> and <a class="auth-check__link" href="#">Privacy Policy</a></span>
           </label>
+          <p class="field__error" id="reg-terms-error" hidden></p>
 
-          <button class="btn btn--primary auth-submit" type="submit">Create Account</button>
+          <div class="auth-success" id="register-success" role="status" hidden>
+            <svg class="auth-success__icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M20 6 9 17l-5-5"/>
+            </svg>
+            <span class="auth-success__text"></span>
+          </div>
+
+          <button class="btn btn--primary auth-submit" type="submit" data-auth-submit>
+            <span class="btn__label">Create Account</span>
+          </button>
         </form>
 
         <p class="auth-switch">Already have an account? <a href="login.php">Sign In</a></p>
@@ -187,5 +203,6 @@
   </footer>
 
   <script src="src/js/main.js"></script>
+  <script src="src/js/auth.js"></script>
 </body>
 </html>

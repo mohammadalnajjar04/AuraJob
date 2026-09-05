@@ -87,10 +87,11 @@
         <h1 class="auth-title">Welcome back</h1>
         <p class="auth-sub">Sign in to continue to HirePeak.</p>
 
-        <form class="auth-form" action="login.php" method="post" data-auth-form novalidate>
+        <form class="auth-form" id="login-form" action="login.php" method="post" data-auth-form novalidate>
           <div class="field">
             <label class="field__label" for="login-email">Email address</label>
             <input class="field__input" id="login-email" name="email" type="email" inputmode="email" autocomplete="email" placeholder="you@example.com">
+            <p class="field__error" id="login-email-error" hidden></p>
           </div>
 
           <div class="field">
@@ -111,6 +112,7 @@
                 </svg>
               </button>
             </div>
+            <p class="field__error" id="login-password-error" hidden></p>
           </div>
 
           <label class="auth-check">
@@ -118,7 +120,16 @@
             <span>Remember me</span>
           </label>
 
-          <button class="btn btn--primary auth-submit" type="submit">Sign In</button>
+          <div class="auth-success" id="login-success" role="status" hidden>
+            <svg class="auth-success__icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M20 6 9 17l-5-5"/>
+            </svg>
+            <span class="auth-success__text"></span>
+          </div>
+
+          <button class="btn btn--primary auth-submit" type="submit" data-auth-submit>
+            <span class="btn__label">Sign In</span>
+          </button>
         </form>
 
         <p class="auth-switch">New to HirePeak? <a href="register.php">Create an account</a></p>
@@ -141,5 +152,6 @@
   </footer>
 
   <script src="src/js/main.js"></script>
+  <script src="src/js/auth.js"></script>
 </body>
 </html>

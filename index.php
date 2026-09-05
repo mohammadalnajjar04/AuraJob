@@ -67,7 +67,7 @@
 
         <ul class="site-nav__links">
           <li><a class="site-nav__link is-active" href="index.php" aria-current="page">Home</a></li>
-          <li><a class="site-nav__link" href="#">Find Jobs</a></li>
+          <li><a class="site-nav__link" href="jobs.php">Find Jobs</a></li>
           <li><a class="site-nav__link" href="#for-employers">For Employers</a></li>
         </ul>
 
@@ -90,7 +90,7 @@
         </h1>
         <p class="hero__sub">Discover meaningful opportunities from growing teams — or find talented people ready to make an impact.</p>
 
-        <form class="hero-search" role="search" data-hero-search>
+        <form class="hero-search" role="search" action="jobs.php" method="get" data-hero-search>
           <label class="sr-only" for="hero-keyword">Keyword or job title</label>
           <div class="hero-search__field">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -152,7 +152,7 @@
       <div class="container">
         <div class="section-head">
           <h2 class="section-title" id="latest-jobs-title">Latest jobs</h2>
-          <a class="link-arrow" href="#">
+          <a class="link-arrow" href="jobs.php">
             View all jobs
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
               <path d="M5 12h14"/>
@@ -226,7 +226,7 @@
       <div class="container">
         <div class="section-head">
           <h2 class="section-title" id="categories-title">Popular categories</h2>
-          <a class="link-arrow" href="#">
+          <a class="link-arrow" href="jobs.php">
             All categories
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
               <path d="M5 12h14"/>
@@ -236,7 +236,7 @@
         </div>
 
         <div class="category-grid">
-          <a class="category-card" href="#">
+          <a class="category-card" href="jobs.php">
             <span class="category-card__icon">
               <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                 <path d="m8 7-5 5 5 5"/>
@@ -256,7 +256,7 @@
             </span>
           </a>
 
-          <a class="category-card" href="#">
+          <a class="category-card" href="jobs.php">
             <span class="category-card__icon">
               <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                 <path d="M12 3a9 9 0 1 0 0 18c1.6 0 2-.9 2-1.7 0-.8-.6-1.3-.6-2.3 0-1.1 1-2 2.3-2H19a5 5 0 0 0 .5-10A9 9 0 0 0 12 3Z"/>
@@ -277,7 +277,7 @@
             </span>
           </a>
 
-          <a class="category-card" href="#">
+          <a class="category-card" href="jobs.php">
             <span class="category-card__icon">
               <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                 <path d="M3 21h18"/>
@@ -298,7 +298,7 @@
             </span>
           </a>
 
-          <a class="category-card" href="#">
+          <a class="category-card" href="jobs.php">
             <span class="category-card__icon">
               <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                 <path d="M12 20s-7-4.5-9-9a5 5 0 0 1 9-3 5 5 0 0 1 9 3c-2 4.5-9 9-9 9Z"/>
@@ -316,7 +316,7 @@
             </span>
           </a>
 
-          <a class="category-card" href="#">
+          <a class="category-card" href="jobs.php">
             <span class="category-card__icon">
               <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                 <path d="M3 11v2a1 1 0 0 0 1 1h2l3 4a1 1 0 0 0 1.7-.7V6.7A1 1 0 0 0 9 6l-3 4H4a1 1 0 0 0-1 1Z"/>
@@ -336,7 +336,7 @@
             </span>
           </a>
 
-          <a class="category-card" href="#">
+          <a class="category-card" href="jobs.php">
             <span class="category-card__icon">
               <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                 <path d="M4 4.5A2.5 2.5 0 0 1 6.5 2H20v18H6.5A2.5 2.5 0 0 0 4 22V4.5Z"/>
@@ -436,7 +436,7 @@
             <h2 class="benefit__title">Find work that fits your goals.</h2>
             <p class="benefit__text">Browse meaningful roles, apply in minutes, and follow every application through to the final decision — all in one calm place.</p>
             <div class="benefit__actions">
-              <a class="btn btn--primary" href="#">
+              <a class="btn btn--primary" href="jobs.php">
                 Explore Jobs
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                   <path d="M5 12h14"/>
@@ -514,7 +514,7 @@
         <p class="cta__text">Create your account for free and start exploring opportunities today.</p>
         <div class="cta__actions">
           <a class="btn btn--primary" href="#">Create Account</a>
-          <a class="btn btn--ghost" href="#">Explore jobs</a>
+          <a class="btn btn--ghost" href="jobs.php">Explore jobs</a>
         </div>
       </div>
     </section>
@@ -537,8 +537,8 @@
           <div class="footer-col">
             <h3 class="footer-col__title">Job Seekers</h3>
             <ul>
-              <li><a href="#">Find Jobs</a></li>
-              <li><a href="#">Browse Categories</a></li>
+              <li><a href="jobs.php">Find Jobs</a></li>
+              <li><a href="jobs.php">Browse Categories</a></li>
               <li><a href="#why-hirepeak">How It Works</a></li>
               <li><a href="#">Create Account</a></li>
             </ul>

@@ -65,7 +65,7 @@ CREATE TABLE applicant_profiles (
     user_id            INT UNSIGNED   NOT NULL,
     professional_title VARCHAR(100)   NULL,
     bio                TEXT           NULL,
-    phone              VARCHAR(30)    NULL,
+    phone              VARCHAR(255)   NULL,
     location           VARCHAR(120)   NULL,
     experience_years   TINYINT UNSIGNED NULL,
     skills             TEXT           NULL,

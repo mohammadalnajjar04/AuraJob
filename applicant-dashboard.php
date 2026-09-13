@@ -64,28 +64,9 @@ try {
     $profile = $stmt->get_result()->fetch_assoc();
     $stmt->close();
 
-    $completenessFields = [
-        'professional_title' => 'Add your professional title',
-        'bio'                => 'Add your bio',
-        'phone'              => 'Add your phone number',
-        'location'           => 'Add your location',
-        'experience_years'   => 'Add your years of experience',
-        'skills'             => 'Add your skills',
-    ];
-
-    $filled = 0;
-    foreach ($completenessFields as $field => $missingLabel) {
-        if ($profile !== null) {
-            $value = $profile[$field] ?? null;
-            if ($value !== null && trim((string) $value) !== '') {
-                $filled++;
-                continue;
-            }
-        }
-        $profileMissing[] = $missingLabel;
-    }
-
-    $profilePercent = (int) round($filled / count($completenessFields) * 100);
+    $completeness = hirepeak_profile_completeness($profile);
+    $profilePercent = $completeness['percent'];
+    $profileMissing = $completeness['missing'];
 
     $stmt = $db->prepare(
         'SELECT a.id AS application_id, a.status, a.applied_at,
@@ -276,7 +257,10 @@ try {
           <section class="dash-panel" aria-labelledby="recent-title">
             <div class="panel-head">
               <h2 class="panel-head__title" id="recent-title">Recent Applications</h2>
-              <span class="panel-head__count"><?php echo (int) count($recentApplications); ?></span>
+              <?php if ($recentApplications !== []): ?>
+                <span class="panel-head__count"><?php echo (int) count($recentApplications); ?></span>
+                <a class="panel-head__link" href="my-applications.php">View all</a>
+              <?php endif; ?>
             </div>
 
             <?php if ($recentApplications === []): ?>
@@ -321,6 +305,7 @@ try {
           <aside class="dash-panel" aria-labelledby="profile-title">
             <div class="panel-head">
               <h2 class="panel-head__title" id="profile-title">Complete your profile</h2>
+              <a class="panel-head__link" href="applicant-profile.php">Edit profile</a>
             </div>
 
             <div class="completeness">

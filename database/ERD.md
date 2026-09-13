@@ -72,7 +72,7 @@ One-to-one detail record for applicant users.
 | `user_id` | INT UNSIGNED | FK → `users.id`, UNIQUE, NOT NULL | One profile per applicant |
 | `professional_title` | VARCHAR(100) | NULL | e.g. "Senior PHP Developer" |
 | `bio` | TEXT | NULL | Short professional summary |
-| `phone` | VARCHAR(30) | NULL | Contact number |
+| `phone` | VARCHAR(255) | NULL | Contact number — **stored as an AES-256-GCM encrypted payload** (`v1:base64(...)`) at rest; widest column sized to hold ciphertext + IV + tag |
 | `location` | VARCHAR(120) | NULL | Searchable preference |
 | `experience_years` | TINYINT UNSIGNED | NULL | Years of experience |
 | `skills` | TEXT | NULL | Comma-separated or free text; kept simple |
@@ -304,7 +304,7 @@ saved_jobs   * ── * jobs                (Many-to-Many via junction)
 - **Passwords**: stored as a hash in `users.password_hash` using PHP `password_hash()` (bcrypt/argon2id). Never reversible; never stored in plain text. **Hash only — do not encrypt.**
 - **Encryption target (recoverable sensitive field):** `applicant_profiles.phone` — a sensitive personal data point that may need to be recovered/read back de-encrypted (unlike a password). It will later be encrypted **in the application layer using PHP AES-256-GCM**.
   - Rationale: it's personally identifying, is not used for lookups (so encryption does not block queries), and may need to be shown back to the user or to employers.
-  - The encrypted value will be stored in a column large enough to hold the ciphertext + IV + tag. The schema keeps the column as an opaque text field; the key lives only in the application configuration (`.env`), **never in the database**.
+  - The encrypted value will be stored in a column large enough to hold the ciphertext + IV + tag (**`phone` was widened from VARCHAR(30) → VARCHAR(255)` for this; see `database/migrations/2026-09-14-phone-encryption.sql`**). The schema keeps the column as an opaque text field; the key lives only in the application configuration (`.env`), **never in the database**.
 - No encryption keys, salts, or IVs are stored in this schema.
 - `email` remains plain (with UNIQUE) because it is the login identifier and must be searchable.
 

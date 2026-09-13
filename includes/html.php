@@ -17,6 +17,61 @@ function hirepeak_esc(?string $value): string
 }
 
 /**
+ * Profile completeness definition — the single source of truth for which
+ * applicant_profiles fields count toward the displayed percentage.
+ *
+ * Field labels double as "Add your ..." action hints for the applicant. The
+ * dashboard and the profile page both use this so the number never diverges.
+ *
+ * @return array<string, string> profile column => missing-field hint
+ */
+function hirepeak_profile_completeness_fields(): array
+{
+    return [
+        'professional_title' => 'Add your professional title',
+        'bio'                => 'Add your bio',
+        'phone'              => 'Add your phone number',
+        'location'           => 'Add your location',
+        'experience_years'   => 'Add your years of experience',
+        'skills'             => 'Add your skills',
+    ];
+}
+
+/**
+ * Computes profile completeness from an applicant_profiles row (or null when
+ * no row exists yet).
+ *
+ * @return array{percent: int, filled: int, total: int, missing: list<string>}
+ */
+function hirepeak_profile_completeness(?array $profile): array
+{
+    $fields = hirepeak_profile_completeness_fields();
+    $filled = 0;
+    $missing = [];
+
+    foreach ($fields as $field => $missingLabel) {
+        if ($profile !== null) {
+            $value = $profile[$field] ?? null;
+            if ($value !== null && trim((string) $value) !== '') {
+                $filled++;
+                continue;
+            }
+        }
+        $missing[] = $missingLabel;
+    }
+
+    $total = count($fields);
+    $percent = $total > 0 ? (int) round($filled / $total * 100) : 0;
+
+    return [
+        'percent' => $percent,
+        'filled'  => $filled,
+        'total'   => $total,
+        'missing' => $missing,
+    ];
+}
+
+/**
  * Renders a hidden field-error slot, or a visible one when the field is in
  * $errors. The element id is "<idPrefix>-<field>-error" so client-side
  * validation and aria-describedby keep pointing at the same element.
@@ -191,6 +246,16 @@ function hirepeak_initials(string $name): string
     }
 
     return $letters;
+}
+
+/**
+ * String length for validation limits. Uses mbstring when available and falls
+ * back to plain strlen so the profile editor never hard-crashes on minimal
+ * PHP installs without the mbstring extension.
+ */
+function hirepeak_utf8_length(string $value): int
+{
+    return \function_exists('mb_strlen') ? mb_strlen($value, 'UTF-8') : strlen($value);
 }
 
 /**

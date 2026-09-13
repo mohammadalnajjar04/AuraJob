@@ -117,6 +117,10 @@ $hpNavItems = [
               <div class="account-menu__panel">
                 <p class="account-menu__label">Signed in as <strong><?php echo hirepeak_esc($hpFullName); ?></strong></p>
                 <a class="account-menu__item" href="<?php echo hirepeak_esc($hpDashboard); ?>">Dashboard</a>
+                <?php if (($hpUser['role'] ?? '') === 'applicant'): ?>
+                  <a class="account-menu__item" href="my-applications.php">My Applications</a>
+                  <a class="account-menu__item" href="applicant-profile.php">My Profile</a>
+                <?php endif; ?>
                 <form class="account-menu__item account-menu__logout" method="post" action="logout.php">
                   <input type="hidden" name="csrf_token" value="<?php echo hirepeak_esc($hpCsrf); ?>">
                   <button class="account-menu__logout-btn" type="submit">Logout</button>

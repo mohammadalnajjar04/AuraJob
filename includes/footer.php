@@ -1,0 +1,69 @@
+<?php
+declare(strict_types=1);
+
+/**
+ * HirePeak shared site footer + page scripts.
+ *
+ * Pages may set $pageScripts (array of script src paths) before including so
+ * each page ends with exactly the scripts it needs.
+ */
+
+$pageScripts = $pageScripts ?? [];
+?>
+<footer class="site-footer">
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <a class="brand" href="index.php" aria-label="HirePeak home">
+          <svg class="brand__mark" width="26" height="26" aria-hidden="true">
+            <use href="#mark-peak"/>
+          </svg>
+          <span class="brand__name">HirePeak</span>
+        </a>
+        <p class="footer-brand__text">Helping talent and employers reach their peak.</p>
+      </div>
+
+      <div class="footer-links">
+        <div class="footer-col">
+          <h3 class="footer-col__title">Job Seekers</h3>
+          <ul>
+            <li><a href="jobs.php">Find Jobs</a></li>
+            <li><a href="jobs.php">Browse Categories</a></li>
+            <li><a href="index.php#why-hirepeak">How It Works</a></li>
+            <li><a href="register.php">Create Account</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-col">
+          <h3 class="footer-col__title">Employers</h3>
+          <ul>
+            <li><a href="#">Post a Job</a></li>
+            <li><a href="index.php#for-employers">For Employers</a></li>
+            <li><a href="#">Applicant Pipeline</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-col">
+          <h3 class="footer-col__title">Company</h3>
+          <ul>
+            <li><a href="#">About</a></li>
+            <li><a href="#">Support</a></li>
+            <li><a href="#">Contact</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <p>&copy; <span id="year">2026</span> HirePeak. All rights reserved.</p>
+      <ul class="footer-bottom__legal">
+        <li><a href="#">Terms</a></li>
+        <li><a href="#">Privacy</a></li>
+      </ul>
+    </div>
+  </div>
+</footer>
+
+<?php foreach ($pageScripts as $hpScript): ?>
+  <script src="<?php echo htmlspecialchars((string) $hpScript, ENT_QUOTES, 'UTF-8'); ?>"></script>
+<?php endforeach; ?>

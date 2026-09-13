@@ -9,7 +9,7 @@ require __DIR__ . '/includes/html.php';
 hirepeak_start_session();
 
 if (hirepeak_is_logged_in()) {
-    header('Location: index.php');
+    header('Location: ' . hirepeak_dashboard_for_role(hirepeak_user()));
     exit;
 }
 
@@ -71,7 +71,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                 if ($user !== null && password_verify($password, $user['password_hash'])) {
                     hirepeak_login((int) $user['id'], $user['name'], $user['email'], $user['role']);
-                    header('Location: index.php');
+                    header('Location: ' . hirepeak_dashboard_for_role($user));
                     exit;
                 }
 
@@ -83,6 +83,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     }
 }
+
+$pageScripts = ['src/js/main.js', 'src/js/auth.js'];
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -99,71 +101,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   <link rel="stylesheet" href="src/css/style.css">
 </head>
 <body class="auth-body">
-  <svg class="svg-defs" aria-hidden="true">
-    <defs>
-      <symbol id="mark-peak" viewBox="0 0 24 24">
-        <rect x="1" y="1" width="22" height="22" rx="7" fill="#4F46E5"/>
-        <path d="M12 4.8 18 16H6Z" fill="#FFFFFF" stroke="#FFFFFF" stroke-width="3" stroke-linejoin="round"/>
-        <path d="M12 6.6 8.8 16H5.9Z" fill="#EEF2FF" stroke="#EEF2FF" stroke-width="3" stroke-linejoin="round"/>
-      </symbol>
-    </defs>
-  </svg>
-
-  <a class="skip-link" href="#main">Skip to content</a>
-
-  <header class="site-header">
-    <div class="container site-header__inner">
-      <a class="brand" href="index.php" aria-label="HirePeak home">
-        <svg class="brand__mark" width="26" height="26" aria-hidden="true">
-          <use href="#mark-peak"/>
-        </svg>
-        <span class="brand__name">HirePeak</span>
-      </a>
-
-      <div class="site-header__actions">
-        <a class="btn btn--primary btn--sm site-header__mobile-cta" href="register.php">Get Started</a>
-        <button class="icon-button nav-toggle" type="button" data-drawer-toggle aria-expanded="false" aria-controls="site-nav" aria-label="Open menu">
-          <svg class="nav-toggle__icon-open" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
-            <path d="M4 7h16"/>
-            <path d="M4 12h16"/>
-            <path d="M4 17h16"/>
-          </svg>
-          <svg class="nav-toggle__icon-close" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
-            <path d="M6 6l12 12"/>
-            <path d="M18 6 6 18"/>
-          </svg>
-        </button>
-      </div>
-
-      <nav class="site-nav" id="site-nav" data-drawer aria-hidden="true" aria-label="Main">
-        <div class="site-nav__head">
-          <span class="brand">
-            <svg class="brand__mark" width="26" height="26" aria-hidden="true">
-              <use href="#mark-peak"/>
-            </svg>
-            <span class="brand__name">HirePeak</span>
-          </span>
-          <button class="icon-button" type="button" data-drawer-close aria-label="Close menu">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
-              <path d="M6 6l12 12"/>
-              <path d="M18 6 6 18"/>
-            </svg>
-          </button>
-        </div>
-
-        <ul class="site-nav__links">
-          <li><a class="site-nav__link" href="index.php">Home</a></li>
-          <li><a class="site-nav__link" href="jobs.php">Find Jobs</a></li>
-          <li><a class="site-nav__link" href="index.php#for-employers">For Employers</a></li>
-        </ul>
-
-        <div class="site-nav__auth">
-          <a class="btn btn--ghost" href="login.php">Sign In</a>
-          <a class="btn btn--primary" href="register.php">Create Account</a>
-        </div>
-      </nav>
-    </div>
-  </header>
+  <?php require __DIR__ . '/includes/header.php'; ?>
 
   <div class="scrim" data-scrim hidden></div>
 
@@ -247,19 +185,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </div>
   </main>
 
-  <footer class="site-footer">
-    <div class="container">
-      <div class="footer-bottom">
-        <p>&copy; <span id="year">2026</span> HirePeak. All rights reserved.</p>
-        <ul class="footer-bottom__legal">
-          <li><a href="#">Terms</a></li>
-          <li><a href="#">Privacy</a></li>
-        </ul>
-      </div>
-    </div>
-  </footer>
-
-  <script src="src/js/main.js"></script>
-  <script src="src/js/auth.js"></script>
+  <?php require __DIR__ . '/includes/footer.php'; ?>
 </body>
 </html>

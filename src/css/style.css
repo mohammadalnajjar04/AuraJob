@@ -3001,3 +3001,209 @@ body.no-scroll {
   background: var(--color-brand);
   color: var(--color-text-on-primary);
 }
+
+/* ===== Authenticated account menu ===== */
+.account-menu {
+  position: relative;
+  width: 100%;
+}
+
+.account-menu__box details,
+.account-menu__box {
+  display: block;
+}
+
+.account-menu__trigger {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: var(--radius-md);
+  font-size: var(--text-body-small);
+  font-weight: 600;
+  color: var(--color-text-primary);
+  cursor: pointer;
+  list-style: none;
+}
+
+.account-menu__trigger::-webkit-details-marker {
+  display: none;
+}
+
+.account-menu__trigger:hover,
+.account-menu__box[open] .account-menu__trigger {
+  background: var(--color-bg-subtle);
+  color: var(--color-text-primary);
+}
+
+.account-menu__name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.account-menu__chevron {
+  flex-shrink: 0;
+  transition: transform var(--dur-1) var(--ease-out);
+}
+
+.account-menu__box[open] .account-menu__chevron {
+  transform: rotate(180deg);
+}
+
+.account-menu__panel {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  left: 0;
+  min-width: 200px;
+  padding: var(--space-2);
+  background: var(--color-bg-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+  z-index: var(--z-modal);
+}
+
+.account-menu__label {
+  padding: var(--space-2) var(--space-3) var(--space-3);
+  font-size: var(--text-caption);
+  color: var(--color-text-muted);
+  border-bottom: 1px solid var(--color-border);
+  margin-bottom: var(--space-2);
+}
+
+.account-menu__label strong {
+  display: block;
+  color: var(--color-text-primary);
+  font-weight: 600;
+}
+
+.account-menu__item {
+  display: block;
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: var(--radius-md);
+  font-size: var(--text-body-small);
+  font-weight: 500;
+  text-align: left;
+  color: var(--color-text-primary);
+}
+
+a.account-menu__item:hover {
+  background: var(--color-bg-subtle);
+  color: var(--color-text-primary);
+}
+
+.account-menu__logout {
+  padding: 0;
+}
+
+.account-menu__logout-btn {
+  display: block;
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: var(--radius-md);
+  font-size: var(--text-body-small);
+  font-weight: 500;
+  text-align: left;
+  color: var(--color-text-primary);
+  cursor: pointer;
+}
+
+.account-menu__logout-btn:hover {
+  background: var(--color-bg-subtle);
+  color: var(--color-text-primary);
+}
+
+@media (min-width: 768px) {
+  .account-menu {
+    width: auto;
+  }
+
+  .account-menu__trigger {
+    justify-content: flex-start;
+  }
+
+  .account-menu__panel {
+    left: auto;
+    min-width: 220px;
+  }
+}
+
+/* ===== Dashboard placeholder shells ===== */
+.dash-main {
+  padding: var(--space-7) 0 var(--space-10);
+}
+
+.dash-card {
+  max-width: 680px;
+  padding: var(--space-7);
+  background: var(--color-bg-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+}
+
+.dash-eyebrow {
+  font-size: var(--text-caption);
+  font-weight: 600;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+  color: var(--color-brand);
+}
+
+.dash-title {
+  margin-top: var(--space-2);
+  font-size: var(--text-h1);
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+}
+
+.dash-text {
+  margin-top: var(--space-3);
+  font-size: var(--text-body-large);
+  color: var(--color-text-secondary);
+}
+
+/* ===== Access denied (403) ===== */
+.denied-main {
+  padding: var(--space-8) 0 var(--space-10);
+}
+
+.denied-card {
+  max-width: 480px;
+  padding: var(--space-8);
+  text-align: center;
+  background: var(--color-bg-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+}
+
+.denied-title {
+  font-size: var(--text-h1);
+  letter-spacing: -0.02em;
+}
+
+.denied-text {
+  margin-top: var(--space-2);
+  font-size: var(--text-body-large);
+  color: var(--color-text-secondary);
+}
+
+.denied-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--space-3);
+  margin-top: var(--space-6);
+}
+
+/* ===== Disabled call-to-action state ===== */
+.btn[disabled] {
+  opacity: .55;
+  cursor: not-allowed;
+}

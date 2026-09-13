@@ -63,6 +63,67 @@ function hirepeak_is_logged_in(): bool
     return hirepeak_user() !== null;
 }
 
+/**
+ * Redirects unauthenticated visitors to login.php and terminates the request.
+ * Returns the authenticated user once it is safe to continue.
+ */
+function hirepeak_require_auth(): array
+{
+    hirepeak_start_session();
+    $user = hirepeak_user();
+
+    if ($user === null) {
+        header('Location: login.php');
+        exit;
+    }
+
+    return $user;
+}
+
+/**
+ * Ensures the visitor is authenticated AND has the given role. Unauthenticated
+ * visitors are redirected to login.php; authenticated visitors with the wrong
+ * role get a 403 access-denied page (never a redirect, so no loops).
+ */
+function hirepeak_require_role(string $role): array
+{
+    hirepeak_start_session();
+    $user = hirepeak_require_auth();
+
+    if (($user['role'] ?? '') !== $role) {
+        http_response_code(403);
+        require __DIR__ . '/access-denied.php';
+        exit;
+    }
+
+    return $user;
+}
+
+function hirepeak_is_applicant(): bool
+{
+    return (hirepeak_user()['role'] ?? '') === 'applicant';
+}
+
+function hirepeak_is_employer(): bool
+{
+    return (hirepeak_user()['role'] ?? '') === 'employer';
+}
+
+/**
+ * Maps an authenticated user to their safe role destination. Never trusts any
+ * query/body input - the role always comes from the authenticated session.
+ */
+function hirepeak_dashboard_for_role(?array $user): string
+{
+    $role = $user['role'] ?? '';
+
+    return match ($role) {
+        'applicant' => 'applicant-dashboard.php',
+        'employer'  => 'employer-dashboard.php',
+        default     => 'index.php',
+    };
+}
+
 function hirepeak_login(int $id, string $name, string $email, string $role): void
 {
     hirepeak_start_session();

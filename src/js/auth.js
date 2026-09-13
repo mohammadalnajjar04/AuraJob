@@ -217,7 +217,8 @@
       new Field(loginForm, '#login-password', '#login-password-error', ruleLoginPassword)
     ], loginForm.querySelector('[data-auth-submit]'), document.getElementById('login-success'), {
       loadingLabel: 'Signing in\u2026',
-      successMessage: 'Form validated successfully. Authentication will be connected next.'
+      successMessage: '',
+      nativeSubmit: true
     });
 
     attachLive(new Field(loginForm, '#login-email', '#login-email-error', ruleEmail));

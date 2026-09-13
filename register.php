@@ -3,16 +3,19 @@ declare(strict_types=1);
 
 require __DIR__ . '/includes/config.php';
 require __DIR__ . '/includes/db.php';
+require __DIR__ . '/includes/auth.php';
+require __DIR__ . '/includes/html.php';
 
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
+hirepeak_start_session();
+
+if (hirepeak_is_logged_in()) {
+    header('Location: index.php');
+    exit;
 }
 
 const HIREPEAK_ALLOWED_ROLES = ['applicant', 'employer'];
 
-if (empty($_SESSION['csrf_token'])) {
-    $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
-}
+hirepeak_csrf_token();
 
 $errors = [];
 $formError = '';
@@ -23,10 +26,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $old['email'] = trim((string) ($_POST['email'] ?? ''));
     $old['role'] = in_array($_POST['role'] ?? '', HIREPEAK_ALLOWED_ROLES, true) ? $_POST['role'] : 'applicant';
 
-    $submittedToken = (string) ($_POST['csrf_token'] ?? '');
-    if (!hash_equals($_SESSION['csrf_token'], $submittedToken)) {
+    if (!hirepeak_csrf_verify((string) ($_POST['csrf_token'] ?? ''))) {
         $formError = 'Your session expired. Please try again.';
-        $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+        hirepeak_csrf_token(true);
     } else {
         $name = $old['name'];
         $email = strtolower($old['email']);
@@ -115,17 +117,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
         }
     }
-}
-
-function hirepeak_error_slot(array $errors, string $field, string $extraClass = ''): string
-{
-    $classes = trim('field__error ' . $extraClass);
-    $id = 'reg-' . $field . '-error';
-    if (!isset($errors[$field])) {
-        return '<p class="' . $classes . '" id="' . $id . '" hidden></p>';
-    }
-    $message = htmlspecialchars($errors[$field], ENT_QUOTES, 'UTF-8');
-    return '<p class="' . $classes . '" id="' . $id . '" role="alert">' . $message . '</p>';
 }
 ?>
 <!DOCTYPE html>
@@ -242,18 +233,18 @@ function hirepeak_error_slot(array $errors, string $field, string $extraClass = 
             </label>
           </fieldset>
           <p class="auth-roles__note" id="reg-role-note" aria-live="polite"></p>
-          <?php echo hirepeak_error_slot($errors, 'role', 'auth-roles__error'); ?>
+          <?php echo hirepeak_error_slot($errors, 'role', 'reg', 'auth-roles__error'); ?>
 
           <div class="field">
             <label class="field__label" for="reg-name">Full name</label>
             <input class="field__input" id="reg-name" name="name" type="text" autocomplete="name" placeholder="Jordan Kamel" value="<?php echo htmlspecialchars($old['name'], ENT_QUOTES, 'UTF-8'); ?>"<?php echo isset($errors['name']) ? ' aria-invalid="true" aria-describedby="reg-name-error"' : ''; ?>>
-            <?php echo hirepeak_error_slot($errors, 'name'); ?>
+            <?php echo hirepeak_error_slot($errors, 'name', 'reg'); ?>
           </div>
 
           <div class="field">
             <label class="field__label" for="reg-email">Email</label>
             <input class="field__input" id="reg-email" name="email" type="email" inputmode="email" autocomplete="email" placeholder="you@example.com" value="<?php echo htmlspecialchars($old['email'], ENT_QUOTES, 'UTF-8'); ?>"<?php echo isset($errors['email']) ? ' aria-invalid="true" aria-describedby="reg-email-error"' : ''; ?>>
-            <?php echo hirepeak_error_slot($errors, 'email'); ?>
+            <?php echo hirepeak_error_slot($errors, 'email', 'reg'); ?>
           </div>
 
           <div class="field">
@@ -274,7 +265,7 @@ function hirepeak_error_slot(array $errors, string $field, string $extraClass = 
               </button>
             </div>
             <p class="field__hint">Use at least 8 characters.</p>
-            <?php echo hirepeak_error_slot($errors, 'password'); ?>
+            <?php echo hirepeak_error_slot($errors, 'password', 'reg'); ?>
           </div>
 
           <div class="field">
@@ -294,14 +285,14 @@ function hirepeak_error_slot(array $errors, string $field, string $extraClass = 
                 </svg>
               </button>
             </div>
-            <?php echo hirepeak_error_slot($errors, 'confirm'); ?>
+            <?php echo hirepeak_error_slot($errors, 'confirm', 'reg'); ?>
           </div>
 
           <label class="auth-check">
             <input type="checkbox" id="reg-terms" name="terms" value="1"<?php echo ($_POST['terms'] ?? '') === '1' ? ' checked' : ''; ?>>
             <span>I agree to the <a class="auth-check__link" href="#">Terms</a> and <a class="auth-check__link" href="#">Privacy Policy</a></span>
           </label>
-          <?php echo hirepeak_error_slot($errors, 'terms'); ?>
+          <?php echo hirepeak_error_slot($errors, 'terms', 'reg'); ?>
 
           <?php if ($formError !== ''): ?>
           <div class="auth-alert" role="alert">

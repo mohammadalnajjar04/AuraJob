@@ -295,7 +295,10 @@ try {
                         <span class="app-row__date">Applied <?php echo hirepeak_esc(hirepeak_relative_time((string) $app['applied_at'])); ?></span>
                       </p>
                     </div>
-                    <a class="btn btn--outline btn--sm app-row__action" href="job-details.php?id=<?php echo (int) $app['job_id']; ?>">View Job</a>
+                    <div class="app-row__actions">
+                      <a class="btn btn--outline btn--sm app-row__action" href="job-details.php?id=<?php echo (int) $app['job_id']; ?>">View Job</a>
+                      <a class="btn btn--primary btn--sm app-row__action" href="application-tracking.php?id=<?php echo (int) $app['application_id']; ?>">Track Application</a>
+                    </div>
                   </li>
                 <?php endforeach; ?>
               </ul>

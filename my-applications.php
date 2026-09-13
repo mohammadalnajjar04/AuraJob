@@ -262,7 +262,7 @@ $pageScripts = ['src/js/main.js'];
 
                 <div class="app-row__actions">
                   <a class="btn btn--outline btn--sm" href="job-details.php?id=<?php echo hirepeak_esc((string) $jobId); ?>">View Job</a>
-                  <span class="app-track-soon" title="Application tracking arrives in a later sprint">Tracking details coming next</span>
+                  <a class="btn btn--primary btn--sm" href="application-tracking.php?id=<?php echo (int) $appId; ?>">Track Application</a>
                 </div>
               </li>
             <?php endforeach; ?>

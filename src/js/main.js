@@ -131,4 +131,18 @@
   if (year) {
     year.textContent = String(new Date().getFullYear());
   }
+
+  // UX-only double-submit guard on the apply review form. The real protection
+  // against duplicate applications is the schema UNIQUE(applicant_id, job_id).
+  var applyForm = document.querySelector('[data-apply-form]');
+
+  if (applyForm) {
+    applyForm.addEventListener('submit', function () {
+      var button = applyForm.querySelector('[data-apply-submit]');
+      if (button) {
+        button.disabled = true;
+        button.setAttribute('aria-disabled', 'true');
+      }
+    });
+  }
 })();

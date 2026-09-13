@@ -10,7 +10,7 @@ hirepeak_start_session();
 $pageActive = 'jobs';
 $pageScripts = ['src/js/main.js'];
 
-$apply = hirepeak_apply_cta();
+$apply = hirepeak_apply_cta(1);
 ?>
 <!DOCTYPE html>
 <html lang="en">

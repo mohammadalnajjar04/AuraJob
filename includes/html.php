@@ -90,18 +90,68 @@ function hirepeak_error_slot(array $errors, string $field, string $idPrefix, str
 }
 
 /**
- * Server-side Apply Now state for a job detail page. Authorization is based on
- * the authenticated session role - never on client-side state.
+ * Server-side Apply Now state for a job detail page. Every branch is derived
+ * from the stored job in the database plus the authenticated session role —
+ * never from client-side state. Closed/draft/expired jobs, guest visitors,
+ * employer accounts, and applicants who already applied each get a distinct,
+ * honest CTA.
+ *
+ * @param int $jobId the job whose apply state is being rendered
  *
  * @return array{cta: string, note: string}
  */
-function hirepeak_apply_cta(): array
+function hirepeak_apply_cta(int $jobId): array
 {
+    require_once __DIR__ . '/db.php';
+
+    $dbDown = false;
+    $job = null;
+
+    try {
+        $db = hirepeak_db();
+        $stmt = $db->prepare('SELECT id, status, application_deadline, (status = "active" AND (application_deadline IS NULL OR application_deadline >= CURDATE())) AS is_open FROM jobs WHERE id = ? LIMIT 1');
+        $stmt->bind_param('i', $jobId);
+        $stmt->execute();
+        $job = $stmt->get_result()->fetch_assoc();
+        $stmt->close();
+    } catch (\Throwable $e) {
+        error_log('[hirepeak] apply CTA job lookup failed: ' . $e->getMessage());
+        $dbDown = true;
+    }
+
+    if ($dbDown) {
+        return [
+            'cta' => '<button class="btn btn--primary" type="button" disabled>Apply Now</button>',
+            'note' => 'Applications are temporarily unavailable. Please try again later.',
+        ];
+    }
+
+    if ($job === null) {
+        return [
+            'cta' => '<button class="btn btn--primary" type="button" disabled>Apply Now</button>',
+            'note' => 'This job is no longer available.',
+        ];
+    }
+
+    $status = (string) ($job['status'] ?? '');
+    $deadline = (string) ($job['application_deadline'] ?? '');
+    $closed = !(bool) ($job['is_open'] ?? false);
+
+    if ($closed) {
+        $note = $status === 'draft'
+            ? 'This job isn\'t accepting applications yet.'
+            : 'Applications are closed for this role.';
+        return [
+            'cta' => '<button class="btn btn--primary" type="button" disabled>Apply Now</button>',
+            'note' => $note,
+        ];
+    }
+
     $user = hirepeak_user();
 
     if ($user === null) {
         return [
-            'cta' => '<a class="btn btn--primary" href="login.php">Apply Now</a>',
+            'cta' => '<a class="btn btn--primary" href="login.php">Sign in to Apply</a>',
             'note' => 'Sign in to apply for this role.',
         ];
     }
@@ -113,9 +163,33 @@ function hirepeak_apply_cta(): array
         ];
     }
 
+    $existing = null;
+
+    try {
+        $uid = (int) $user['id'];
+        $db = hirepeak_db();
+        $stmt = $db->prepare('SELECT id FROM applications WHERE applicant_id = ? AND job_id = ? LIMIT 1');
+        $stmt->bind_param('ii', $uid, $jobId);
+        $stmt->execute();
+        $existing = $stmt->get_result()->fetch_assoc();
+        $stmt->close();
+    } catch (\Throwable $e) {
+        error_log('[hirepeak] apply CTA existing-application check failed: ' . $e->getMessage());
+        $existing = null;
+    }
+
+    if ($existing !== null) {
+        return [
+            'cta' => '<a class="btn btn--primary" href="application-tracking.php?id=' . (int) $existing['id'] . '">Track Application</a>',
+            'note' => 'You\'ve already applied for this role.',
+        ];
+    }
+
     return [
-        'cta' => '<button class="btn btn--primary" type="button" disabled>Apply Now</button>',
-        'note' => 'Application flow coming next.',
+        'cta' => '<a class="btn btn--primary" href="apply.php?id=' . $jobId . '">Apply Now</a>',
+        'note' => $deadline !== ''
+            ? 'Applications close on ' . date('M j, Y', strtotime($deadline)) . '.'
+            : 'Submitting sends your application straight to the employer.',
     ];
 }
 

@@ -16,6 +16,13 @@ $uid = (int) $user['id'];
  * 404 as a nonexistent one: no cross-account information is ever leaked.
  */
 
+/* One-time PRG flash from apply.php (consumed on first render). */
+$flash = '';
+if (isset($_SESSION['hirepeak_apply_flash']) && $_SESSION['hirepeak_apply_flash'] !== '') {
+    $flash = (string) $_SESSION['hirepeak_apply_flash'];
+    unset($_SESSION['hirepeak_apply_flash']);
+}
+
 $pageActive = '';
 $pageScripts = ['src/js/main.js'];
 
@@ -310,6 +317,10 @@ $showSalary = $salary !== 'Salary not disclosed';
           Back to My Applications
         </a>
       </div>
+
+      <?php if ($flash !== ''): ?>
+        <p class="dash-flash" role="status"><?php echo hirepeak_esc($flash); ?></p>
+      <?php endif; ?>
 
       <?php if ($loadError): ?>
         <section class="dash-alert" role="alert" aria-labelledby="track-error-title">

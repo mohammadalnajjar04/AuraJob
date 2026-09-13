@@ -3,11 +3,73 @@ declare(strict_types=1);
 
 require __DIR__ . '/includes/config.php';
 require __DIR__ . '/includes/auth.php';
+require __DIR__ . '/includes/db.php';
+require __DIR__ . '/includes/html.php';
 
 hirepeak_start_session();
 
 $pageActive = 'jobs';
 $pageScripts = ['src/js/main.js', 'src/js/jobs.js'];
+
+$jobs = [];
+$dbError = false;
+
+try {
+    $db = hirepeak_db();
+    $stmt = $db->prepare(
+        'SELECT j.id, j.title, j.location, j.salary_min, j.salary_max,
+                j.employment_type, j.work_mode, j.experience_level,
+                j.created_at, j.description, j.requirements,
+                c.name AS company_name, ct.name AS category_name
+         FROM jobs j
+         INNER JOIN companies c ON c.id = j.company_id
+         INNER JOIN categories ct ON ct.id = j.category_id
+         WHERE j.status = "active"
+           AND (j.application_deadline IS NULL
+                OR j.application_deadline >= CURDATE())
+         ORDER BY j.created_at DESC'
+    );
+    $stmt->execute();
+    $jobs = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+    $stmt->close();
+} catch (\Throwable $e) {
+    error_log('[hirepeak] jobs listing load failed: ' . $e->getMessage());
+    $dbError = true;
+}
+
+$resultCount = count($jobs);
+
+$filterValues = [
+    'category'   => [],
+    'employment' => [],
+    'mode'       => [],
+    'experience' => [],
+    'location'   => [],
+];
+foreach ($jobs as $job) {
+    if ((string) $job['category_name'] !== '') {
+        $filterValues['category'][] = (string) $job['category_name'];
+    }
+    $filterValues['employment'][] = hirepeak_employment_type_label((string) $job['employment_type']);
+    $filterValues['mode'][] = hirepeak_work_mode_label((string) $job['work_mode']);
+    $filterValues['experience'][] = hirepeak_experience_level_label((string) $job['experience_level']);
+    if ((string) $job['location'] !== '') {
+        $filterValues['location'][] = (string) $job['location'];
+    }
+}
+foreach ($filterValues as $group => $values) {
+    $filterValues[$group] = array_values(array_unique($values));
+}
+
+$filterGroups = [
+    'category'   => 'Category',
+    'employment' => 'Employment type',
+    'mode'       => 'Work mode',
+    'experience' => 'Experience level',
+    'location'   => 'Location',
+];
+
+$totalPages = max(1, (int) ceil($resultCount / 5));
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -75,64 +137,25 @@ $pageScripts = ['src/js/main.js', 'src/js/jobs.js'];
           </div>
 
           <form class="jobs-filters">
-            <fieldset class="jobs-filter">
-              <legend class="jobs-filter__title">Category</legend>
-              <div class="jobs-filter__options">
-                <label class="jobs-check"><input type="checkbox" name="category" value="Software Development"><span>Software Development</span></label>
-                <label class="jobs-check"><input type="checkbox" name="category" value="QA &amp; Testing"><span>QA &amp; Testing</span></label>
-                <label class="jobs-check"><input type="checkbox" name="category" value="UI/UX Design"><span>UI/UX Design</span></label>
-                <label class="jobs-check"><input type="checkbox" name="category" value="Engineering"><span>Engineering</span></label>
-                <label class="jobs-check"><input type="checkbox" name="category" value="Marketing"><span>Marketing</span></label>
-                <label class="jobs-check"><input type="checkbox" name="category" value="Finance"><span>Finance</span></label>
-                <label class="jobs-check"><input type="checkbox" name="category" value="Customer Service"><span>Customer Service</span></label>
-              </div>
-            </fieldset>
-
-            <fieldset class="jobs-filter">
-              <legend class="jobs-filter__title">Employment type</legend>
-              <div class="jobs-filter__options">
-                <label class="jobs-check"><input type="checkbox" name="employment" value="Full Time"><span>Full Time</span></label>
-                <label class="jobs-check"><input type="checkbox" name="employment" value="Part Time"><span>Part Time</span></label>
-                <label class="jobs-check"><input type="checkbox" name="employment" value="Internship"><span>Internship</span></label>
-                <label class="jobs-check"><input type="checkbox" name="employment" value="Contract"><span>Contract</span></label>
-              </div>
-            </fieldset>
-
-            <fieldset class="jobs-filter">
-              <legend class="jobs-filter__title">Work mode</legend>
-              <div class="jobs-filter__options">
-                <label class="jobs-check"><input type="checkbox" name="mode" value="On-site"><span>On-site</span></label>
-                <label class="jobs-check"><input type="checkbox" name="mode" value="Hybrid"><span>Hybrid</span></label>
-                <label class="jobs-check"><input type="checkbox" name="mode" value="Remote"><span>Remote</span></label>
-              </div>
-            </fieldset>
-
-            <fieldset class="jobs-filter">
-              <legend class="jobs-filter__title">Experience level</legend>
-              <div class="jobs-filter__options">
-                <label class="jobs-check"><input type="checkbox" name="experience" value="Entry Level"><span>Entry Level</span></label>
-                <label class="jobs-check"><input type="checkbox" name="experience" value="Junior"><span>Junior</span></label>
-                <label class="jobs-check"><input type="checkbox" name="experience" value="Mid Level"><span>Mid Level</span></label>
-                <label class="jobs-check"><input type="checkbox" name="experience" value="Senior"><span>Senior</span></label>
-              </div>
-            </fieldset>
-
-            <fieldset class="jobs-filter">
-              <legend class="jobs-filter__title">Location</legend>
-              <div class="jobs-filter__options">
-                <label class="jobs-check"><input type="checkbox" name="location" value="Amman"><span>Amman</span></label>
-                <label class="jobs-check"><input type="checkbox" name="location" value="Irbid"><span>Irbid</span></label>
-                <label class="jobs-check"><input type="checkbox" name="location" value="Zarqa"><span>Zarqa</span></label>
-                <label class="jobs-check"><input type="checkbox" name="location" value="Remote"><span>Remote</span></label>
-              </div>
-            </fieldset>
+            <?php foreach ($filterGroups as $group => $title): ?>
+              <?php if ($filterValues[$group] !== []): ?>
+                <fieldset class="jobs-filter">
+                  <legend class="jobs-filter__title"><?php echo hirepeak_esc($title); ?></legend>
+                  <div class="jobs-filter__options">
+                    <?php foreach ($filterValues[$group] as $value): ?>
+                      <label class="jobs-check"><input type="checkbox" name="<?php echo hirepeak_esc($group); ?>" value="<?php echo hirepeak_esc($value); ?>"><span><?php echo hirepeak_esc($value); ?></span></label>
+                    <?php endforeach; ?>
+                  </div>
+                </fieldset>
+              <?php endif; ?>
+            <?php endforeach; ?>
           </form>
         </aside>
 
         <div class="jobs-results">
           <div class="jobs-toolbar">
             <div class="jobs-toolbar__row">
-              <h2 class="jobs-count" id="results-count" aria-live="polite">9 opportunities</h2>
+              <h2 class="jobs-count" id="results-count" aria-live="polite"><?php echo (int) $resultCount; ?> opportunities</h2>
               <div class="jobs-toolbar__controls">
                 <button class="btn btn--outline jobs-filter-trigger" type="button" aria-expanded="false" aria-controls="filter-drawer">
                   Filters <span class="jobs-filter-trigger__badge" hidden>0</span>
@@ -154,223 +177,89 @@ $pageScripts = ['src/js/main.js', 'src/js/jobs.js'];
             <button class="active-filters__clear" type="button" data-clear-all>Clear all</button>
           </div>
 
-          <div class="jobs-list">
+          <?php if ($dbError): ?>
+            <section class="dash-alert" role="alert" aria-labelledby="jobs-error-title">
+              <h2 id="jobs-error-title">We couldn't load jobs right now.</h2>
+              <p>Please try again in a moment.</p>
+            </section>
+          <?php else: ?>
 
-            <article class="job-card job-card--row" data-keywords="php laravel mysql api sql backend">
-              <div class="job-card--row__main">
-                <span class="job-card__logo job-card__logo--nl" aria-hidden="true">NL</span>
-                <div class="job-card--row__body">
-                  <h3 class="job-card__title"><a href="job-details.php?id=1">Backend Developer</a></h3>
-                  <p class="job-card--row__company">Northstar Labs <span class="job-card__dot" aria-hidden="true">&middot;</span> Amman <span class="job-card__dot" aria-hidden="true">&middot;</span> Hybrid</p>
-                  <p class="job-card--row__meta">Full Time <span class="job-card__dot" aria-hidden="true">&middot;</span> Senior</p>
-                  <p class="job-card--row__salary">800 <span aria-hidden="true">&ndash;</span> 1,100 JOD <span class="job-card--row__period">/ month</span></p>
-                  <p class="job-card--row__foot">Software Development <span class="job-card__dot" aria-hidden="true">&middot;</span> Posted 2 days ago</p>
-                </div>
-              </div>
-              <div class="job-card--row__actions">
-                <button class="icon-button job-card__save" type="button" data-bookmark aria-pressed="false" aria-label="Save Backend Developer at Northstar Labs">
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                    <path d="M19 21 12 16 5 21V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2Z"/>
-                  </svg>
-                </button>
-                <a class="btn btn--outline btn--sm" href="job-details.php?id=1">View Job</a>
-              </div>
-            </article>
+            <div class="jobs-list">
 
-            <article class="job-card job-card--row" data-keywords="figma prototyping wireframes ui design">
-              <div class="job-card--row__main">
-                <span class="job-card__logo job-card__logo--vd" aria-hidden="true">VD</span>
-                <div class="job-card--row__body">
-                  <h3 class="job-card__title"><a href="job-details.php?id=2">Product Designer</a></h3>
-                  <p class="job-card--row__company">Vertex Digital <span class="job-card__dot" aria-hidden="true">&middot;</span> Worldwide <span class="job-card__dot" aria-hidden="true">&middot;</span> Remote</p>
-                  <p class="job-card--row__meta">Full Time <span class="job-card__dot" aria-hidden="true">&middot;</span> Mid Level</p>
-                  <p class="job-card--row__salary">700 <span aria-hidden="true">&ndash;</span> 950 JOD <span class="job-card--row__period">/ month</span></p>
-                  <p class="job-card--row__foot">UI/UX Design <span class="job-card__dot" aria-hidden="true">&middot;</span> Posted 1 day ago</p>
-                </div>
-              </div>
-              <div class="job-card--row__actions">
-                <button class="icon-button job-card__save" type="button" data-bookmark aria-pressed="false" aria-label="Save Product Designer at Vertex Digital">
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                    <path d="M19 21 12 16 5 21V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2Z"/>
-                  </svg>
-                </button>
-                <a class="btn btn--outline btn--sm" href="job-details.php?id=2">View Job</a>
-              </div>
-            </article>
+              <?php foreach ($jobs as $job): ?>
+                <?php
+                $salaryText = hirepeak_salary_range(
+                    isset($job['salary_min']) ? (string) $job['salary_min'] : '',
+                    isset($job['salary_max']) ? (string) $job['salary_max'] : ''
+                );
+                $salaryLead = $salaryText;
+                $salaryPeriod = '';
+                if (str_ends_with($salaryText, '/ month')) {
+                    $salaryLead = trim(substr($salaryText, 0, -8));
+                    $salaryPeriod = '/ month';
+                }
+                $cardMeta = hirepeak_employment_type_label((string) $job['employment_type'])
+                    . ' <span class="job-card__dot" aria-hidden="true">&middot;</span> '
+                    . hirepeak_experience_level_label((string) $job['experience_level']);
+                $companyLine = (string) $job['company_name']
+                    . ' <span class="job-card__dot" aria-hidden="true">&middot;</span> '
+                    . (string) $job['location']
+                    . ' <span class="job-card__dot" aria-hidden="true">&middot;</span> '
+                    . hirepeak_work_mode_label((string) $job['work_mode']);
+                $posted = hirepeak_relative_time((string) $job['created_at']);
+                ?>
+                <article class="job-card job-card--row" data-keywords="<?php echo hirepeak_esc(hirepeak_job_keywords($job)); ?>" data-job-id="<?php echo (int) $job['id']; ?>">
+                  <div class="job-card--row__main">
+                    <span class="job-card__logo" aria-hidden="true"><?php echo hirepeak_esc(hirepeak_initials((string) $job['company_name'])); ?></span>
+                    <div class="job-card--row__body">
+                      <h3 class="job-card__title"><a href="job-details.php?id=<?php echo (int) $job['id']; ?>"><?php echo hirepeak_esc((string) $job['title']); ?></a></h3>
+                      <p class="job-card--row__company"><?php echo $companyLine; ?></p>
+                      <p class="job-card--row__meta"><?php echo $cardMeta; ?></p>
+                      <p class="job-card--row__salary"><?php echo $salaryLead; ?><?php echo $salaryPeriod !== '' ? ' <span class="job-card--row__period">' . $salaryPeriod . '</span>' : ''; ?></p>
+                      <p class="job-card--row__foot"><?php echo hirepeak_esc((string) $job['category_name']); ?> <span class="job-card__dot" aria-hidden="true">&middot;</span> Posted <?php echo hirepeak_esc($posted); ?></p>
+                    </div>
+                  </div>
+                  <div class="job-card--row__actions">
+                    <button class="icon-button job-card__save" type="button" data-bookmark aria-pressed="false" aria-label="Save <?php echo hirepeak_esc((string) $job['title']); ?> at <?php echo hirepeak_esc((string) $job['company_name']); ?>">
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <path d="M19 21 12 16 5 21V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2Z"/>
+                      </svg>
+                    </button>
+                    <a class="btn btn--outline btn--sm" href="job-details.php?id=<?php echo (int) $job['id']; ?>">View Job</a>
+                  </div>
+                </article>
+              <?php endforeach; ?>
 
-            <article class="job-card job-card--row" data-keywords="testing automation selenium qa manual">
-              <div class="job-card--row__main">
-                <span class="job-card__logo job-card__logo--as" aria-hidden="true">AS</span>
-                <div class="job-card--row__body">
-                  <h3 class="job-card__title"><a href="job-details.php?id=3">QA Engineer</a></h3>
-                  <p class="job-card--row__company">Atlas Systems <span class="job-card__dot" aria-hidden="true">&middot;</span> Amman <span class="job-card__dot" aria-hidden="true">&middot;</span> On-site</p>
-                  <p class="job-card--row__meta">Full Time <span class="job-card__dot" aria-hidden="true">&middot;</span> Junior</p>
-                  <p class="job-card--row__salary">500 <span aria-hidden="true">&ndash;</span> 650 JOD <span class="job-card--row__period">/ month</span></p>
-                  <p class="job-card--row__foot">QA &amp; Testing <span class="job-card__dot" aria-hidden="true">&middot;</span> Posted 3 days ago</p>
-                </div>
-              </div>
-              <div class="job-card--row__actions">
-                <button class="icon-button job-card__save" type="button" data-bookmark aria-pressed="false" aria-label="Save QA Engineer at Atlas Systems">
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                    <path d="M19 21 12 16 5 21V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2Z"/>
-                  </svg>
-                </button>
-                <a class="btn btn--outline btn--sm" href="job-details.php?id=3">View Job</a>
-              </div>
-            </article>
-
-            <article class="job-card job-card--row" data-keywords="marketing social media seo campaigns">
-              <div class="job-card--row__main">
-                <span class="job-card__logo job-card__logo--nw" aria-hidden="true">NW</span>
-                <div class="job-card--row__body">
-                  <h3 class="job-card__title"><a href="job-details.php?id=4">Marketing Specialist</a></h3>
-                  <p class="job-card--row__company">NovaWorks <span class="job-card__dot" aria-hidden="true">&middot;</span> Amman <span class="job-card__dot" aria-hidden="true">&middot;</span> On-site</p>
-                  <p class="job-card--row__meta">Full Time <span class="job-card__dot" aria-hidden="true">&middot;</span> Entry Level</p>
-                  <p class="job-card--row__salary">500 <span aria-hidden="true">&ndash;</span> 650 JOD <span class="job-card--row__period">/ month</span></p>
-                  <p class="job-card--row__foot">Marketing <span class="job-card__dot" aria-hidden="true">&middot;</span> Posted 4 days ago</p>
-                </div>
-              </div>
-              <div class="job-card--row__actions">
-                <button class="icon-button job-card__save" type="button" data-bookmark aria-pressed="false" aria-label="Save Marketing Specialist at NovaWorks">
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                    <path d="M19 21 12 16 5 21V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2Z"/>
-                  </svg>
-                </button>
-                <a class="btn btn--outline btn--sm" href="job-details.php?id=4">View Job</a>
-              </div>
-            </article>
-
-            <article class="job-card job-card--row" data-keywords="javascript react css frontend">
-              <div class="job-card--row__main">
-                <span class="job-card__logo job-card__logo--ol" aria-hidden="true">OL</span>
-                <div class="job-card--row__body">
-                  <h3 class="job-card__title"><a href="job-details.php?id=5">Frontend Developer</a></h3>
-                  <p class="job-card--row__company">Orbit Labs <span class="job-card__dot" aria-hidden="true">&middot;</span> Worldwide <span class="job-card__dot" aria-hidden="true">&middot;</span> Remote</p>
-                  <p class="job-card--row__meta">Contract <span class="job-card__dot" aria-hidden="true">&middot;</span> Mid Level</p>
-                  <p class="job-card--row__salary">700 <span aria-hidden="true">&ndash;</span> 950 JOD <span class="job-card--row__period">/ month</span></p>
-                  <p class="job-card--row__foot">Software Development <span class="job-card__dot" aria-hidden="true">&middot;</span> Posted 1 week ago</p>
-                </div>
-              </div>
-              <div class="job-card--row__actions">
-                <button class="icon-button job-card__save" type="button" data-bookmark aria-pressed="false" aria-label="Save Frontend Developer at Orbit Labs">
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                    <path d="M19 21 12 16 5 21V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2Z"/>
-                  </svg>
-                </button>
-                <a class="btn btn--outline btn--sm" href="job-details.php?id=5">View Job</a>
-              </div>
-            </article>
-
-            <article class="job-card job-card--row" data-keywords="finance analysis excel modeling">
-              <div class="job-card--row__main">
-                <span class="job-card__logo job-card__logo--bp" aria-hidden="true">BP</span>
-                <div class="job-card--row__body">
-                  <h3 class="job-card__title"><a href="job-details.php?id=6">Financial Analyst</a></h3>
-                  <p class="job-card--row__company">BridgePoint <span class="job-card__dot" aria-hidden="true">&middot;</span> Amman <span class="job-card__dot" aria-hidden="true">&middot;</span> On-site</p>
-                  <p class="job-card--row__meta">Full Time <span class="job-card__dot" aria-hidden="true">&middot;</span> Junior</p>
-                  <p class="job-card--row__salary">600 <span aria-hidden="true">&ndash;</span> 800 JOD <span class="job-card--row__period">/ month</span></p>
-                  <p class="job-card--row__foot">Finance <span class="job-card__dot" aria-hidden="true">&middot;</span> Posted 5 days ago</p>
-                </div>
-              </div>
-              <div class="job-card--row__actions">
-                <button class="icon-button job-card__save" type="button" data-bookmark aria-pressed="false" aria-label="Save Financial Analyst at BridgePoint">
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                    <path d="M19 21 12 16 5 21V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2Z"/>
-                  </svg>
-                </button>
-                <a class="btn btn--outline btn--sm" href="job-details.php?id=6">View Job</a>
-              </div>
-            </article>
-
-            <article class="job-card job-card--row" data-keywords="customer success support communication">
-              <div class="job-card--row__main">
-                <span class="job-card__logo job-card__logo--lt" aria-hidden="true">LT</span>
-                <div class="job-card--row__body">
-                  <h3 class="job-card__title"><a href="job-details.php?id=7">Customer Success Specialist</a></h3>
-                  <p class="job-card--row__company">Lumina Technologies <span class="job-card__dot" aria-hidden="true">&middot;</span> Irbid <span class="job-card__dot" aria-hidden="true">&middot;</span> Hybrid</p>
-                  <p class="job-card--row__meta">Full Time <span class="job-card__dot" aria-hidden="true">&middot;</span> Entry Level</p>
-                  <p class="job-card--row__salary">500 <span aria-hidden="true">&ndash;</span> 650 JOD <span class="job-card--row__period">/ month</span></p>
-                  <p class="job-card--row__foot">Customer Service <span class="job-card__dot" aria-hidden="true">&middot;</span> Posted 3 days ago</p>
-                </div>
-              </div>
-              <div class="job-card--row__actions">
-                <button class="icon-button job-card__save" type="button" data-bookmark aria-pressed="false" aria-label="Save Customer Success Specialist at Lumina Technologies">
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                    <path d="M19 21 12 16 5 21V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2Z"/>
-                  </svg>
-                </button>
-                <a class="btn btn--outline btn--sm" href="job-details.php?id=7">View Job</a>
-              </div>
-            </article>
-
-            <article class="job-card job-card--row" data-keywords="javascript python problem solving">
-              <div class="job-card--row__main">
-                <span class="job-card__logo job-card__logo--cd" aria-hidden="true">CD</span>
-                <div class="job-card--row__body">
-                  <h3 class="job-card__title"><a href="job-details.php?id=8">Junior Software Engineer</a></h3>
-                  <p class="job-card--row__company">Cedar Digital <span class="job-card__dot" aria-hidden="true">&middot;</span> Zarqa <span class="job-card__dot" aria-hidden="true">&middot;</span> On-site</p>
-                  <p class="job-card--row__meta">Full Time <span class="job-card__dot" aria-hidden="true">&middot;</span> Junior</p>
-                  <p class="job-card--row__salary">600 <span aria-hidden="true">&ndash;</span> 800 JOD <span class="job-card--row__period">/ month</span></p>
-                  <p class="job-card--row__foot">Software Development <span class="job-card__dot" aria-hidden="true">&middot;</span> Posted 2 days ago</p>
-                </div>
-              </div>
-              <div class="job-card--row__actions">
-                <button class="icon-button job-card__save" type="button" data-bookmark aria-pressed="false" aria-label="Save Junior Software Engineer at Cedar Digital">
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                    <path d="M19 21 12 16 5 21V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2Z"/>
-                  </svg>
-                </button>
-                <a class="btn btn--outline btn--sm" href="job-details.php?id=8">View Job</a>
-              </div>
-            </article>
-
-            <article class="job-card job-card--row" data-keywords="sql python etl data pipelines">
-              <div class="job-card--row__main">
-                <span class="job-card__logo job-card__logo--as" aria-hidden="true">AS</span>
-                <div class="job-card--row__body">
-                  <h3 class="job-card__title"><a href="job-details.php?id=9">Data Engineer</a></h3>
-                  <p class="job-card--row__company">Atlas Systems <span class="job-card__dot" aria-hidden="true">&middot;</span> Amman <span class="job-card__dot" aria-hidden="true">&middot;</span> Hybrid</p>
-                  <p class="job-card--row__meta">Full Time <span class="job-card__dot" aria-hidden="true">&middot;</span> Senior</p>
-                  <p class="job-card--row__salary">900 <span aria-hidden="true">&ndash;</span> 1,200 JOD <span class="job-card--row__period">/ month</span></p>
-                  <p class="job-card--row__foot">Engineering <span class="job-card__dot" aria-hidden="true">&middot;</span> Posted 6 days ago</p>
-                </div>
-              </div>
-              <div class="job-card--row__actions">
-                <button class="icon-button job-card__save" type="button" data-bookmark aria-pressed="false" aria-label="Save Data Engineer at Atlas Systems">
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                    <path d="M19 21 12 16 5 21V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2Z"/>
-                  </svg>
-                </button>
-                <a class="btn btn--outline btn--sm" href="job-details.php?id=9">View Job</a>
-              </div>
-            </article>
-          </div>
-
-          <div class="jobs-empty" hidden>
-            <div class="jobs-empty__icon" aria-hidden="true">
-              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
-                <circle cx="11" cy="11" r="7"/>
-                <path d="m21 21-4.35-4.35"/>
-                <path d="M8.5 8.5l5 5"/>
-                <path d="M13.5 8.5l-5 5"/>
-              </svg>
             </div>
-            <h3 class="jobs-empty__title">No jobs match those filters.</h3>
-            <p class="jobs-empty__text">Try adjusting your search or clearing some filters.</p>
-            <button class="btn btn--primary" type="button">Clear Filters</button>
-          </div>
 
-          <nav class="pagination" aria-label="Results pagination">
-            <p class="pagination__meta">Showing 1&ndash;5 of 9</p>
-            <div class="pagination__controls">
-              <button class="pagination__btn" type="button" data-page-prev aria-label="Previous page" disabled>Previous</button>
-              <div class="pagination__nums" data-page-nums>
-                <button class="pagination__num is-current" type="button" aria-current="page">1</button>
-                <button class="pagination__num" type="button">2</button>
+            <div class="jobs-empty" hidden>
+              <div class="jobs-empty__icon" aria-hidden="true">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="11" cy="11" r="7"/>
+                  <path d="m21 21-4.35-4.35"/>
+                  <path d="M8.5 8.5l5 5"/>
+                  <path d="M13.5 8.5l-5 5"/>
+                </svg>
               </div>
-              <button class="pagination__btn" type="button" data-page-next aria-label="Next page">Next</button>
+              <h3 class="jobs-empty__title">No jobs match those filters.</h3>
+              <p class="jobs-empty__text">Try adjusting your search or clearing some filters.</p>
+              <button class="btn btn--primary" type="button">Clear Filters</button>
             </div>
-          </nav>
+
+            <nav class="pagination" aria-label="Results pagination">
+              <p class="pagination__meta">Showing 1&ndash;<?php echo min(5, $resultCount); ?> of <?php echo (int) $resultCount; ?></p>
+              <div class="pagination__controls">
+                <button class="pagination__btn" type="button" data-page-prev aria-label="Previous page" disabled>Previous</button>
+                <div class="pagination__nums" data-page-nums>
+                  <?php for ($i = 1; $i <= $totalPages; $i++): ?>
+                    <button class="pagination__num<?php echo $i === 1 ? ' is-current' : ''; ?>" type="button"<?php echo $i === 1 ? ' aria-current="page"' : ''; ?>><?php echo $i; ?></button>
+                  <?php endfor; ?>
+                </div>
+                <button class="pagination__btn" type="button" data-page-next aria-label="Next page">Next</button>
+              </div>
+            </nav>
+
+          <?php endif; ?>
         </div>
       </div>
     </section>

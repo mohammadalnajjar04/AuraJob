@@ -335,6 +335,137 @@ function hirepeak_job_status_badge(string $status): string
 }
 
 /**
+ * Exact ENUM value sets from database/schema.sql for the jobs table. The post
+ * and edit forms validate against (and render their options from) these exact
+ * lists — anything else is rejected server-side, never emitted.
+ *
+ * @return array<string, list<string>> enum column => allowed values
+ */
+function hirepeak_job_enum_values(): array
+{
+    return [
+        'employment_type'  => ['full_time', 'part_time', 'contract', 'internship', 'freelance'],
+        'work_mode'        => ['onsite', 'remote', 'hybrid'],
+        'experience_level' => ['entry', 'junior', 'mid', 'senior', 'lead'],
+        'status'           => ['active', 'closed', 'draft'],
+    ];
+}
+
+/**
+ * Space-separated lowercase keyword tokens for the public job card
+ * data-keywords attribute (drives the client-side search box).
+ */
+function hirepeak_job_keywords(array $job): string
+{
+    $sources = [
+        (string) ($job['title'] ?? ''),
+        (string) ($job['company_name'] ?? ''),
+        (string) ($job['category_name'] ?? ''),
+        (string) ($job['location'] ?? ''),
+        (string) ($job['description'] ?? ''),
+        (string) ($job['requirements'] ?? ''),
+    ];
+
+    $tokens = [];
+    foreach ($sources as $source) {
+        $words = preg_split('/[^A-Za-z0-9]+/', strtolower($source), -1, PREG_SPLIT_NO_EMPTY) ?: [];
+        foreach ($words as $word) {
+            if ($word !== '' && !in_array($word, $tokens, true)) {
+                $tokens[] = $word;
+            }
+            if (count($tokens) >= 60) {
+                break 2;
+            }
+        }
+    }
+
+    return implode(' ', $tokens);
+}
+
+/**
+ * Server-side "today" (the MySQL host's calendar date) so every past-deadline
+ * comparison on post/edit/public pages uses exactly the same boundary the
+ * "applications open" SQL check uses (Sprint 6 fix).
+ */
+function hirepeak_today_sql(\mysqli $db): string
+{
+    $result = $db->query('SELECT CURDATE() AS today');
+    $row = $result->fetch_assoc();
+    $result->close();
+    $today = (string) ($row['today'] ?? '');
+    return $today !== '' ? $today : date('Y-m-d');
+}
+
+/**
+ * All categories as [id, name] ordered by name, for the job form selects.
+ *
+ * @return list<array{id: int, name: string}>
+ */
+function hirepeak_categories(\mysqli $db): array
+{
+    $result = $db->query('SELECT id, name FROM categories ORDER BY name ASC');
+    $list = [];
+    while ($row = $result->fetch_assoc()) {
+        $list[] = ['id' => (int) $row['id'], 'name' => (string) $row['name']];
+    }
+    $result->close();
+    return $list;
+}
+
+/**
+ * Calm, indexed-404 page for jobs that are missing, unreachable as a draft,
+ * or not owned by the requesting employer. Emits a complete response and exits.
+ */
+function hirepeak_job_not_found(): void
+{
+    $pageActive = '';
+    $pageScripts = ['src/js/main.js'];
+    http_response_code(404);
+    ?><!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Job not found — HirePeak</title>
+  <meta name="description" content="We couldn't find this job.">
+  <meta name="theme-color" content="#ffffff">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect x='1' y='1' width='22' height='22' rx='7' fill='%234F46E5'/%3E%3Cpath d='M12 4.8 18 16H6Z' fill='%23FFFFFF' stroke='%23FFFFFF' stroke-width='3' stroke-linejoin='round'/%3E%3Cpath d='M12 6.6 8.8 16H5.9Z' fill='%23EEF2FF' stroke='%23EEF2FF' stroke-width='3' stroke-linejoin='round'/%3E%3C/svg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="src/css/style.css">
+</head>
+<body>
+  <?php require __DIR__ . '/header.php'; ?>
+
+  <div class="scrim" data-scrim hidden></div>
+
+  <main id="main" class="dash-main">
+    <div class="container">
+      <section class="empty-state">
+        <div class="empty-state__icon" aria-hidden="true">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="9"/>
+            <path d="m15 9-6 6"/>
+            <path d="m9 9 6 6"/>
+          </svg>
+        </div>
+        <h1 class="empty-state__title">Job not found</h1>
+        <p class="empty-state__text">We couldn't find this job. It may have been removed, or the link may be incorrect.</p>
+        <div class="empty-state__actions">
+          <a class="btn btn--primary" href="jobs.php">Find Jobs</a>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <?php require __DIR__ . '/footer.php'; ?>
+</body>
+</html><?php
+    exit;
+}
+
+/**
  * Maps the compact ENUM job attributes to user-facing labels.
  */
 function hirepeak_employment_type_label(string $type): string

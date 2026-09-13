@@ -163,10 +163,7 @@ try {
             <p class="dash-text">Here's what's happening with your hiring activity.</p>
           </div>
           <div class="dash-head__cta-wrap">
-            <button class="btn btn--primary dash-head__cta" type="button" disabled title="Posting jobs is coming in an upcoming release">
-              Post a Job
-            </button>
-            <p class="dash-head__cta-note">Job posting is coming next.</p>
+            <a class="btn btn--primary dash-head__cta" href="post-job.php">Post a Job</a>
           </div>
         </header>
 
@@ -196,6 +193,7 @@ try {
               <h2 class="panel-head__title" id="jobs-title">Recent Jobs</h2>
               <?php if ($hasJobs): ?>
                 <span class="panel-head__count"><?php echo (int) count($recentJobs); ?></span>
+                <a class="panel-head__link" href="my-jobs.php">View all jobs</a>
               <?php endif; ?>
             </div>
 
@@ -218,7 +216,7 @@ try {
                       Your company profile is set up.
                     <?php endif; ?>
                   </li>
-                  <li>Post your first job — job posting tools are coming next.</li>
+                  <li>Post your first job and put it in front of candidates.</li>
                   <li>Review applicants — they'll appear here once your jobs go live.</li>
                 </ol>
                 <?php if ($company === null): ?>
@@ -248,6 +246,7 @@ try {
                     </div>
                     <div class="app-row__actions">
                       <a class="btn btn--outline btn--sm app-row__action" href="job-details.php?id=<?php echo (int) $job['id']; ?>">View Job</a>
+                      <a class="btn btn--outline btn--sm app-row__action" href="edit-job.php?id=<?php echo (int) $job['id']; ?>">Manage</a>
                     </div>
                   </li>
                 <?php endforeach; ?>

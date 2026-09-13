@@ -72,6 +72,61 @@ function hirepeak_profile_completeness(?array $profile): array
 }
 
 /**
+ * Company profile completeness definition — which companies columns count
+ * toward the displayed percentage. The employer dashboard and the company
+ * profile page share this so the number never diverges.
+ *
+ * @return array<string, string> companies column => missing-field hint
+ */
+function hirepeak_company_completeness_fields(): array
+{
+    return [
+        'name'          => 'Add your company name',
+        'industry'      => 'Add your industry',
+        'location'      => 'Add your location',
+        'website'       => 'Add your company website',
+        'description'   => 'Add a company description',
+        'contact_email' => 'Add a contact email',
+        'contact_phone' => 'Add a contact phone',
+    ];
+}
+
+/**
+ * Computes company profile completeness from a companies row (or null when no
+ * row exists yet). The name column is NOT NULL once a row exists, so it only
+ * ever shows as missing before the company is created.
+ *
+ * @return array{percent: int, filled: int, total: int, missing: list<string>}
+ */
+function hirepeak_company_completeness(?array $company): array
+{
+    $fields = hirepeak_company_completeness_fields();
+    $filled = 0;
+    $missing = [];
+
+    foreach ($fields as $field => $missingLabel) {
+        if ($company !== null) {
+            $value = $company[$field] ?? null;
+            if ($value !== null && trim((string) $value) !== '') {
+                $filled++;
+                continue;
+            }
+        }
+        $missing[] = $missingLabel;
+    }
+
+    $total = count($fields);
+    $percent = $total > 0 ? (int) round($filled / $total * 100) : 0;
+
+    return [
+        'percent' => $percent,
+        'filled'  => $filled,
+        'total'   => $total,
+        'missing' => $missing,
+    ];
+}
+
+/**
  * Renders a hidden field-error slot, or a visible one when the field is in
  * $errors. The element id is "<idPrefix>-<field>-error" so client-side
  * validation and aria-describedby keep pointing at the same element.
@@ -246,6 +301,36 @@ function hirepeak_application_status_badge(string $status): string
 {
     $label = hirepeak_esc(hirepeak_application_status_label($status));
     $class = hirepeak_application_status_class($status);
+    return '<span class="status-badge ' . $class . '">' . $label . '</span>';
+}
+
+/**
+ * Job status badge mapping for the employer dashboard.
+ */
+function hirepeak_job_status_class(string $status): string
+{
+    return match ($status) {
+        'active' => 'status-badge--active',
+        'closed' => 'status-badge--closed',
+        'draft'  => 'status-badge--draft',
+        default  => 'status-badge--neutral',
+    };
+}
+
+function hirepeak_job_status_label(string $status): string
+{
+    return match ($status) {
+        'active' => 'Active',
+        'closed' => 'Closed',
+        'draft'  => 'Draft',
+        default  => ucfirst($status),
+    };
+}
+
+function hirepeak_job_status_badge(string $status): string
+{
+    $label = hirepeak_esc(hirepeak_job_status_label($status));
+    $class = hirepeak_job_status_class($status);
     return '<span class="status-badge ' . $class . '">' . $label . '</span>';
 }
 

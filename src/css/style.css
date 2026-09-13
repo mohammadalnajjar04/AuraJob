@@ -3677,6 +3677,144 @@ a.account-menu__item:hover {
 }
 
 /* ==========================================================================
+   Employer dashboard & company profile
+   ========================================================================== */
+
+.panel-head__link {
+  display: inline-flex;
+  align-items: center;
+  min-height: 28px;
+  padding: 4px 0;
+  font-size: var(--text-caption);
+  font-weight: 500;
+  color: var(--color-brand);
+  text-decoration: none;
+  transition: color var(--dur-1) var(--ease-out);
+}
+
+.panel-head__link:hover {
+  color: var(--color-brand-active);
+}
+
+.dash-head__cta-wrap {
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: var(--space-1);
+}
+
+.dash-head__cta-note {
+  font-size: var(--text-caption);
+  color: var(--color-text-muted);
+}
+
+.status-badge--active {
+  background: var(--color-status-accepted-soft);
+  color: var(--color-status-accepted);
+  border-color: color-mix(in srgb, var(--color-status-accepted) 25%, transparent);
+}
+
+.status-badge--closed {
+  background: var(--color-bg-subtle);
+  color: var(--color-text-secondary);
+}
+
+.status-badge--draft {
+  background: var(--color-bg-inset);
+  color: var(--color-text-muted);
+}
+
+.app-row__count {
+  display: inline-flex;
+  align-items: center;
+  min-height: 24px;
+  padding: 2px 10px;
+  border-radius: var(--radius-full);
+  background: var(--color-bg-subtle);
+  font-size: var(--text-caption);
+  font-weight: 600;
+  color: var(--color-text-secondary);
+  font-variant-numeric: tabular-nums;
+}
+
+.app-row__note {
+  flex-shrink: 0;
+  font-size: var(--text-caption);
+  font-weight: 500;
+  color: var(--color-text-muted);
+}
+
+.job-inline-link {
+  color: var(--color-brand);
+  text-decoration: none;
+  transition: color var(--dur-1) var(--ease-out);
+}
+
+.job-inline-link:hover {
+  color: var(--color-brand-active);
+  text-decoration: underline;
+}
+
+.empty-steps {
+  margin: var(--space-4) 0 0;
+  padding: 0;
+  list-style: none;
+  counter-reset: empty-step;
+  display: grid;
+  gap: var(--space-2);
+  text-align: left;
+  max-width: 46ch;
+}
+
+.empty-steps li {
+  position: relative;
+  padding-left: 30px;
+  counter-increment: empty-step;
+  font-size: var(--text-body-small);
+  color: var(--color-text-secondary);
+}
+
+.empty-steps li::before {
+  content: counter(empty-step);
+  position: absolute;
+  top: 2px;
+  left: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border-radius: var(--radius-full);
+  background: var(--color-brand-soft);
+  color: var(--color-brand);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.empty-steps a {
+  color: var(--color-brand);
+  font-weight: 500;
+  text-decoration: none;
+}
+
+.empty-steps a:hover {
+  color: var(--color-brand-active);
+  text-decoration: underline;
+}
+
+@media (max-width: 479px) {
+  .dash-head__cta-wrap {
+    align-items: stretch;
+    width: 100%;
+  }
+
+  .dash-head__cta-wrap .btn {
+    width: 100%;
+  }
+}
+
+/* ==========================================================================
    Applicant profile editor
    ========================================================================== */
 

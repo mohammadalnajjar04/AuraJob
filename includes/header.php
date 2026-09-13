@@ -12,6 +12,7 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/config.php';
 require_once __DIR__ . '/auth.php';
+require_once __DIR__ . '/html.php';
 
 hirepeak_start_session();
 
@@ -36,11 +37,6 @@ $hpNavItems = [
     ['key' => 'jobs', 'label' => 'Find Jobs', 'href' => 'jobs.php', 'target' => ''],
     ['key' => 'employers', 'label' => 'For Employers', 'href' => 'index.php#for-employers', 'target' => ''],
 ];
-
-function hirepeak_esc(?string $value): string
-{
-    return htmlspecialchars((string) $value, ENT_QUOTES, 'UTF-8');
-}
 ?>
 <svg class="svg-defs" aria-hidden="true">
   <defs>

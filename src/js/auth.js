@@ -144,7 +144,6 @@
     currentSuccessEl = successEl;
 
     form.addEventListener('submit', function (event) {
-      event.preventDefault();
       if (submitting) return;
 
       hideSuccess();
@@ -159,10 +158,17 @@
       }
 
       if (invalidCount > 0) {
+        event.preventDefault();
         if (firstInvalid) firstInvalid.focus();
         return;
       }
 
+      if (opts.nativeSubmit) {
+        if (submitBtn) submitBtn.disabled = true;
+        return;
+      }
+
+      event.preventDefault();
       submitting = true;
 
       var label = submitBtn.querySelector('.btn__label');
@@ -231,7 +237,8 @@
     setupForm(registerForm, [roleField, nameField, emailField, passwordField, confirmField, termsField],
       registerForm.querySelector('[data-auth-submit]'), document.getElementById('register-success'), {
       loadingLabel: 'Creating account\u2026',
-      successMessage: 'Account details look good. Registration backend will be connected next.'
+      successMessage: '',
+      nativeSubmit: true
     });
 
     attachLive(roleField);

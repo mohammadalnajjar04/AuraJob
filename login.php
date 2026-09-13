@@ -1,3 +1,18 @@
+<?php
+declare(strict_types=1);
+
+require __DIR__ . '/includes/config.php';
+
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
+$registerFlash = '';
+if (isset($_GET['registered'], $_SESSION['register_flash']) && $_SESSION['register_flash'] !== '') {
+    $registerFlash = $_SESSION['register_flash'];
+    unset($_SESSION['register_flash']);
+}
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -86,6 +101,15 @@
       <div class="auth-card">
         <h1 class="auth-title">Welcome back</h1>
         <p class="auth-sub">Sign in to continue to HirePeak.</p>
+
+        <?php if ($registerFlash !== ''): ?>
+        <div class="auth-success auth-flash" role="status">
+          <svg class="auth-success__icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M20 6 9 17l-5-5"/>
+          </svg>
+          <span class="auth-success__text"><?php echo htmlspecialchars($registerFlash, ENT_QUOTES, 'UTF-8'); ?></span>
+        </div>
+        <?php endif; ?>
 
         <form class="auth-form" id="login-form" action="login.php" method="post" data-auth-form novalidate>
           <div class="field">

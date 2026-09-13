@@ -1,3 +1,133 @@
+<?php
+declare(strict_types=1);
+
+require __DIR__ . '/includes/config.php';
+require __DIR__ . '/includes/db.php';
+
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
+const HIREPEAK_ALLOWED_ROLES = ['applicant', 'employer'];
+
+if (empty($_SESSION['csrf_token'])) {
+    $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+}
+
+$errors = [];
+$formError = '';
+$old = ['name' => '', 'email' => '', 'role' => 'applicant'];
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $old['name'] = trim((string) ($_POST['name'] ?? ''));
+    $old['email'] = trim((string) ($_POST['email'] ?? ''));
+    $old['role'] = in_array($_POST['role'] ?? '', HIREPEAK_ALLOWED_ROLES, true) ? $_POST['role'] : 'applicant';
+
+    $submittedToken = (string) ($_POST['csrf_token'] ?? '');
+    if (!hash_equals($_SESSION['csrf_token'], $submittedToken)) {
+        $formError = 'Your session expired. Please try again.';
+        $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+    } else {
+        $name = $old['name'];
+        $email = strtolower($old['email']);
+        $role = (string) ($_POST['role'] ?? '');
+        $password = (string) ($_POST['password'] ?? '');
+        $confirm = (string) ($_POST['confirm'] ?? '');
+        $terms = ($_POST['terms'] ?? '') === '1';
+
+        if ($name === '') {
+            $errors['name'] = 'Enter your full name.';
+        } elseif (preg_match('/^.{2,100}$/u', $name) !== 1) {
+            $errors['name'] = 'Full name must be 2–100 characters.';
+        }
+
+        if ($email === '') {
+            $errors['email'] = 'Enter your email address.';
+        } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            $errors['email'] = 'Enter a valid email address.';
+        } elseif (strlen($email) > 190) {
+            $errors['email'] = 'Email must be 190 characters or fewer.';
+        }
+
+        if (!in_array($role, HIREPEAK_ALLOWED_ROLES, true)) {
+            $errors['role'] = 'Select an account type to continue.';
+            $role = 'applicant';
+            $old['role'] = 'applicant';
+        }
+
+        if ($password === '') {
+            $errors['password'] = 'Enter a password.';
+        } elseif (strlen($password) < 8) {
+            $errors['password'] = 'Password must be at least 8 characters.';
+        } elseif (strlen($password) > 72) {
+            $errors['password'] = 'Password must be 72 characters or fewer.';
+        }
+
+        if ($confirm === '') {
+            $errors['confirm'] = 'Re-enter your password.';
+        } elseif ($password !== '' && $confirm !== $password) {
+            $errors['confirm'] = 'Passwords do not match.';
+        }
+
+        if (!$terms) {
+            $errors['terms'] = 'Please accept the Terms and Privacy Policy.';
+        }
+
+        if (!$errors) {
+            try {
+                $db = hirepeak_db();
+                $stmt = $db->prepare('SELECT id FROM users WHERE email = ?');
+                $stmt->bind_param('s', $email);
+                $stmt->execute();
+                $stmt->store_result();
+                if ($stmt->num_rows > 0) {
+                    $errors['email'] = 'An account with this email already exists.';
+                }
+                $stmt->close();
+            } catch (\Throwable $e) {
+                error_log('[hirepeak] Duplicate email check failed: ' . $e->getMessage());
+                $formError = 'Registration is temporarily unavailable. Please try again shortly.';
+            }
+        }
+
+        if (!$errors && $formError === '') {
+            try {
+                $hash = password_hash($password, PASSWORD_DEFAULT);
+                $stmt = $db->prepare('INSERT INTO users (name, email, password_hash, role, status) VALUES (?, ?, ?, ?, \'active\')');
+                $stmt->bind_param('ssss', $name, $email, $hash, $role);
+                $stmt->execute();
+                $stmt->close();
+
+                $_SESSION['register_flash'] = 'Your account has been created. Sign in to continue.';
+                session_regenerate_id(true);
+                header('Location: login.php?registered=1');
+                exit;
+            } catch (\mysqli_sql_exception $e) {
+                if ($e->getCode() === 1062) {
+                    $errors['email'] = 'An account with this email already exists.';
+                } else {
+                    error_log('[hirepeak] User insert failed: ' . $e->getMessage());
+                    $formError = 'Registration is temporarily unavailable. Please try again shortly.';
+                }
+            } catch (\Throwable $e) {
+                error_log('[hirepeak] User insert failed: ' . $e->getMessage());
+                $formError = 'Registration is temporarily unavailable. Please try again shortly.';
+            }
+        }
+    }
+}
+
+function hirepeak_error_slot(array $errors, string $field, string $extraClass = ''): string
+{
+    $classes = trim('field__error ' . $extraClass);
+    $id = 'reg-' . $field . '-error';
+    if (!isset($errors[$field])) {
+        return '<p class="' . $classes . '" id="' . $id . '" hidden></p>';
+    }
+    $message = htmlspecialchars($errors[$field], ENT_QUOTES, 'UTF-8');
+    return '<p class="' . $classes . '" id="' . $id . '" role="alert">' . $message . '</p>';
+}
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -88,11 +218,13 @@
         <p class="auth-sub">Choose how you'll use HirePeak and get started.</p>
 
         <form class="auth-form" id="register-form" action="register.php" method="post" data-auth-form novalidate>
-          <fieldset class="auth-roles" id="reg-roles">
+          <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token'], ENT_QUOTES, 'UTF-8'); ?>">
+
+          <fieldset class="auth-roles" id="reg-roles"<?php echo isset($errors['role']) ? ' aria-invalid="true"' : ''; ?>>
             <legend class="auth-roles__legend">I want to</legend>
 
             <label class="role-card">
-              <input type="radio" name="role" value="applicant" checked>
+              <input type="radio" name="role" value="applicant"<?php echo $old['role'] === 'applicant' ? ' checked' : ''; ?>>
               <span class="role-card__dot" aria-hidden="true"></span>
               <span class="role-card__body">
                 <span class="role-card__title">Applicant</span>
@@ -101,7 +233,7 @@
             </label>
 
             <label class="role-card">
-              <input type="radio" name="role" value="employer">
+              <input type="radio" name="role" value="employer"<?php echo $old['role'] === 'employer' ? ' checked' : ''; ?>>
               <span class="role-card__dot" aria-hidden="true"></span>
               <span class="role-card__body">
                 <span class="role-card__title">Employer</span>
@@ -110,18 +242,18 @@
             </label>
           </fieldset>
           <p class="auth-roles__note" id="reg-role-note" aria-live="polite"></p>
-          <p class="field__error auth-roles__error" id="reg-role-error" hidden></p>
+          <?php echo hirepeak_error_slot($errors, 'role', 'auth-roles__error'); ?>
 
           <div class="field">
             <label class="field__label" for="reg-name">Full name</label>
-            <input class="field__input" id="reg-name" name="name" type="text" autocomplete="name" placeholder="Jordan Kamel">
-            <p class="field__error" id="reg-name-error" hidden></p>
+            <input class="field__input" id="reg-name" name="name" type="text" autocomplete="name" placeholder="Jordan Kamel" value="<?php echo htmlspecialchars($old['name'], ENT_QUOTES, 'UTF-8'); ?>"<?php echo isset($errors['name']) ? ' aria-invalid="true" aria-describedby="reg-name-error"' : ''; ?>>
+            <?php echo hirepeak_error_slot($errors, 'name'); ?>
           </div>
 
           <div class="field">
             <label class="field__label" for="reg-email">Email</label>
-            <input class="field__input" id="reg-email" name="email" type="email" inputmode="email" autocomplete="email" placeholder="you@example.com">
-            <p class="field__error" id="reg-email-error" hidden></p>
+            <input class="field__input" id="reg-email" name="email" type="email" inputmode="email" autocomplete="email" placeholder="you@example.com" value="<?php echo htmlspecialchars($old['email'], ENT_QUOTES, 'UTF-8'); ?>"<?php echo isset($errors['email']) ? ' aria-invalid="true" aria-describedby="reg-email-error"' : ''; ?>>
+            <?php echo hirepeak_error_slot($errors, 'email'); ?>
           </div>
 
           <div class="field">
@@ -129,7 +261,7 @@
               <label class="field__label" for="reg-password">Password</label>
             </div>
             <div class="field__control">
-              <input class="field__input field__input--password" id="reg-password" name="password" type="password" autocomplete="new-password" placeholder="Create a password">
+              <input class="field__input field__input--password" id="reg-password" name="password" type="password" autocomplete="new-password" placeholder="Create a password"<?php echo isset($errors['password']) ? ' aria-invalid="true" aria-describedby="reg-password-error"' : ''; ?>>
               <button class="field__toggle" type="button" data-password-toggle aria-label="Show password" aria-controls="reg-password" aria-pressed="false">
                 <svg class="field__toggle-icon-eye" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                   <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z"/>
@@ -142,7 +274,7 @@
               </button>
             </div>
             <p class="field__hint">Use at least 8 characters.</p>
-            <p class="field__error" id="reg-password-error" hidden></p>
+            <?php echo hirepeak_error_slot($errors, 'password'); ?>
           </div>
 
           <div class="field">
@@ -150,7 +282,7 @@
               <label class="field__label" for="reg-confirm">Confirm password</label>
             </div>
             <div class="field__control">
-              <input class="field__input field__input--password" id="reg-confirm" name="confirm" type="password" autocomplete="new-password" placeholder="Re-enter your password">
+              <input class="field__input field__input--password" id="reg-confirm" name="confirm" type="password" autocomplete="new-password" placeholder="Re-enter your password"<?php echo isset($errors['confirm']) ? ' aria-invalid="true" aria-describedby="reg-confirm-error"' : ''; ?>>
               <button class="field__toggle" type="button" data-password-toggle aria-label="Show password" aria-controls="reg-confirm" aria-pressed="false">
                 <svg class="field__toggle-icon-eye" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                   <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z"/>
@@ -162,14 +294,25 @@
                 </svg>
               </button>
             </div>
-            <p class="field__error" id="reg-confirm-error" hidden></p>
+            <?php echo hirepeak_error_slot($errors, 'confirm'); ?>
           </div>
 
           <label class="auth-check">
-            <input type="checkbox" id="reg-terms" name="terms" value="1">
+            <input type="checkbox" id="reg-terms" name="terms" value="1"<?php echo ($_POST['terms'] ?? '') === '1' ? ' checked' : ''; ?>>
             <span>I agree to the <a class="auth-check__link" href="#">Terms</a> and <a class="auth-check__link" href="#">Privacy Policy</a></span>
           </label>
-          <p class="field__error" id="reg-terms-error" hidden></p>
+          <?php echo hirepeak_error_slot($errors, 'terms'); ?>
+
+          <?php if ($formError !== ''): ?>
+          <div class="auth-alert" role="alert">
+            <svg class="auth-alert__icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M12 9v4"/>
+              <path d="M12 17h.01"/>
+              <path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0Z"/>
+            </svg>
+            <span><?php echo htmlspecialchars($formError, ENT_QUOTES, 'UTF-8'); ?></span>
+          </div>
+          <?php endif; ?>
 
           <div class="auth-success" id="register-success" role="status" hidden>
             <svg class="auth-success__icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">

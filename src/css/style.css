@@ -2950,6 +2950,31 @@ body.no-scroll {
   color: var(--color-status-accepted);
 }
 
+.auth-flash {
+  margin-top: var(--space-6);
+}
+
+.auth-alert {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  background: var(--color-status-rejected-soft);
+  border: 1px solid var(--color-status-rejected);
+  border-radius: var(--radius-md);
+  font-size: var(--text-body-small);
+  line-height: 1.5;
+  color: var(--color-text-primary);
+}
+
+.auth-alert__icon {
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+  margin-top: 1px;
+  color: var(--color-status-rejected);
+}
+
 .btn-spinner {
   display: block;
   width: 16px;

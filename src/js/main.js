@@ -112,11 +112,70 @@
   var bookmarkButtons = document.querySelectorAll('[data-bookmark]');
 
   Array.prototype.forEach.call(bookmarkButtons, function (btn) {
+    if (btn.closest && btn.closest('form[data-save-job]')) return;
     btn.addEventListener('click', function () {
       var pressed = btn.getAttribute('aria-pressed') === 'true';
       btn.setAttribute('aria-pressed', pressed ? 'false' : 'true');
     });
   });
+
+  var saveForms = document.querySelectorAll('form[data-save-job]');
+
+  if ('fetch' in window && 'FormData' in window) {
+    Array.prototype.forEach.call(saveForms, function (form) {
+      form.addEventListener('submit', function (event) {
+        var btn = form.querySelector('[data-bookmark]');
+
+        if (btn && btn.disabled) {
+          event.preventDefault();
+          return;
+        }
+
+        event.preventDefault();
+        if (btn) { btn.disabled = true; btn.setAttribute('aria-disabled', 'true'); }
+
+        var payload = new FormData(form);
+
+        fetch(form.getAttribute('action') || 'save-job.php', {
+          method: 'POST',
+          body: payload,
+          credentials: 'same-origin',
+          headers: { 'Accept': 'application/json' }
+        }).then(function (response) {
+          if (response.status === 401) {
+            window.location.assign('login.php');
+            return null;
+          }
+          if (response.status === 403 || response.status === 404 || response.status === 405 || response.status >= 500) {
+            window.location.reload();
+            return null;
+          }
+          return response.json().then(function (data) {
+            if (!data || !data.ok) { window.location.reload(); return null; }
+            return data;
+          })['catch'](function () { window.location.reload(); return null; });
+        }).then(function (data) {
+          if (!data) return;
+          var saved = !!data.saved;
+
+          if (btn) {
+            btn.disabled = false;
+            btn.removeAttribute('aria-disabled');
+            btn.setAttribute('aria-pressed', saved ? 'true' : 'false');
+            btn.setAttribute('aria-label', saved
+              ? (form.getAttribute('data-saved-label') || btn.getAttribute('aria-label') || 'Unsave job')
+              : (form.getAttribute('data-save-label') || btn.getAttribute('aria-label') || 'Save job'));
+          }
+
+          var actionInput = form.querySelector('input[name="action"]');
+          if (actionInput) actionInput.value = saved ? 'unsave' : 'save';
+        })['catch'](function () {
+          if (btn) { btn.disabled = false; btn.removeAttribute('aria-disabled'); }
+          form.submit();
+        });
+      });
+    });
+  }
 
   var heroSearch = document.querySelector('[data-hero-search]');
 

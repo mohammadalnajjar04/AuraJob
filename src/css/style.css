@@ -709,8 +709,8 @@ body.no-scroll {
 }
 
 .job-card__save {
-  width: 40px;
-  height: 40px;
+  width: 44px;
+  height: 44px;
 }
 
 .job-card__save svg {
@@ -724,6 +724,42 @@ body.no-scroll {
 .job-card__save[aria-pressed="true"] svg {
   fill: var(--color-brand);
   stroke: var(--color-brand);
+}
+
+.save-form {
+  display: inline-flex;
+  margin: 0;
+  padding: 0;
+}
+
+.jobs__flash {
+  margin: var(--space-4) 0 0;
+}
+
+.jd-flash {
+  margin: var(--space-4) 0;
+}
+
+.jd-bar__inner > .save-form {
+  flex: 1 1 0%;
+  min-width: 0;
+}
+
+.jd-bar__inner > .save-form .btn {
+  width: 100%;
+}
+
+.saved-job {
+  display: grid;
+  gap: var(--space-2);
+}
+
+.saved-job__remove {
+  justify-self: end;
+}
+
+.saved-job__remove-btn svg {
+  flex-shrink: 0;
 }
 
 .job-card__title {

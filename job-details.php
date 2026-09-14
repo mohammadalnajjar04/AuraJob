@@ -53,10 +53,37 @@ try {
         hirepeak_job_not_found();
     }
 
-    $isOpen = (bool) ($job['is_open'] ?? false);
-    $viewerRole = (string) (hirepeak_user()['role'] ?? '');
-    $viewerId = (int) (hirepeak_user()['id'] ?? 0);
-    $owner = $viewerRole === 'employer' && $viewerId === (int) $job['employer_id'];
+$isOpen = (bool) ($job['is_open'] ?? false);
+$viewerRole = (string) (hirepeak_user()['role'] ?? '');
+$viewerId = (int) (hirepeak_user()['id'] ?? 0);
+$owner = $viewerRole === 'employer' && $viewerId === (int) $job['employer_id'];
+$savedThis = false;
+$savedRelated = [];
+$saveCsrf = '';
+
+if ($viewerRole === 'applicant' && $viewerId > 0) {
+    $saveCsrf = hirepeak_csrf_token();
+    try {
+        $allSaved = hirepeak_saved_job_ids($db, $viewerId);
+        foreach ($allSaved as $sid) {
+            $savedRelated[$sid] = true;
+        }
+        $savedThis = isset($savedRelated[$jobId]);
+    } catch (\Throwable $e) {
+        error_log('[hirepeak] saved-jobs details state failed: ' . $e->getMessage());
+    }
+}
+
+$saveFlash = '';
+if (isset($_SESSION['hp_save_flash']) && $_SESSION['hp_save_flash'] !== '') {
+    $saveFlash = (string) $_SESSION['hp_save_flash'];
+    unset($_SESSION['hp_save_flash']);
+}
+$saveFlashError = '';
+if (isset($_SESSION['hp_save_flash_error']) && $_SESSION['hp_save_flash_error'] !== '') {
+    $saveFlashError = (string) $_SESSION['hp_save_flash_error'];
+    unset($_SESSION['hp_save_flash_error']);
+}
 
     if (($job['status'] ?? '') === 'draft' && !$owner) {
         hirepeak_job_not_found();
@@ -158,6 +185,16 @@ $companyMetaLine = trim($companyIndustry . ($companyLocation !== '' ? ' &middot;
       </div>
     <?php endif; ?>
 
+    <?php if ($saveFlash !== ''): ?>
+      <div class="container jd-flash">
+        <p class="dash-flash" role="status"><?php echo hirepeak_esc($saveFlash); ?></p>
+      </div>
+    <?php elseif ($saveFlashError !== ''): ?>
+      <div class="container jd-flash">
+        <p class="dash-alert dash-alert--error" role="alert"><?php echo hirepeak_esc($saveFlashError); ?></p>
+      </div>
+    <?php endif; ?>
+
     <div class="jd-topbar">
       <div class="container jd-topbar__inner">
         <nav class="breadcrumb" aria-label="Breadcrumb">
@@ -229,12 +266,27 @@ $companyMetaLine = trim($companyIndustry . ($companyLocation !== '' ? ' &middot;
               <?php else: ?>
                 <?php echo $applyCta; ?>
               <?php endif; ?>
-              <button class="btn btn--secondary" type="button" data-bookmark aria-pressed="false">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                  <path d="M19 21 12 16 5 21V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2Z"/>
-                </svg>
-                Save Job
-              </button>
+              <?php if ($viewerRole === 'applicant'): ?>
+                <form class="save-form jd-save-aside" method="post" action="save-job.php">
+                  <input type="hidden" name="csrf_token" value="<?php echo hirepeak_esc($saveCsrf); ?>">
+                  <input type="hidden" name="job_id" value="<?php echo (int) $jobId; ?>">
+                  <input type="hidden" name="action" value="<?php echo $savedThis ? 'unsave' : 'save'; ?>">
+                  <input type="hidden" name="return_to" value="job-details">
+                  <button class="btn btn--secondary" type="submit" aria-pressed="<?php echo $savedThis ? 'true' : 'false'; ?>">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                      <path d="M19 21 12 16 5 21V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2Z"/>
+                    </svg>
+                    <?php echo $savedThis ? 'Saved' : 'Save Job'; ?>
+                  </button>
+                </form>
+              <?php elseif ($viewerRole === ''): ?>
+                <a class="btn btn--secondary" href="login.php">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M19 21 12 16 5 21V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2Z"/>
+                  </svg>
+                  Sign in to save
+                </a>
+              <?php endif; ?>
             </div>
             <?php if (!$isDraft): ?>
               <p class="jd-apply__note"><?php echo hirepeak_esc($applyNote); ?></p>
@@ -290,11 +342,28 @@ $companyMetaLine = trim($companyIndustry . ($companyLocation !== '' ? ' &middot;
               <article class="job-card job-card--related">
                 <div class="job-card__top">
                   <span class="job-card__logo" aria-hidden="true"><?php echo hirepeak_esc(hirepeak_initials((string) $rj['company_name'])); ?></span>
-                  <button class="icon-button job-card__save" type="button" data-bookmark aria-pressed="false" aria-label="Save <?php echo hirepeak_esc((string) $rj['title']); ?> at <?php echo hirepeak_esc((string) $rj['company_name']); ?>">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                      <path d="M19 21 12 16 5 21V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2Z"/>
-                    </svg>
-                  </button>
+                  <?php if ($viewerRole === 'applicant'): ?>
+                    <?php $rjSaved = isset($savedRelated[(int) $rj['id']]); ?>
+                    <?php $rjSaveLabel = 'Save ' . (string) $rj['title'] . ' at ' . (string) $rj['company_name']; ?>
+                    <?php $rjSavedLabel = 'Remove ' . (string) $rj['title'] . ' at ' . (string) $rj['company_name'] . ' from saved jobs'; ?>
+                    <form class="save-form" method="post" action="save-job.php">
+                      <input type="hidden" name="csrf_token" value="<?php echo hirepeak_esc($saveCsrf); ?>">
+                      <input type="hidden" name="job_id" value="<?php echo (int) $rj['id']; ?>">
+                      <input type="hidden" name="action" value="<?php echo $rjSaved ? 'unsave' : 'save'; ?>">
+                      <input type="hidden" name="return_to" value="job-details">
+                      <button class="icon-button job-card__save" type="submit" aria-pressed="<?php echo $rjSaved ? 'true' : 'false'; ?>" aria-label="<?php echo hirepeak_esc($rjSaved ? $rjSavedLabel : $rjSaveLabel); ?>">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                          <path d="M19 21 12 16 5 21V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2Z"/>
+                        </svg>
+                      </button>
+                    </form>
+                  <?php elseif ($viewerRole === ''): ?>
+                    <a class="icon-button job-card__save" href="login.php" aria-label="Sign in to save <?php echo hirepeak_esc((string) $rj['title']); ?> at <?php echo hirepeak_esc((string) $rj['company_name']); ?>">
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <path d="M19 21 12 16 5 21V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2Z"/>
+                      </svg>
+                    </a>
+                  <?php endif; ?>
                 </div>
                 <h3 class="job-card__title"><a href="job-details.php?id=<?php echo (int) $rj['id']; ?>"><?php echo hirepeak_esc((string) $rj['title']); ?></a></h3>
                 <p class="job-card__company"><?php echo hirepeak_esc((string) $rj['company_name']); ?> &middot; <?php echo hirepeak_esc((string) $rj['location']); ?> &middot; <?php echo hirepeak_esc(hirepeak_work_mode_label((string) $rj['work_mode'])); ?></p>
@@ -314,12 +383,27 @@ $companyMetaLine = trim($companyIndustry . ($companyLocation !== '' ? ' &middot;
 
   <div class="jd-bar">
     <div class="jd-bar__inner">
-      <button class="btn btn--secondary" type="button" data-bookmark aria-pressed="false">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <path d="M19 21 12 16 5 21V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2Z"/>
-        </svg>
-        Save
-      </button>
+      <?php if ($viewerRole === 'applicant'): ?>
+        <form class="save-form jd-save-bar" method="post" action="save-job.php">
+          <input type="hidden" name="csrf_token" value="<?php echo hirepeak_esc($saveCsrf); ?>">
+          <input type="hidden" name="job_id" value="<?php echo (int) $jobId; ?>">
+          <input type="hidden" name="action" value="<?php echo $savedThis ? 'unsave' : 'save'; ?>">
+          <input type="hidden" name="return_to" value="job-details">
+          <button class="btn btn--secondary" type="submit" aria-pressed="<?php echo $savedThis ? 'true' : 'false'; ?>">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M19 21 12 16 5 21V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2Z"/>
+            </svg>
+            <?php echo $savedThis ? 'Saved' : 'Save'; ?>
+          </button>
+        </form>
+      <?php elseif ($viewerRole === ''): ?>
+        <a class="btn btn--secondary" href="login.php">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M19 21 12 16 5 21V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2Z"/>
+          </svg>
+          Sign in to save
+        </a>
+      <?php endif; ?>
       <?php if ($isDraft): ?>
         <a class="btn btn--primary" href="edit-job.php?id=<?php echo (int) $jobId; ?>">Edit Draft</a>
       <?php else: ?>

@@ -347,10 +347,13 @@ try {
         </div>
 
         <section class="dash-panel dash-panel--full" aria-labelledby="saved-title">
-          <div class="panel-head">
-            <h2 class="panel-head__title" id="saved-title">Saved Jobs</h2>
-            <span class="panel-head__count"><?php echo (int) count($savedJobs); ?></span>
-          </div>
+<div class="panel-head">
+              <h2 class="panel-head__title" id="saved-title">Saved Jobs</h2>
+              <span class="panel-head__count"><?php echo (int) count($savedJobs); ?></span>
+              <?php if ($savedJobs !== []): ?>
+                <a class="panel-head__link" href="saved-jobs.php">View all</a>
+              <?php endif; ?>
+            </div>
 
           <?php if ($savedJobs === []): ?>
             <div class="empty-state">

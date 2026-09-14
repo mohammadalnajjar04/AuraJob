@@ -383,6 +383,31 @@ function hirepeak_job_keywords(array $job): string
 }
 
 /**
+ * All saved_jobs.job_id values for the given applicant, as a plain list of
+ * ints. Callers use this to seed bookmark state on rendered pages (jobs
+ * listing, job details, related jobs) so the state always comes from the
+ * database, never from JavaScript memory or aria-pressed alone.
+ *
+ * @return list<int>
+ */
+function hirepeak_saved_job_ids(\mysqli $db, int $applicantId): array
+{
+    $ids = [];
+
+    $stmt = $db->prepare('SELECT job_id FROM saved_jobs WHERE applicant_id = ?');
+    $stmt->bind_param('i', $applicantId);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    while ($row = $result->fetch_assoc()) {
+        $ids[] = (int) $row['job_id'];
+    }
+    $result->close();
+    $stmt->close();
+
+    return $ids;
+}
+
+/**
  * Server-side "today" (the MySQL host's calendar date) so every past-deadline
  * comparison on post/edit/public pages uses exactly the same boundary the
  * "applications open" SQL check uses (Sprint 6 fix).

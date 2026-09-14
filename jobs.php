@@ -39,6 +39,36 @@ try {
 
 $resultCount = count($jobs);
 
+/* Saved-job state is rendered server-side from saved_jobs (never from JS), and
+ * only ever considered for signed-in applicants. */
+$viewerRole = (string) (hirepeak_user()['role'] ?? '');
+$viewerId = (int) (hirepeak_user()['id'] ?? 0);
+$savedSet = [];
+$saveCsrf = '';
+
+if ($viewerRole === 'applicant' && $viewerId > 0) {
+    $saveCsrf = hirepeak_csrf_token();
+    try {
+        foreach (hirepeak_saved_job_ids($db, $viewerId) as $savedJobId) {
+            $savedSet[$savedJobId] = true;
+        }
+    } catch (\Throwable $e) {
+        error_log('[hirepeak] saved-jobs listing state failed: ' . $e->getMessage());
+        $savedSet = [];
+    }
+}
+
+$saveFlash = '';
+if (isset($_SESSION['hp_save_flash']) && $_SESSION['hp_save_flash'] !== '') {
+    $saveFlash = (string) $_SESSION['hp_save_flash'];
+    unset($_SESSION['hp_save_flash']);
+}
+$saveFlashError = '';
+if (isset($_SESSION['hp_save_flash_error']) && $_SESSION['hp_save_flash_error'] !== '') {
+    $saveFlashError = (string) $_SESSION['hp_save_flash_error'];
+    unset($_SESSION['hp_save_flash_error']);
+}
+
 $filterValues = [
     'category'   => [],
     'employment' => [],
@@ -177,6 +207,13 @@ $totalPages = max(1, (int) ceil($resultCount / 5));
             <button class="active-filters__clear" type="button" data-clear-all>Clear all</button>
           </div>
 
+          <?php if ($saveFlash !== ''): ?>
+            <p class="dash-flash jobs__flash" role="status"><?php echo hirepeak_esc($saveFlash); ?></p>
+          <?php endif; ?>
+          <?php if ($saveFlashError !== ''): ?>
+            <p class="dash-alert dash-alert--error jobs__flash" role="alert"><?php echo hirepeak_esc($saveFlashError); ?></p>
+          <?php endif; ?>
+
           <?php if ($dbError): ?>
             <section class="dash-alert" role="alert" aria-labelledby="jobs-error-title">
               <h2 id="jobs-error-title">We couldn't load jobs right now.</h2>
@@ -220,11 +257,27 @@ $totalPages = max(1, (int) ceil($resultCount / 5));
                     </div>
                   </div>
                   <div class="job-card--row__actions">
-                    <button class="icon-button job-card__save" type="button" data-bookmark aria-pressed="false" aria-label="Save <?php echo hirepeak_esc((string) $job['title']); ?> at <?php echo hirepeak_esc((string) $job['company_name']); ?>">
-                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                        <path d="M19 21 12 16 5 21V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2Z"/>
-                      </svg>
-                    </button>
+                    <?php if ($viewerRole === 'applicant'): ?>
+                      <?php $saved = isset($savedSet[(int) $job['id']]); ?>
+                      <?php $saveLabel = 'Save ' . (string) $job['title'] . ' at ' . (string) $job['company_name']; ?>
+                      <?php $savedLabel = 'Remove ' . (string) $job['title'] . ' at ' . (string) $job['company_name'] . ' from saved jobs'; ?>
+                      <form class="save-form" method="post" action="save-job.php" data-save-job data-job-id="<?php echo (int) $job['id']; ?>" data-save-label="<?php echo hirepeak_esc($saveLabel); ?>" data-saved-label="<?php echo hirepeak_esc($savedLabel); ?>">
+                        <input type="hidden" name="csrf_token" value="<?php echo hirepeak_esc($saveCsrf); ?>">
+                        <input type="hidden" name="job_id" value="<?php echo (int) $job['id']; ?>">
+                        <input type="hidden" name="action" value="<?php echo $saved ? 'unsave' : 'save'; ?>">
+                        <button class="icon-button job-card__save" type="submit" data-bookmark aria-pressed="<?php echo $saved ? 'true' : 'false'; ?>" aria-label="<?php echo hirepeak_esc($saved ? $savedLabel : $saveLabel); ?>">
+                          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <path d="M19 21 12 16 5 21V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2Z"/>
+                          </svg>
+                        </button>
+                      </form>
+                    <?php elseif ($viewerRole === ''): ?>
+                      <a class="icon-button job-card__save" href="login.php" aria-label="Sign in to save <?php echo hirepeak_esc((string) $job['title']); ?> at <?php echo hirepeak_esc((string) $job['company_name']); ?>">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                          <path d="M19 21 12 16 5 21V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2Z"/>
+                        </svg>
+                      </a>
+                    <?php endif; ?>
                     <a class="btn btn--outline btn--sm" href="job-details.php?id=<?php echo (int) $job['id']; ?>">View Job</a>
                   </div>
                 </article>

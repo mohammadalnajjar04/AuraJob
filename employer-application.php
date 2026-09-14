@@ -1,0 +1,212 @@
+<?php
+declare(strict_types=1);
+
+/**
+ * Employer Application — read-only detail for a single application (with the
+ * applicant's profile) on one of your jobs (Part 3A).
+ *
+ * This page never mutates anything: status changes are deliberately NOT wired
+ * up yet. Part 3B adds the employer-side status update as a POST/CSRF/ownership-
+ * scoped flow through the shared helpers in includes/applies-form.php. This
+ * page only ever renders an application that is scoped (via JOIN on
+ * jobs.employer_id) to a job the signed-in employer actually owns, so a foreign
+ * or nonexistent application id resolves to a safe not-found page and no
+ * cross-owner applicant data can leak.
+ */
+
+require __DIR__ . '/includes/config.php';
+require __DIR__ . '/includes/db.php';
+require __DIR__ . '/includes/html.php';
+require __DIR__ . '/includes/applies-form.php';
+require __DIR__ . '/includes/crypto.php';
+
+$user = hirepeak_require_role('employer');
+$uid  = (int) $user['id'];
+
+$appId = (int) ($_GET['id'] ?? 0);
+$appId = $appId > 0 ? $appId : 0;
+
+$db        = null;
+$loadError = false;
+$application = null;
+
+try {
+    $db = hirepeak_db();
+
+    $stmt = $db->prepare(
+        'SELECT a.id, a.job_id, a.status, a.applied_at, a.cover_letter,
+                j.title AS job_title,
+                j.location AS job_location,
+                u.name AS applicant_name,
+                u.email AS applicant_email,
+                ap.professional_title,
+                ap.bio,
+                ap.phone,
+                ap.location AS applicant_location,
+                ap.experience_years,
+                ap.skills,
+                ap.cv_path
+         FROM applications a
+         INNER JOIN jobs j ON j.id = a.job_id
+         INNER JOIN users u ON u.id = a.applicant_id
+         LEFT JOIN applicant_profiles ap ON ap.user_id = a.applicant_id
+         WHERE a.id = ? AND j.employer_id = ?
+         LIMIT 1'
+    );
+    $stmt->bind_param('ii', $appId, $uid);
+    $stmt->execute();
+    $application = $stmt->get_result()->fetch_assoc() ?: null;
+    $stmt->close();
+
+    if ($application === null) {
+        hirepeak_job_not_found();
+    }
+
+    $phone = null;
+    $phoneRaw = (string) ($application['phone'] ?? '');
+    if ($phoneRaw !== '') {
+        $decrypted = hirepeak_phone_decrypt($phoneRaw);
+        if ($decrypted !== null) {
+            $phone = trim($decrypted);
+        }
+        /* Never echo ciphertext: if it can't be decrypted, we simply omit it. */
+    }
+} catch (\Throwable $e) {
+    error_log('[hirepeak] employer application load failed: ' . $e->getMessage());
+    $loadError = true;
+}
+?>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><?php echo $application !== null && trim((string) $application['job_title']) !== '' ? hirepeak_esc((string) $application['applicant_name']) . ' — Application | HirePeak' : 'Application | HirePeak'; ?></title>
+  <meta name="description" content="Review this candidate's full application on HirePeak.">
+  <meta name="theme-color" content="#ffffff">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect x='1' y='1' width='22' height='22' rx='7' fill='%234F46E5'/%3E%3Cpath d='M12 4.8 18 16H6Z' fill='%23FFFFFF' stroke='%23FFFFFF' stroke-width='3' stroke-linejoin='round'/%3E%3Cpath d='M12 6.6 8.8 16H5.9Z' fill='%23EEF2FF' stroke='%23EEF2FF' stroke-width='3' stroke-linejoin='round'/%3E%3C/svg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="src/css/style.css">
+</head>
+<body>
+  <?php require __DIR__ . '/includes/header.php'; ?>
+
+  <div class="scrim" data-scrim hidden></div>
+
+  <main id="main" class="dash-main">
+    <div class="container">
+
+      <?php if ($loadError): ?>
+        <section class="dash-alert" role="alert" aria-labelledby="application-error-title">
+          <h1 id="application-error-title">Something went wrong on our side.</h1>
+          <p>We couldn't load this application right now. Please try again in a moment.</p>
+          <a class="btn btn--primary" href="job-applicants.php">Back to Applicants</a>
+        </section>
+
+      <?php else: ?>
+
+        <?php
+        $jobId     = (int) $application['job_id'];
+        $status    = (string) $application['status'];
+        $statusLabel = hirepeak_application_status_label($status);
+        $phone     = null;
+        $phoneRaw  = (string) ($application['phone'] ?? '');
+        if ($phoneRaw !== '') {
+            $decrypted = hirepeak_phone_decrypt($phoneRaw);
+            if ($decrypted !== null) {
+                $phone = trim($decrypted);
+            }
+        }
+        ?>
+
+        <header class="dash-head">
+          <div>
+            <p class="dash-eyebrow">Employer account</p>
+            <h1 class="dash-title"><?php echo hirepeak_esc((string) $application['applicant_name']); ?></h1>
+            <p class="dash-text">Application for
+              <a class="job-inline-link" href="job-details.php?id=<?php echo $jobId; ?>"><?php echo hirepeak_esc((string) $application['job_title']); ?></a>
+              <?php if (trim((string) ($application['job_location'] ?? '')) !== ''): ?>
+                &middot; <?php echo hirepeak_esc((string) $application['job_location']); ?>
+              <?php endif; ?>
+            </p>
+          </div>
+          <div class="dash-head__cta-wrap">
+            <a class="btn btn--ghost" href="job-applicants.php?job_id=<?php echo $jobId; ?>">Back to Applicants</a>
+          </div>
+        </header>
+
+        <div class="jd-layout">
+
+          <section class="dash-panel jd-main" aria-labelledby="application-overview-title">
+            <div class="panel-head">
+              <h2 class="panel-head__title" id="application-overview-title">Application</h2>
+            </div>
+
+            <p class="app-row__meta">
+              <?php echo hirepeak_application_status_badge($status); ?>
+              <span class="app-row__date">Applied <?php echo hirepeak_esc(hirepeak_relative_time((string) $application['applied_at'])); ?></span>
+            </p>
+
+            <dl class="jd-facts__list">
+              <?php if ($statusLabel !== ''): ?>
+                <div class="jd-fact"><dt>Status</dt><dd><?php echo hirepeak_esc((string) $statusLabel); ?></dd></div>
+              <?php endif; ?>
+              <div class="jd-fact"><dt>Applied</dt><dd><?php echo hirepeak_esc(hirepeak_relative_time((string) $application['applied_at'])); ?></dd></div>
+              <div class="jd-fact"><dt>Job</dt><dd><a href="job-details.php?id=<?php echo (int) $jobId; ?>"><?php echo hirepeak_esc((string) $application['job_title']); ?></a></dd></div>
+            </dl>
+
+            <?php if (trim((string) ($application['cover_letter'] ?? '')) !== ''): ?>
+              <div class="jd-prose">
+                <h2>Cover letter</h2>
+                <p class="apply-details__note"><?php echo hirepeak_esc($application['cover_letter']); ?></p>
+              </div>
+            <?php endif; ?>
+          </section>
+
+          <aside class="dash-panel jd-aside" aria-labelledby="applicant-details-title">
+            <div class="panel-head">
+              <h2 class="panel-head__title" id="applicant-details-title">Applicant</h2>
+            </div>
+
+            <p class="app-row__meta">
+              <?php echo hirepeak_esc((string) ($application['professional_title'] ?? '')); ?>
+              <?php if (trim((string) ($application['applicant_location'] ?? '')) !== ''): ?>
+                <span class="row-dot" aria-hidden="true">&middot;</span>
+                <?php echo hirepeak_esc((string) $application['applicant_location']); ?>
+              <?php endif; ?>
+              <?php if ((int) ($application['experience_years'] ?? 0) > 0): ?>
+                <span class="row-dot" aria-hidden="true">&middot;</span>
+                <?php echo (int) $application['experience_years']; ?> yrs exp
+              <?php endif; ?>
+            </p>
+
+            <dl class="jd-facts__list">
+              <div class="jd-fact"><dt>Name</dt><dd><?php echo hirepeak_esc((string) $application['applicant_name']); ?></dd></div>
+              <div class="jd-fact"><dt>Email</dt><dd><a href="mailto:<?php echo hirepeak_esc((string) $application['applicant_email']); ?>"><?php echo hirepeak_esc((string) $application['applicant_email']); ?></a></dd></div>
+              <?php if ($phone !== null && $phone !== ''): ?>
+                <div class="jd-fact"><dt>Phone</dt><dd><a href="tel:<?php echo hirepeak_esc($phone); ?>"><?php echo hirepeak_esc($phone); ?></a></dd></div>
+              <?php endif; ?>
+              <?php if (trim((string) ($application['skills'] ?? '')) !== ''): ?>
+                <div class="jd-fact"><dt>Skills</dt><dd><?php echo hirepeak_esc((string) $application['skills']); ?></dd></div>
+              <?php endif; ?>
+            </dl>
+
+            <?php if (trim((string) ($application['bio'] ?? '')) !== ''): ?>
+              <div class="jd-prose">
+                <h2>About the applicant</h2>
+                <p class="apply-details__note"><?php echo hirepeak_esc((string) $application['bio']); ?></p>
+              </div>
+            <?php endif; ?>
+          </aside>
+
+        </div>
+
+      <?php endif; ?>
+    </div>
+  </main>
+
+  <?php require __DIR__ . '/includes/footer.php'; ?>
+</body>
+</html>

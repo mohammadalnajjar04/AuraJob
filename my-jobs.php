@@ -235,6 +235,7 @@ $deadlineLabel = static function (?string $ts): string {
                     </p>
                   </div>
                   <div class="app-row__actions">
+                    <a class="btn btn--outline btn--sm app-row__action" href="job-applicants.php?job_id=<?php echo (int) $job['id']; ?>">View Applicants</a>
                     <?php if (($job['status'] ?? '') !== 'draft'): ?>
                       <a class="btn btn--outline btn--sm app-row__action" href="job-details.php?id=<?php echo (int) $job['id']; ?>">View</a>
                     <?php endif; ?>

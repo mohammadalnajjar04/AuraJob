@@ -20,6 +20,8 @@ declare(strict_types=1);
  * Everything here is POST-only + CSRF-protected; there are no GET mutations.
  */
 
+require_once __DIR__ . '/notifications.php';
+
 /**
  * Returns the real schema ENUM statuses in pipeline order, keyed by the
  * stored value so the list page tabs and the detail page stay in sync with
@@ -133,7 +135,8 @@ function hirepeak_process_application_status_update(\mysqli $db, int $applicatio
     try {
         $stmt = $db->prepare(
             'SELECT a.id, a.status, a.updated_at,
-                    j.id AS job_id, j.employer_id
+                    a.applicant_id,
+                    j.id AS job_id, j.employer_id, j.title AS job_title
              FROM applications a
              INNER JOIN jobs j ON j.id = a.job_id
              INNER JOIN users u ON u.id = a.applicant_id
@@ -171,6 +174,18 @@ function hirepeak_process_application_status_update(\mysqli $db, int $applicatio
         if ($affected !== 1) {
             $result['errors'] = ['That application changed elsewhere. Please review and try again.'];
             return $result;
+        }
+
+        /* In-app notice for the applicant: "status changed" event. */
+        $applicantId = (int) ($row['applicant_id'] ?? 0);
+        $jobTitle = trim((string) ($row['job_title'] ?? ''));
+        if ($applicantId > 0 && $jobTitle !== '') {
+            hirepeak_notification_create(
+                $db,
+                $applicantId,
+                'application_status',
+                'Your application for ' . $jobTitle . ' ' . hirepeak_notification_application_status_message($requested)
+            );
         }
 
         $result['ok'] = true;

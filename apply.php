@@ -6,6 +6,7 @@ require __DIR__ . '/includes/auth.php';
 require __DIR__ . '/includes/db.php';
 require __DIR__ . '/includes/html.php';
 require __DIR__ . '/includes/crypto.php';
+require __DIR__ . '/includes/notifications.php';
 
 $user = hirepeak_require_role('applicant');
 $uid = (int) $user['id'];
@@ -105,7 +106,7 @@ try {
     $stmt = $db->prepare(
         'SELECT j.id, j.title, j.location, j.salary_min, j.salary_max,
                 j.employment_type, j.work_mode, j.experience_level, j.status,
-                j.application_deadline,
+                j.application_deadline, j.employer_id,
                 c.name AS company_name, ct.name AS category_name,
                 (j.status = "active"
                     AND (j.application_deadline IS NULL
@@ -176,6 +177,18 @@ try {
                 $stmt->execute();
                 $newId = (int) $db->insert_id;
                 $stmt->close();
+
+                /* In-app notice for the job owner: "new application" event. */
+                $ownerId = (int) ($job['employer_id'] ?? 0);
+                $jobTitleNotif = trim((string) ($job['title'] ?? ''));
+                if ($ownerId > 0 && $jobTitleNotif !== '') {
+                    hirepeak_notification_create(
+                        $db,
+                        $ownerId,
+                        'application_new',
+                        'A new application was submitted for ' . $jobTitleNotif . '.'
+                    );
+                }
 
                 $_SESSION['hirepeak_apply_flash'] = 'Application submitted successfully.';
                 header('Location: application-tracking.php?id=' . $newId, true, 303);

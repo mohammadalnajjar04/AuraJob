@@ -13,6 +13,8 @@ declare(strict_types=1);
 require_once __DIR__ . '/config.php';
 require_once __DIR__ . '/auth.php';
 require_once __DIR__ . '/html.php';
+require_once __DIR__ . '/db.php';
+require_once __DIR__ . '/notifications.php';
 
 hirepeak_start_session();
 
@@ -31,6 +33,35 @@ if ($hpUser !== null) {
 }
 
 $hpCsrf = $hpLogged ? hirepeak_csrf_token() : '';
+
+/*
+ * Unread badge for the notifications bell. Read straight from the database for
+ * the authenticated session user; a DB hiccup degrades to "no badge" rather
+ * than a broken header.
+ */
+$hpUnread = 0;
+if ($hpLogged && $hpUser !== null) {
+    try {
+        $hpDb = hirepeak_db();
+        $hpUnread = hirepeak_notification_unread_count($hpDb, (int) $hpUser['id']);
+        $hpDb->close();
+    } catch (\Throwable $e) {
+        error_log('[hirepeak] header unread badge failed: ' . $e->getMessage());
+        $hpUnread = 0;
+    }
+}
+
+$hpBell = '';
+if ($hpLogged) {
+    $hpBell = '<a class="bell" href="notifications.php" aria-label="Notifications'
+        . ($hpUnread > 0 ? ', ' . $hpUnread . ' unread' : '') . '">'
+        . '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'
+        . '<path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/>'
+        . '<path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/>'
+        . '</svg>'
+        . ($hpUnread > 0 ? '<span class="bell__badge" aria-hidden="true">' . (int) $hpUnread . '</span>' : '')
+        . '</a>';
+}
 
 $hpNavItems = [
     ['key' => 'home', 'label' => 'Home', 'href' => 'index.php', 'target' => ''],
@@ -104,6 +135,7 @@ $hpNavItems = [
 
       <div class="site-nav__auth">
         <?php if ($hpLogged && $hpUser !== null): ?>
+          <?php echo $hpBell; ?>
           <a class="btn btn--ghost" href="<?php echo hirepeak_esc($hpDashboard); ?>">Dashboard</a>
 
           <div class="account-menu">

@@ -13,22 +13,223 @@ $pageScripts = ['src/js/main.js', 'src/js/jobs.js'];
 
 $jobs = [];
 $dbError = false;
+$resultCount = 0;
+$totalPages = 1;
+$currentPage = 1;
+
+/* ---- GET input parsing (whitelisted only; nothing raw reaches SQL) ----------- */
+
+$keyword = trim((string) ($_GET['keyword'] ?? ''));
+$locationSearch = trim((string) ($_GET['location'] ?? ''));
+
+$enumEmployment = ['full_time', 'part_time', 'contract', 'internship', 'freelance'];
+$enumMode = ['onsite', 'remote', 'hybrid'];
+$enumExperience = ['entry', 'junior', 'mid', 'senior', 'lead'];
+$sortOptions = ['newest', 'salary-desc', 'salary-asc'];
+$sortLabels = [
+    'newest'      => 'Newest',
+    'salary-desc' => 'Salary: High to Low',
+    'salary-asc'  => 'Salary: Low to High',
+];
+
+$sort = (string) ($_GET['sort'] ?? '');
+if (!in_array($sort, $sortOptions, true)) {
+    $sort = 'newest';
+}
+
+/* Multi-select params: silently drop anything outside the schema ENUMs /
+ * database whitelists. Values are only used as bound IN (...) parameters. */
+$categorySel = [];
+$employmentSel = [];
+$modeSel = [];
+$experienceSel = [];
+$locationsSel = [];
+
+foreach ((array) ($_GET['employment'] ?? []) as $value) {
+    if (is_string($value) && in_array($value, $enumEmployment, true)) {
+        $employmentSel[] = $value;
+    }
+}
+foreach ((array) ($_GET['mode'] ?? []) as $value) {
+    if (is_string($value) && in_array($value, $enumMode, true)) {
+        $modeSel[] = $value;
+    }
+}
+foreach ((array) ($_GET['experience'] ?? []) as $value) {
+    if (is_string($value) && in_array($value, $enumExperience, true)) {
+        $experienceSel[] = $value;
+    }
+}
+
+/** Builds the jobs listing URL for the current filter state, optionally adding
+ * a page number. Arrays become repeated name[]=value pairs so multi-select
+ * filters survive pagination, sorting, and chip removal intact. */
+$jobsUrl = static function (array $state, ?int $page = null): string {
+    $pairs = [];
+    foreach ($state as $key => $value) {
+        if (is_array($value)) {
+            foreach ($value as $one) {
+                $pairs[] = rawurlencode($key) . '[]=' . rawurlencode((string) $one);
+            }
+        } elseif ((string) $value !== '') {
+            $pairs[] = rawurlencode($key) . '=' . rawurlencode((string) $value);
+        }
+    }
+    if ($page !== null) {
+        $pairs[] = 'page=' . rawurlencode((string) $page);
+    }
+    return 'jobs.php' . ($pairs !== [] ? '?' . implode('&', $pairs) : '');
+};
 
 try {
     $db = hirepeak_db();
+
+    /* Database-backed whitelists so category/location filters only ever match
+     * values that actually exist in the schema. */
+    $validCategories = [];
+    foreach (hirepeak_categories($db) as $category) {
+        $validCategories[] = $category['name'];
+    }
+    $validLocations = [];
+    $result = $db->query(
+        'SELECT DISTINCT location FROM jobs '
+        . "WHERE status = 'active' "
+        . 'AND (application_deadline IS NULL OR application_deadline >= CURDATE()) '
+        . "AND location <> '' ORDER BY location"
+    );
+    while ($row = $result->fetch_assoc()) {
+        $validLocations[] = (string) $row['location'];
+    }
+    $result->close();
+
+    foreach ((array) ($_GET['category'] ?? []) as $value) {
+        if (is_string($value) && in_array($value, $validCategories, true)) {
+            $categorySel[] = $value;
+        }
+    }
+    foreach ((array) ($_GET['locations'] ?? []) as $value) {
+        if (is_string($value) && in_array($value, $validLocations, true)) {
+            $locationsSel[] = $value;
+        }
+    }
+
+    /* ---- WHERE clause ----------------------------------------------------- */
+    $where = [
+        "j.status = 'active'",
+        '(j.application_deadline IS NULL OR j.application_deadline >= CURDATE())',
+    ];
+    $params = [];
+    $types = '';
+
+    $addLikeParam = static function (string $value) use (&$params, &$types): void {
+        $params[] = $value;
+        $types .= 's';
+    };
+
+    /* Keyword: any whole term matching title / company / category / description. */
+    $keywordTerms = preg_split('/\s+/', $keyword, -1, PREG_SPLIT_NO_EMPTY) ?: [];
+    $keywordOrs = [];
+    foreach ($keywordTerms as $term) {
+        $keywordOrs[] = '(j.title LIKE ? OR c.name LIKE ? OR ct.name LIKE ? OR j.description LIKE ?)';
+        $like = '%' . $term . '%';
+        $addLikeParam($like);
+        $addLikeParam($like);
+        $addLikeParam($like);
+        $addLikeParam($like);
+    }
+    if ($keywordOrs !== []) {
+        $where[] = '(' . implode(' OR ', $keywordOrs) . ')';
+    }
+
+    /* Location text search. "remote" / "anywhere" / "worldwide" also match
+     * remote-mode jobs, preserving the pre-existing Remote/Worldwide behaviour. */
+    $locationTerms = preg_split('/\s+/', $locationSearch, -1, PREG_SPLIT_NO_EMPTY) ?: [];
+    $locationOrs = [];
+    foreach ($locationTerms as $term) {
+        $locationOrs[] = 'j.location LIKE ?';
+        $addLikeParam('%' . $term . '%');
+        if (in_array(strtolower($term), ['remote', 'anywhere', 'worldwide'], true)) {
+            $locationOrs[] = "j.work_mode = 'remote'";
+        }
+    }
+    if ($locationOrs !== []) {
+        $where[] = '(' . implode(' OR ', $locationOrs) . ')';
+    }
+
+    /* Sidebar multi-select filters — every value was whitelisted above. */
+    $inGroup = static function (array $group, string $column) use (&$where, &$params, &$types, &$addLikeParam): void {
+        if ($group === []) {
+            return;
+        }
+        $placeholders = implode(',', array_fill(0, count($group), '?'));
+        $where[] = $column . ' IN (' . $placeholders . ')';
+        foreach ($group as $value) {
+            $addLikeParam($value);
+        }
+    };
+    $inGroup($categorySel, 'ct.name');
+    $inGroup($employmentSel, 'j.employment_type');
+    $inGroup($modeSel, 'j.work_mode');
+    $inGroup($experienceSel, 'j.experience_level');
+
+    if ($locationsSel !== []) {
+        $placeholders = implode(',', array_fill(0, count($locationsSel), '?'));
+        $cond = 'j.location IN (' . $placeholders . ')';
+        foreach ($locationsSel as $value) {
+            $addLikeParam($value);
+        }
+        /* Selecting "Remote" also matches remote-mode roles, as before. */
+        if (in_array('Remote', $locationsSel, true)) {
+            $cond = '(' . $cond . " OR j.work_mode = 'remote')";
+        }
+        $where[] = $cond;
+    }
+
+    $whereSql = 'WHERE ' . implode(' AND ', $where);
+    $fromSql = 'FROM jobs j '
+        . 'INNER JOIN companies c ON c.id = j.company_id '
+        . 'INNER JOIN categories ct ON ct.id = j.category_id ';
+
+    /* ---- Count ------------------------------------------------------------ */
+    $stmt = $db->prepare('SELECT COUNT(*) AS total ' . $fromSql . $whereSql);
+    if ($types !== '') {
+        $stmt->bind_param($types, ...$params);
+    }
+    $stmt->execute();
+    $resultCount = (int) $stmt->get_result()->fetch_assoc()['total'];
+    $stmt->close();
+
+    /* ---- Pagination -------------------------------------------------------- */
+    $pageSize = 5;
+    $totalPages = max(1, (int) ceil($resultCount / $pageSize));
+    $pageRaw = filter_var($_GET['page'] ?? '1', FILTER_VALIDATE_INT);
+    $currentPage = ($pageRaw === false || $pageRaw < 1) ? 1 : (int) $pageRaw;
+    if ($currentPage > $totalPages) {
+        $currentPage = $totalPages;
+    }
+    $offset = ($currentPage - 1) * $pageSize;
+
+    /* ---- Sort (whitelist only; static ORDER BY strings) -------------------- */
+    $salarySort = 'COALESCE(j.salary_max, j.salary_min)';
+    $orderBy = match ($sort) {
+        'salary-desc' => 'ORDER BY (' . $salarySort . ' IS NULL) ASC, ' . $salarySort . ' DESC, j.created_at DESC, j.id DESC',
+        'salary-asc'  => 'ORDER BY (' . $salarySort . ' IS NULL) ASC, ' . $salarySort . ' ASC, j.created_at DESC, j.id DESC',
+        default       => 'ORDER BY j.created_at DESC, j.id DESC',
+    };
+
+    /* ---- Results ----------------------------------------------------------- */
     $stmt = $db->prepare(
         'SELECT j.id, j.title, j.location, j.salary_min, j.salary_max,
                 j.employment_type, j.work_mode, j.experience_level,
                 j.created_at, j.description, j.requirements,
                 c.name AS company_name, ct.name AS category_name
-         FROM jobs j
-         INNER JOIN companies c ON c.id = j.company_id
-         INNER JOIN categories ct ON ct.id = j.category_id
-         WHERE j.status = "active"
-           AND (j.application_deadline IS NULL
-                OR j.application_deadline >= CURDATE())
-         ORDER BY j.created_at DESC'
+         ' . $fromSql . $whereSql . ' ' . $orderBy . ' LIMIT ? OFFSET ?'
     );
+    $params[] = $pageSize;
+    $types .= 'i';
+    $params[] = $offset;
+    $types .= 'i';
+    $stmt->bind_param($types, ...$params);
     $stmt->execute();
     $jobs = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
     $stmt->close();
@@ -37,7 +238,32 @@ try {
     $dbError = true;
 }
 
-$resultCount = count($jobs);
+$shownStart = $resultCount > 0 ? ($currentPage - 1) * $pageSize + 1 : 0;
+$shownEnd = $resultCount > 0 ? min($currentPage * $pageSize, $resultCount) : 0;
+$countLabel = $resultCount === 1 ? 'opportunity' : 'opportunities';
+
+/* Full query state for URL building (all forms / links share it). */
+$queryState = [
+    'keyword'     => $keyword,
+    'location'    => $locationSearch,
+    'category'    => $categorySel,
+    'employment'  => $employmentSel,
+    'mode'        => $modeSel,
+    'experience'  => $experienceSel,
+    'locations'   => $locationsSel,
+    'sort'        => $sort !== 'newest' ? $sort : '',
+];
+
+/* URL that removes a single chip value from the current query state. */
+$withoutChip = static function (string $key, string $value) use ($queryState, $jobsUrl): string {
+    $state = $queryState;
+    if (is_array($state[$key] ?? null)) {
+        $state[$key] = array_values(array_filter($state[$key], static fn (string $v): bool => $v !== $value));
+    } else {
+        $state[$key] = '';
+    }
+    return $jobsUrl($state);
+};
 
 /* Saved-job state is rendered server-side from saved_jobs (never from JS), and
  * only ever considered for signed-in applicants. */
@@ -80,9 +306,9 @@ foreach ($jobs as $job) {
     if ((string) $job['category_name'] !== '') {
         $filterValues['category'][] = (string) $job['category_name'];
     }
-    $filterValues['employment'][] = hirepeak_employment_type_label((string) $job['employment_type']);
-    $filterValues['mode'][] = hirepeak_work_mode_label((string) $job['work_mode']);
-    $filterValues['experience'][] = hirepeak_experience_level_label((string) $job['experience_level']);
+    $filterValues['employment'][] = (string) $job['employment_type'];
+    $filterValues['mode'][] = (string) $job['work_mode'];
+    $filterValues['experience'][] = (string) $job['experience_level'];
     if ((string) $job['location'] !== '') {
         $filterValues['location'][] = (string) $job['location'];
     }
@@ -91,6 +317,10 @@ foreach ($filterValues as $group => $values) {
     $filterValues[$group] = array_values(array_unique($values));
 }
 
+/* Sidebar checkbox group => visible label / bound value mapping. Employment,
+ * work mode, and experience bind the raw schema ENUM value (whitelisted for
+ * the query) but display the human label. Category and location values are the
+ * actual stored strings. */
 $filterGroups = [
     'category'   => 'Category',
     'employment' => 'Employment type',
@@ -98,8 +328,59 @@ $filterGroups = [
     'experience' => 'Experience level',
     'location'   => 'Location',
 ];
+$groupParam = [
+    'category'   => 'category',
+    'employment' => 'employment',
+    'mode'       => 'mode',
+    'experience' => 'experience',
+    'location'   => 'locations',
+];
+$groupSelected = [
+    'category'   => $categorySel,
+    'employment' => $employmentSel,
+    'mode'       => $modeSel,
+    'experience' => $experienceSel,
+    'location'   => $locationsSel,
+];
+$groupLabel = static function (string $group, string $value): string {
+    return match ($group) {
+        'employment' => hirepeak_employment_type_label($value),
+        'mode'       => hirepeak_work_mode_label($value),
+        'experience' => hirepeak_experience_level_label($value),
+        default      => $value,
+    };
+};
 
-$totalPages = max(1, (int) ceil($resultCount / 5));
+/* ---- Active filter chips (server-rendered from GET state) ------------------- */
+$activeChips = [];
+if ($keyword !== '') {
+    $activeChips[] = ['label' => 'Keyword: ' . $keyword, 'url' => $withoutChip('keyword', $keyword)];
+}
+if ($locationSearch !== '') {
+    $activeChips[] = ['label' => 'Location: ' . $locationSearch, 'url' => $withoutChip('location', $locationSearch)];
+}
+foreach ($categorySel as $value) {
+    $activeChips[] = ['label' => $value, 'url' => $withoutChip('category', $value)];
+}
+foreach ($employmentSel as $value) {
+    $activeChips[] = ['label' => hirepeak_employment_type_label($value), 'url' => $withoutChip('employment', $value)];
+}
+foreach ($modeSel as $value) {
+    $activeChips[] = ['label' => hirepeak_work_mode_label($value), 'url' => $withoutChip('mode', $value)];
+}
+foreach ($experienceSel as $value) {
+    $activeChips[] = ['label' => hirepeak_experience_level_label($value), 'url' => $withoutChip('experience', $value)];
+}
+foreach ($locationsSel as $value) {
+    $activeChips[] = ['label' => $value, 'url' => $withoutChip('locations', $value)];
+}
+
+/* Badge on the mobile Filters trigger: number of active checkbox filters. */
+$activeFilterCount = count($categorySel)
+    + count($employmentSel)
+    + count($modeSel)
+    + count($experienceSel)
+    + count($locationsSel);
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -133,7 +414,7 @@ $totalPages = max(1, (int) ceil($resultCount / 5));
               <circle cx="11" cy="11" r="7"/>
               <path d="m20 20-3.5-3.5"/>
             </svg>
-            <input id="jobs-keyword" name="keyword" type="search" placeholder="Job title, skill, or company" autocomplete="off">
+            <input id="jobs-keyword" name="keyword" type="search" placeholder="Job title, skill, or company" autocomplete="off" value="<?php echo hirepeak_esc($keyword); ?>">
           </div>
 
           <div class="hero-search__divider" aria-hidden="true"></div>
@@ -144,8 +425,25 @@ $totalPages = max(1, (int) ceil($resultCount / 5));
               <path d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 0 1 16 0Z"/>
               <circle cx="12" cy="10" r="3"/>
             </svg>
-            <input id="jobs-location" name="location" type="text" placeholder="City, or remote" autocomplete="off">
+            <input id="jobs-location" name="location" type="text" placeholder="City, or remote" autocomplete="off" value="<?php echo hirepeak_esc($locationSearch); ?>">
           </div>
+
+          <?php foreach ($categorySel as $value): ?>
+            <input type="hidden" name="category[]" value="<?php echo hirepeak_esc($value); ?>">
+          <?php endforeach; ?>
+          <?php foreach ($employmentSel as $value): ?>
+            <input type="hidden" name="employment[]" value="<?php echo hirepeak_esc($value); ?>">
+          <?php endforeach; ?>
+          <?php foreach ($modeSel as $value): ?>
+            <input type="hidden" name="mode[]" value="<?php echo hirepeak_esc($value); ?>">
+          <?php endforeach; ?>
+          <?php foreach ($experienceSel as $value): ?>
+            <input type="hidden" name="experience[]" value="<?php echo hirepeak_esc($value); ?>">
+          <?php endforeach; ?>
+          <?php foreach ($locationsSel as $value): ?>
+            <input type="hidden" name="locations[]" value="<?php echo hirepeak_esc($value); ?>">
+          <?php endforeach; ?>
+          <input type="hidden" name="sort" value="<?php echo hirepeak_esc($sort); ?>">
 
           <button class="btn btn--primary hero-search__submit" type="submit">
             Search Jobs
@@ -163,49 +461,79 @@ $totalPages = max(1, (int) ceil($resultCount / 5));
         <aside class="jobs-sidebar" id="filter-panel" aria-label="Filters">
           <div class="jobs-sidebar__head">
             <h2 class="jobs-sidebar__title">Filters</h2>
-            <button class="jobs-sidebar__clear" type="button">Clear all</button>
+            <a class="jobs-sidebar__clear" href="<?php echo hirepeak_esc($jobsUrl([])); ?>">Clear all</a>
           </div>
 
-          <form class="jobs-filters">
+          <form class="jobs-filters" method="get" action="jobs.php" data-jobs-filters>
+            <input type="hidden" name="keyword" value="<?php echo hirepeak_esc($keyword); ?>">
+            <input type="hidden" name="location" value="<?php echo hirepeak_esc($locationSearch); ?>">
+            <input type="hidden" name="sort" value="<?php echo hirepeak_esc($sort); ?>">
             <?php foreach ($filterGroups as $group => $title): ?>
               <?php if ($filterValues[$group] !== []): ?>
                 <fieldset class="jobs-filter">
                   <legend class="jobs-filter__title"><?php echo hirepeak_esc($title); ?></legend>
                   <div class="jobs-filter__options">
                     <?php foreach ($filterValues[$group] as $value): ?>
-                      <label class="jobs-check"><input type="checkbox" name="<?php echo hirepeak_esc($group); ?>" value="<?php echo hirepeak_esc($value); ?>"><span><?php echo hirepeak_esc($value); ?></span></label>
+                      <label class="jobs-check"><input type="checkbox" name="<?php echo hirepeak_esc($groupParam[$group]); ?>[]" value="<?php echo hirepeak_esc($value); ?>"<?php echo in_array($value, $groupSelected[$group], true) ? ' checked' : ''; ?>><span><?php echo hirepeak_esc($groupLabel($group, $value)); ?></span></label>
                     <?php endforeach; ?>
                   </div>
                 </fieldset>
               <?php endif; ?>
             <?php endforeach; ?>
+            <button class="btn btn--primary jobs-filters__apply" type="submit">Apply Filters</button>
           </form>
         </aside>
 
         <div class="jobs-results">
           <div class="jobs-toolbar">
             <div class="jobs-toolbar__row">
-              <h2 class="jobs-count" id="results-count" aria-live="polite"><?php echo (int) $resultCount; ?> opportunities</h2>
+              <h2 class="jobs-count" id="results-count"><?php echo (int) $resultCount; ?> <?php echo hirepeak_esc($countLabel); ?></h2>
               <div class="jobs-toolbar__controls">
                 <button class="btn btn--outline jobs-filter-trigger" type="button" aria-expanded="false" aria-controls="filter-drawer">
-                  Filters <span class="jobs-filter-trigger__badge" hidden>0</span>
+                  Filters <?php if ($activeFilterCount > 0): ?><span class="jobs-filter-trigger__badge"><?php echo (int) $activeFilterCount; ?></span><?php endif; ?>
                 </button>
-                <label class="jobs-sort">
-                  <span class="sr-only">Sort results</span>
-                  <select>
-                    <option value="newest">Newest</option>
-                    <option value="salary-desc">Salary: High to Low</option>
-                    <option value="salary-asc">Salary: Low to High</option>
-                  </select>
-                </label>
+                <form class="jobs-sort" method="get" action="jobs.php" data-jobs-sort>
+                  <input type="hidden" name="keyword" value="<?php echo hirepeak_esc($keyword); ?>">
+                  <input type="hidden" name="location" value="<?php echo hirepeak_esc($locationSearch); ?>">
+                  <?php foreach ($categorySel as $value): ?>
+                    <input type="hidden" name="category[]" value="<?php echo hirepeak_esc($value); ?>">
+                  <?php endforeach; ?>
+                  <?php foreach ($employmentSel as $value): ?>
+                    <input type="hidden" name="employment[]" value="<?php echo hirepeak_esc($value); ?>">
+                  <?php endforeach; ?>
+                  <?php foreach ($modeSel as $value): ?>
+                    <input type="hidden" name="mode[]" value="<?php echo hirepeak_esc($value); ?>">
+                  <?php endforeach; ?>
+                  <?php foreach ($experienceSel as $value): ?>
+                    <input type="hidden" name="experience[]" value="<?php echo hirepeak_esc($value); ?>">
+                  <?php endforeach; ?>
+                  <?php foreach ($locationsSel as $value): ?>
+                    <input type="hidden" name="locations[]" value="<?php echo hirepeak_esc($value); ?>">
+                  <?php endforeach; ?>
+                  <label class="jobs-sort__label">
+                    <span class="sr-only">Sort results</span>
+                    <select name="sort">
+                      <?php foreach ($sortOptions as $option): ?>
+                        <option value="<?php echo hirepeak_esc($option); ?>"<?php echo $sort === $option ? ' selected' : ''; ?>><?php echo hirepeak_esc($sortLabels[$option]); ?></option>
+                      <?php endforeach; ?>
+                    </select>
+                  </label>
+                  <button class="btn btn--outline jobs-sort__submit" type="submit">Sort</button>
+                </form>
               </div>
             </div>
           </div>
 
-          <div class="active-filters" data-active-filters hidden>
-            <ul aria-label="Active filters"></ul>
-            <button class="active-filters__clear" type="button" data-clear-all>Clear all</button>
+          <?php if ($activeChips !== []): ?>
+          <div class="active-filters">
+            <ul aria-label="Active filters">
+              <?php foreach ($activeChips as $chip): ?>
+                <li><a class="active-filters__chip" href="<?php echo hirepeak_esc($chip['url']); ?>" aria-label="Remove <?php echo hirepeak_esc($chip['label']); ?> filter"><?php echo hirepeak_esc($chip['label']); ?><span class="active-filters__x" aria-hidden="true">&times;</span></a></li>
+              <?php endforeach; ?>
+            </ul>
+            <a class="active-filters__clear" href="jobs.php">Clear all</a>
           </div>
+          <?php endif; ?>
 
           <?php if ($saveFlash !== ''): ?>
             <p class="dash-flash jobs__flash" role="status"><?php echo hirepeak_esc($saveFlash); ?></p>
@@ -285,7 +613,8 @@ $totalPages = max(1, (int) ceil($resultCount / 5));
 
             </div>
 
-            <div class="jobs-empty" hidden>
+            <?php if ($resultCount === 0): ?>
+            <div class="jobs-empty">
               <div class="jobs-empty__icon" aria-hidden="true">
                 <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
                   <circle cx="11" cy="11" r="7"/>
@@ -296,21 +625,36 @@ $totalPages = max(1, (int) ceil($resultCount / 5));
               </div>
               <h3 class="jobs-empty__title">No jobs match those filters.</h3>
               <p class="jobs-empty__text">Try adjusting your search or clearing some filters.</p>
-              <button class="btn btn--primary" type="button">Clear Filters</button>
+              <a class="btn btn--primary" href="jobs.php">Clear Filters</a>
             </div>
+            <?php endif; ?>
 
+            <?php if ($resultCount > 0): ?>
             <nav class="pagination" aria-label="Results pagination">
-              <p class="pagination__meta">Showing 1&ndash;<?php echo min(5, $resultCount); ?> of <?php echo (int) $resultCount; ?></p>
+              <p class="pagination__meta">Showing <?php echo (int) $shownStart; ?>&ndash;<?php echo (int) $shownEnd; ?> of <?php echo (int) $resultCount; ?> <?php echo hirepeak_esc($countLabel); ?></p>
               <div class="pagination__controls">
-                <button class="pagination__btn" type="button" data-page-prev aria-label="Previous page" disabled>Previous</button>
-                <div class="pagination__nums" data-page-nums>
+                <?php if ($currentPage > 1): ?>
+                  <a class="pagination__btn" href="<?php echo hirepeak_esc($jobsUrl($queryState, $currentPage - 1)); ?>" data-page-prev aria-label="Previous page">Previous</a>
+                <?php else: ?>
+                  <span class="pagination__btn is-disabled" aria-disabled="true">Previous</span>
+                <?php endif; ?>
+                <div class="pagination__nums">
                   <?php for ($i = 1; $i <= $totalPages; $i++): ?>
-                    <button class="pagination__num<?php echo $i === 1 ? ' is-current' : ''; ?>" type="button"<?php echo $i === 1 ? ' aria-current="page"' : ''; ?>><?php echo $i; ?></button>
+                    <?php if ($i === $currentPage): ?>
+                      <span class="pagination__num is-current" aria-current="page"><?php echo $i; ?></span>
+                    <?php else: ?>
+                      <a class="pagination__num" href="<?php echo hirepeak_esc($jobsUrl($queryState, $i)); ?>"><?php echo $i; ?></a>
+                    <?php endif; ?>
                   <?php endfor; ?>
                 </div>
-                <button class="pagination__btn" type="button" data-page-next aria-label="Next page">Next</button>
+                <?php if ($currentPage < $totalPages): ?>
+                  <a class="pagination__btn" href="<?php echo hirepeak_esc($jobsUrl($queryState, $currentPage + 1)); ?>" data-page-next aria-label="Next page">Next</a>
+                <?php else: ?>
+                  <span class="pagination__btn is-disabled" aria-disabled="true">Next</span>
+                <?php endif; ?>
               </div>
             </nav>
+            <?php endif; ?>
 
           <?php endif; ?>
         </div>
@@ -331,7 +675,7 @@ $totalPages = max(1, (int) ceil($resultCount / 5));
       </div>
       <div class="filter-drawer__body" data-filter-drawer-body></div>
       <div class="filter-drawer__foot">
-        <button class="btn btn--ghost" type="button" data-filter-reset>Reset</button>
+        <a class="btn btn--ghost" href="jobs.php">Reset</a>
         <button class="btn btn--primary" type="button" data-filter-apply>Show results</button>
       </div>
     </aside>

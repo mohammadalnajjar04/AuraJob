@@ -952,6 +952,12 @@ body.no-scroll {
   line-height: 1;
 }
 
+.jobs-sort {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
 .jobs-sort select {
   appearance: none;
   -webkit-appearance: none;
@@ -969,6 +975,14 @@ body.no-scroll {
 
 .jobs-sort select:hover {
   border-color: var(--color-text-muted);
+}
+
+.jobs-sort__submit {
+  flex-shrink: 0;
+}
+
+.jobs-filters__apply {
+  margin-top: var(--space-2);
 }
 
 .jobs-list {
@@ -1097,6 +1111,9 @@ body.no-scroll {
 }
 
 .pagination__btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   height: 44px;
   padding: 0 var(--space-4);
   border: 1px solid var(--color-border-strong);
@@ -1107,12 +1124,12 @@ body.no-scroll {
   transition: border-color var(--dur-1) var(--ease-out), background-color var(--dur-1) var(--ease-out), color var(--dur-1) var(--ease-out);
 }
 
-.pagination__btn:hover:not(:disabled) {
+.pagination__btn:not(.is-disabled):hover {
   border-color: var(--color-text-muted);
   background: var(--color-bg-subtle);
 }
 
-.pagination__btn:disabled {
+.pagination__btn.is-disabled {
   color: var(--color-text-muted);
   background: var(--color-bg-subtle);
   border-color: var(--color-border);
@@ -1125,6 +1142,9 @@ body.no-scroll {
 }
 
 .pagination__num {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   width: 44px;
   height: 44px;
   border: 1px solid var(--color-border);
@@ -1389,6 +1409,10 @@ body.no-scroll {
 
 .filter-drawer__body .jobs-filters {
   margin-top: 0;
+}
+
+.filter-drawer__body .jobs-filters__apply {
+  display: none;
 }
 
 .filter-drawer__body .jobs-filter + .jobs-filter {

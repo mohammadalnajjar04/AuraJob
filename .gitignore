@@ -11,6 +11,10 @@
 error_log
 npm-debug.log*
 
+# Runtime uploads (developer CV files are not part of the repo)
+/uploads/*
+!/uploads/.gitkeep
+
 # OS and editor files
 .DS_Store
 Thumbs.db

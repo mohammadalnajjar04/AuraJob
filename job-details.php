@@ -30,7 +30,7 @@ try {
         'SELECT j.id, j.title, j.description, j.requirements, j.location,
                 j.salary_min, j.salary_max, j.employment_type, j.work_mode,
                 j.experience_level, j.application_deadline, j.status,
-                j.created_at, j.employer_id,
+                j.category_id, j.created_at, j.employer_id,
                 c.name AS company_name, c.industry,
                 c.description AS company_description,
                 c.location AS company_location,

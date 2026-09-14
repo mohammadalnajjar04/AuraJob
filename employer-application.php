@@ -2,13 +2,17 @@
 declare(strict_types=1);
 
 /**
- * Employer Application — read-only detail for a single application (with the
- * applicant's profile) on one of your jobs (Part 3A).
+ * Employer Application — detail for a single application (with the applicant's
+ * profile) on one of your jobs (Part 3A).
  *
- * This page never mutates anything: status changes are deliberately NOT wired
- * up yet. Part 3B adds the employer-side status update as a POST/CSRF/ownership-
- * scoped flow through the shared helpers in includes/applies-form.php. This
- * page only ever renders an application that is scoped (via JOIN on
+ * Status updates (Part 3B) are handled here via the shared helpers in
+ * includes/applies-form.php: the page is POST-only + CSRF-protected, and all
+ * status rules (whitelisted transitions, ownership scoping via jobs.employer_id,
+ * stale/current-status guard, terminal accepted/rejected) live in that helper,
+ * never duplicated in this page. A successful update sets a one-time flash and
+ * 303-redirects back to this same page (PRG), so a refresh cannot repeat it.
+ *
+ * This page only ever renders an application that is scoped (via JOIN on
  * jobs.employer_id) to a job the signed-in employer actually owns, so a foreign
  * or nonexistent application id resolves to a safe not-found page and no
  * cross-owner applicant data can leak.
@@ -26,9 +30,11 @@ $uid  = (int) $user['id'];
 $appId = (int) ($_GET['id'] ?? 0);
 $appId = $appId > 0 ? $appId : 0;
 
-$db        = null;
-$loadError = false;
+$db         = null;
+$loadError  = false;
 $application = null;
+$flash      = '';
+$error      = '';
 
 try {
     $db = hirepeak_db();
@@ -60,6 +66,31 @@ try {
 
     if ($application === null) {
         hirepeak_job_not_found();
+    }
+
+    /* PRG flashes from the status-update POST handler below. */
+    if (isset($_GET['updated'], $_SESSION['app_status_flash']) && $_SESSION['app_status_flash'] !== '') {
+        $flash = (string) $_SESSION['app_status_flash'];
+        unset($_SESSION['app_status_flash']);
+    }
+    if (isset($_GET['status_error'], $_SESSION['app_status_error']) && $_SESSION['app_status_error'] !== '') {
+        $error = (string) $_SESSION['app_status_error'];
+        unset($_SESSION['app_status_error']);
+    }
+
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        $update = hirepeak_process_application_status_update($db, $appId, $uid);
+
+        if (($update['ok'] ?? false) === true) {
+            $_SESSION['app_status_flash'] = $update['flash'] ?? 'Application status updated.';
+            header('Location: employer-application.php?id=' . $appId . '&updated=1', true, 303);
+            exit;
+        }
+
+        $errors = $update['errors'] ?? [];
+        $_SESSION['app_status_error'] = $errors !== [] ? $errors[0] : 'Could not update this application.';
+        header('Location: employer-application.php?id=' . $appId . '&status_error=1', true, 303);
+        exit;
     }
 
     $phone = null;
@@ -111,6 +142,13 @@ try {
         $jobId     = (int) $application['job_id'];
         $status    = (string) $application['status'];
         $statusLabel = hirepeak_application_status_label($status);
+        $nextStatuses = hirepeak_application_transitions()[$status] ?? [];
+        $transitionLabel = [
+            'under_review' => 'Move to Under Review',
+            'interview'    => 'Move to Interview',
+            'accepted'     => 'Accept Application',
+            'rejected'     => 'Reject Application',
+        ];
         $phone     = null;
         $phoneRaw  = (string) ($application['phone'] ?? '');
         if ($phoneRaw !== '') {
@@ -136,6 +174,38 @@ try {
             <a class="btn btn--ghost" href="job-applicants.php?job_id=<?php echo $jobId; ?>">Back to Applicants</a>
           </div>
         </header>
+
+        <?php if ($flash !== ''): ?>
+          <p class="dash-flash" role="status"><?php echo hirepeak_esc($flash); ?></p>
+        <?php endif; ?>
+
+        <?php if ($error !== ''): ?>
+          <p class="dash-alert dash-alert--error" role="alert"><?php echo hirepeak_esc($error); ?></p>
+        <?php endif; ?>
+
+        <section class="dash-panel dash-panel--full" aria-labelledby="application-status-title">
+          <div class="panel-head">
+            <h2 class="panel-head__title" id="application-status-title">Application Status</h2>
+          </div>
+          <p class="app-row__meta">
+            <?php echo hirepeak_application_status_badge($status); ?>
+          </p>
+          <?php if ($nextStatuses !== []): ?>
+            <div class="profile-form__actions">
+              <?php foreach ($nextStatuses as $nextStatus): ?>
+                <form class="inline-form" action="employer-application.php?id=<?php echo (int) $appId; ?>" method="post">
+                  <input type="hidden" name="csrf_token" value="<?php echo hirepeak_esc(hirepeak_csrf_token()); ?>">
+                  <input type="hidden" name="status" value="<?php echo hirepeak_esc((string) $nextStatus); ?>">
+                  <button class="btn <?php echo $nextStatus === 'rejected' ? 'btn--danger' : 'btn--primary'; ?>" type="submit">
+                    <?php echo hirepeak_esc((string) ($transitionLabel[$nextStatus] ?? hirepeak_application_status_label((string) $nextStatus))); ?>
+                  </button>
+                </form>
+              <?php endforeach; ?>
+            </div>
+          <?php else: ?>
+            <p class="jd-fact"><?php echo hirepeak_esc($statusLabel); ?> is a final status — no further status changes are available.</p>
+          <?php endif; ?>
+        </section>
 
         <div class="jd-layout">
 

@@ -74,7 +74,7 @@ function hirepeak_application_status_select(string $current, string $name = 'sta
 
     foreach ($map as $value => $label) {
         $isCurrent = $value === $current;
-        $isAllowed = in_array($value, $allowed, trueony);
+        $isAllowed = in_array($value, $allowed, true);
 
         if (!$isCurrent && !$isAllowed) {
             continue;
@@ -163,7 +163,7 @@ function hirepeak_process_application_status_update(\mysqli $db, int $applicatio
              SET a.status = ?, a.updated_at = CURRENT_TIMESTAMP
              WHERE a.id = ? AND j.employer_id = ? AND a.status = ?'
         );
-        $stmt->bind_param('siii', $requested, $applicationId, $uid, $current);
+        $stmt->bind_param('siis', $requested, $applicationId, $uid, $current);
         $stmt->execute();
         $affected = (int) $db->affected_rows;
         $stmt->close();

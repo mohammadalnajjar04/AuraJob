@@ -12,8 +12,8 @@ error_log
 npm-debug.log*
 
 # Runtime uploads (developer CV files are not part of the repo)
-/uploads/*
-!/uploads/.gitkeep
+/storage/uploads/*
+!/storage/uploads/.gitkeep
 
 # OS and editor files
 .DS_Store

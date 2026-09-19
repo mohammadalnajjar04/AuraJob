@@ -1,0 +1,11 @@
+# Normalize text files across platforms.
+* text=auto
+
+# Keep GitHub language statistics accurate for this plain-PHP project.
+*.php linguist-language=PHP
+*.css linguist-language=CSS
+*.js  linguist-language=JavaScript
+*.sql linguist-language=SQL
+
+# Documentation should not dominate repository language statistics.
+*.md linguist-documentation

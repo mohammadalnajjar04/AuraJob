@@ -301,6 +301,27 @@ Additional documentation is available in:
 - `docs/UX_FLOWS.md` — user flows
 - `docs/WIREFRAMES.md` — interface planning
 - `docs/COMPONENT_INVENTORY.md` — UI component inventory
+- `docs/DEPLOYMENT.md` — production deployment and launch checklist
+
+
+## Production Deployment
+
+For production, configure the web server document root to `public/`, create a server-only `.env`, use a dedicated least-privilege MySQL account, generate a unique encryption key, enable HTTPS, and disable browser-visible PHP errors.
+
+See `docs/DEPLOYMENT.md` for the full deployment checklist.
+
+## Final Submission Checklist
+
+Before submitting or publishing the repository:
+
+- import-test `database/database.sql` on a clean MySQL instance
+- keep `.env` and runtime uploads out of Git
+- serve the application from `public/`
+- verify Applicant and Employer demo flows
+- confirm PHP/JavaScript syntax checks pass
+- confirm no placeholder/dead links remain
+- include `README.md`, `database/database.sql`, ERD/database notes, and project documentation
+- keep production credentials and encryption keys private
 
 ## Notes
 

@@ -146,14 +146,14 @@ $pageScripts = ['/assets/js/main.js', '/assets/js/auth.js'];
         <h1 class="auth-title">Create your HirePeak account</h1>
         <p class="auth-sub">Choose how you'll use HirePeak and get started.</p>
 
-        <form class="auth-form" id="register-form" action="<?php echo hirepeak_url('register.php'); ?>" method="post" data-auth-form novalidate>
+        <form class="auth-form" id="register-form" action="<?php echo hirepeak_url('register.php'); ?>" method="post" data-auth-form>
           <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token'], ENT_QUOTES, 'UTF-8'); ?>">
 
           <fieldset class="auth-roles" id="reg-roles"<?php echo isset($errors['role']) ? ' aria-invalid="true"' : ''; ?>>
             <legend class="auth-roles__legend">I want to</legend>
 
             <label class="role-card">
-              <input type="radio" name="role" value="applicant"<?php echo $old['role'] === 'applicant' ? ' checked' : ''; ?>>
+              <input type="radio" name="role" value="applicant" required<?php echo $old['role'] === 'applicant' ? ' checked' : ''; ?>>
               <span class="role-card__dot" aria-hidden="true"></span>
               <span class="role-card__body">
                 <span class="role-card__title">Applicant</span>
@@ -175,13 +175,13 @@ $pageScripts = ['/assets/js/main.js', '/assets/js/auth.js'];
 
           <div class="field">
             <label class="field__label" for="reg-name">Full name</label>
-            <input class="field__input" id="reg-name" name="name" type="text" autocomplete="name" placeholder="Jordan Kamel" value="<?php echo htmlspecialchars($old['name'], ENT_QUOTES, 'UTF-8'); ?>"<?php echo isset($errors['name']) ? ' aria-invalid="true" aria-describedby="reg-name-error"' : ''; ?>>
+            <input class="field__input" id="reg-name" name="name" type="text" autocomplete="name" minlength="2" maxlength="100" pattern=".{2,100}" required placeholder="Jordan Kamel" value="<?php echo htmlspecialchars($old['name'], ENT_QUOTES, 'UTF-8'); ?>"<?php echo isset($errors['name']) ? ' aria-invalid="true" aria-describedby="reg-name-error"' : ''; ?>>
             <?php echo hirepeak_error_slot($errors, 'name', 'reg'); ?>
           </div>
 
           <div class="field">
             <label class="field__label" for="reg-email">Email</label>
-            <input class="field__input" id="reg-email" name="email" type="email" inputmode="email" autocomplete="email" placeholder="you@example.com" value="<?php echo htmlspecialchars($old['email'], ENT_QUOTES, 'UTF-8'); ?>"<?php echo isset($errors['email']) ? ' aria-invalid="true" aria-describedby="reg-email-error"' : ''; ?>>
+            <input class="field__input" id="reg-email" name="email" type="email" inputmode="email" autocomplete="email" maxlength="190" required placeholder="you@example.com" value="<?php echo htmlspecialchars($old['email'], ENT_QUOTES, 'UTF-8'); ?>"<?php echo isset($errors['email']) ? ' aria-invalid="true" aria-describedby="reg-email-error"' : ''; ?>>
             <?php echo hirepeak_error_slot($errors, 'email', 'reg'); ?>
           </div>
 
@@ -190,7 +190,7 @@ $pageScripts = ['/assets/js/main.js', '/assets/js/auth.js'];
               <label class="field__label" for="reg-password">Password</label>
             </div>
             <div class="field__control">
-              <input class="field__input field__input--password" id="reg-password" name="password" type="password" autocomplete="new-password" placeholder="Create a password"<?php echo isset($errors['password']) ? ' aria-invalid="true" aria-describedby="reg-password-error"' : ''; ?>>
+              <input class="field__input field__input--password" id="reg-password" name="password" type="password" autocomplete="new-password" minlength="8" maxlength="72" required placeholder="Create a password"<?php echo isset($errors['password']) ? ' aria-invalid="true" aria-describedby="reg-password-error"' : ''; ?>>
               <button class="field__toggle" type="button" data-password-toggle aria-label="Show password" aria-controls="reg-password" aria-pressed="false">
                 <svg class="field__toggle-icon-eye" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                   <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z"/>
@@ -211,7 +211,7 @@ $pageScripts = ['/assets/js/main.js', '/assets/js/auth.js'];
               <label class="field__label" for="reg-confirm">Confirm password</label>
             </div>
             <div class="field__control">
-              <input class="field__input field__input--password" id="reg-confirm" name="confirm" type="password" autocomplete="new-password" placeholder="Re-enter your password"<?php echo isset($errors['confirm']) ? ' aria-invalid="true" aria-describedby="reg-confirm-error"' : ''; ?>>
+              <input class="field__input field__input--password" id="reg-confirm" name="confirm" type="password" autocomplete="new-password" minlength="8" maxlength="72" required placeholder="Re-enter your password"<?php echo isset($errors['confirm']) ? ' aria-invalid="true" aria-describedby="reg-confirm-error"' : ''; ?>>
               <button class="field__toggle" type="button" data-password-toggle aria-label="Show password" aria-controls="reg-confirm" aria-pressed="false">
                 <svg class="field__toggle-icon-eye" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                   <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z"/>
@@ -227,7 +227,7 @@ $pageScripts = ['/assets/js/main.js', '/assets/js/auth.js'];
           </div>
 
           <label class="auth-check">
-            <input type="checkbox" id="reg-terms" name="terms" value="1"<?php echo ($_POST['terms'] ?? '') === '1' ? ' checked' : ''; ?>>
+            <input type="checkbox" id="reg-terms" name="terms" value="1" required<?php echo ($_POST['terms'] ?? '') === '1' ? ' checked' : ''; ?>>
             <span>I agree to the <a class="auth-check__link" href="#">Terms</a> and <a class="auth-check__link" href="#">Privacy Policy</a></span>
           </label>
           <?php echo hirepeak_error_slot($errors, 'terms', 'reg'); ?>

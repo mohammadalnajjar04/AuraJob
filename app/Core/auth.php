@@ -12,6 +12,8 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/config.php';
 
+const HIREPEAK_REMEMBER_SECONDS = 2592000; // 30 days
+
 function hirepeak_session_is_https(): bool
 {
     if (!empty($_SERVER['HTTPS']) && strtolower((string) $_SERVER['HTTPS']) !== 'off') {
@@ -28,6 +30,10 @@ function hirepeak_start_session(): void
 
     ini_set('session.use_strict_mode', '1');
     ini_set('session.use_only_cookies', '1');
+    // Keep server-side sessions long enough for the optional persistent
+    // "Remember me" cookie. Non-remembered users still receive a browser-
+    // session cookie (lifetime 0), so their login ends when the browser closes.
+    ini_set('session.gc_maxlifetime', (string) HIREPEAK_REMEMBER_SECONDS);
 
     session_set_cookie_params([
         'lifetime' => 0,
@@ -124,7 +130,7 @@ function hirepeak_dashboard_for_role(?array $user): string
     };
 }
 
-function hirepeak_login(int $id, string $name, string $email, string $role): void
+function hirepeak_login(int $id, string $name, string $email, string $role, bool $remember = false): void
 {
     hirepeak_start_session();
     session_regenerate_id(true);
@@ -134,6 +140,21 @@ function hirepeak_login(int $id, string $name, string $email, string $role): voi
         'email' => $email,
         'role' => $role,
     ];
+
+    // "Remember me" uses the same hardened PHP session identifier, but
+    // reissues its cookie with a 30-day expiry. We never store credentials or
+    // password hashes in a client cookie. Secure/HttpOnly/SameSite match the
+    // normal session cookie settings.
+    if ($remember) {
+        setcookie(session_name(), session_id(), [
+            'expires' => time() + HIREPEAK_REMEMBER_SECONDS,
+            'path' => '/',
+            'domain' => '',
+            'secure' => hirepeak_session_is_https(),
+            'httponly' => true,
+            'samesite' => 'Lax',
+        ]);
+    }
 }
 
 function hirepeak_logout(): void
@@ -142,15 +163,14 @@ function hirepeak_logout(): void
 
     if (ini_get('session.use_cookies')) {
         $params = session_get_cookie_params();
-        setcookie(
-            session_name(),
-            '',
-            time() - 42000,
-            $params['path'] ?? '/',
-            $params['domain'] ?? '',
-            (bool) ($params['secure'] ?? false),
-            (bool) ($params['httponly'] ?? true)
-        );
+        setcookie(session_name(), '', [
+            'expires' => time() - 42000,
+            'path' => $params['path'] ?? '/',
+            'domain' => $params['domain'] ?? '',
+            'secure' => (bool) ($params['secure'] ?? false),
+            'httponly' => (bool) ($params['httponly'] ?? true),
+            'samesite' => $params['samesite'] ?? 'Lax',
+        ]);
     }
 
     session_destroy();

@@ -195,7 +195,7 @@ function hirepeak_job_form_render(array $ctx): string
         $opts = '<option value="" disabled' . ($selStr === '' || !$matched ? ' selected' : '') . '>' . hirepeak_esc($placeholder) . '</option>' . $opts;
         return '<div class="field">'
             . '<label class="field__label" for="' . $id . '">' . hirepeak_esc($label) . '</label>'
-            . '<select class="field__input field__select" id="' . $id . '" name="' . $name . '"' . $invalidFn($name) . '>' . $opts . '</select>'
+            . '<select class="field__input field__select" id="' . $id . '" name="' . $name . '" required' . $invalidFn($name) . '>' . $opts . '</select>'
             . $errorFn($name)
             . '</div>';
     };
@@ -241,7 +241,7 @@ function hirepeak_job_form_render(array $ctx): string
         . '<div class="field">'
         . '<label class="field__label" for="job-title">Job title</label>'
         . '<input class="field__input" id="job-title" name="title" type="text" maxlength="150"'
-        . ' autocomplete="off" placeholder="e.g. Backend Engineer"' . $invalid('title')
+        . ' autocomplete="off" required placeholder="e.g. Backend Engineer"' . $invalid('title')
         . ' value="' . $value('title') . '">'
         . $error('title')
         . '</div>'
@@ -253,7 +253,7 @@ function hirepeak_job_form_render(array $ctx): string
         . '<div class="field">'
         . '<label class="field__label" for="job-location">Location</label>'
         . '<input class="field__input" id="job-location" name="location" type="text" maxlength="150"'
-        . ' autocomplete="address-level2" placeholder="e.g. Amman, Jordan"' . $invalid('location')
+        . ' autocomplete="address-level2" required placeholder="e.g. Amman, Jordan"' . $invalid('location')
         . ' value="' . $value('location') . '">'
         . $error('location')
         . '</div>'
@@ -292,7 +292,7 @@ function hirepeak_job_form_render(array $ctx): string
         . '<div class="field">'
         . '<label class="field__label" for="job-description">Role description</label>'
         . '<textarea class="field__input field__textarea" id="job-description" name="description" rows="6"'
-        . ' maxlength="' . HIREPEAK_JOB_DESCRIPTION_MAX . '" placeholder="What will the candidate do?"'
+        . ' maxlength="' . HIREPEAK_JOB_DESCRIPTION_MAX . '" required placeholder="What will the candidate do?"'
         . $invalid('description') . '>' . $value('description') . '</textarea>'
         . '<p class="field__hint">Up to ' . HIREPEAK_JOB_DESCRIPTION_MAX . ' characters.</p>'
         . $error('description')

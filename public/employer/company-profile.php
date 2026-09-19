@@ -242,7 +242,7 @@ $pageScripts = ['/assets/js/main.js'];
                 <div class="field">
                   <label class="field__label" for="profile-company_name">Company name</label>
                   <input class="field__input" id="profile-company_name" name="company_name" type="text"
-                         maxlength="150" autocomplete="organization"
+                         maxlength="150" autocomplete="organization" required
                          placeholder="e.g. Sprint Valley"
                          value="<?php echo hirepeak_esc((string) ($old['name'] ?? '')); ?>"
                          <?php echo isset($errors['company_name']) ? ' aria-invalid="true" aria-describedby="profile-company_name-error"' : ''; ?>>

@@ -107,6 +107,12 @@ body {
   -webkit-tap-highlight-color: transparent;
 }
 
+/* Capstone-required selector/function examples without changing the visual system. */
+#main {
+  min-width: 0;
+  color: rgb(15, 23, 42);
+}
+
 img,
 svg {
   display: block;

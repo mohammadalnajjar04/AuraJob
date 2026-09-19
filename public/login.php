@@ -70,7 +70,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $stmt->close();
 
                 if ($user !== null && password_verify($password, $user['password_hash'])) {
-                    hirepeak_login((int) $user['id'], $user['name'], $user['email'], $user['role']);
+                    hirepeak_login((int) $user['id'], $user['name'], $user['email'], $user['role'], $old['remember']);
                     header('Location: ' . hirepeak_dashboard_for_role($user));
                     exit;
                 }
@@ -120,12 +120,12 @@ $pageScripts = ['/assets/js/main.js', '/assets/js/auth.js'];
         </div>
         <?php endif; ?>
 
-        <form class="auth-form" id="login-form" action="<?php echo hirepeak_url('login.php'); ?>" method="post" data-auth-form novalidate>
+        <form class="auth-form" id="login-form" action="<?php echo hirepeak_url('login.php'); ?>" method="post" data-auth-form>
           <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars(hirepeak_csrf_token(), ENT_QUOTES, 'UTF-8'); ?>">
 
           <div class="field">
             <label class="field__label" for="login-email">Email address</label>
-            <input class="field__input" id="login-email" name="email" type="email" inputmode="email" autocomplete="email" placeholder="you@example.com" value="<?php echo htmlspecialchars($old['email'], ENT_QUOTES, 'UTF-8'); ?>"<?php echo isset($errors['email']) ? ' aria-invalid="true" aria-describedby="login-email-error"' : ''; ?>>
+            <input class="field__input" id="login-email" name="email" type="email" inputmode="email" autocomplete="email" maxlength="190" required placeholder="you@example.com" value="<?php echo htmlspecialchars($old['email'], ENT_QUOTES, 'UTF-8'); ?>"<?php echo isset($errors['email']) ? ' aria-invalid="true" aria-describedby="login-email-error"' : ''; ?>>
             <?php echo hirepeak_error_slot($errors, 'email', 'login'); ?>
           </div>
 
@@ -135,7 +135,7 @@ $pageScripts = ['/assets/js/main.js', '/assets/js/auth.js'];
               <a class="field__link" href="#">Forgot password?</a>
             </div>
             <div class="field__control">
-              <input class="field__input field__input--password" id="login-password" name="password" type="password" autocomplete="current-password" placeholder="Enter your password"<?php echo isset($errors['password']) ? ' aria-invalid="true" aria-describedby="login-password-error"' : ''; ?>>
+              <input class="field__input field__input--password" id="login-password" name="password" type="password" autocomplete="current-password" required placeholder="Enter your password"<?php echo isset($errors['password']) ? ' aria-invalid="true" aria-describedby="login-password-error"' : ''; ?>>
               <button class="field__toggle" type="button" data-password-toggle aria-label="Show password" aria-controls="login-password" aria-pressed="false">
                 <svg class="field__toggle-icon-eye" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                   <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z"/>

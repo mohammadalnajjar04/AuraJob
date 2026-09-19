@@ -52,6 +52,20 @@ Create a full-stack recruitment platform that connects job seekers with employer
 - Accepted
 - Rejected
 
+
+## Current Implementation Notes
+
+The current HirePeak build now includes the mandatory capstone requirements and the completed bonus functionality used by the application:
+
+- Job CRUD includes create, read, update, close, and permanent delete for employer-owned jobs.
+- Applicants can cancel eligible in-progress applications.
+- Job search/filtering is server-side and progressively enhanced with AJAX `fetch()` + History API.
+- Saved Jobs uses AJAX persistence.
+- Notifications are implemented with PHP OOP (`interface` + service class).
+- Applicant phone data is encrypted at rest with AES-256-GCM.
+- Authentication uses secure PHP sessions, CSRF protection, and an optional 30-day Remember-me session cookie.
+- HTML5, JavaScript, PHP, and database validation are layered together.
+
 # Page Map
 
 ## Public Pages
@@ -111,7 +125,7 @@ Purpose:
 Purpose:
 - Manage applicant profile information
 - Manage professional information
-- Manage CV later as a bonus feature
+- Manage CV as a future bonus feature (upload workflow is not part of the current release)
 
 ### 9. Saved Jobs
 Purpose:
@@ -416,6 +430,6 @@ Current status stored on `applications.status` (applied / under_review / intervi
 Hashed only via PHP `password_hash()` / `password_verify()`. Never plaintext, never reversible.
 
 **Encryption target:**
-`applicant_profiles.phone` intended for recoverable AES-256-GCM encryption in PHP later (not the password). Encryption keys live outside the database (`.env`), never in schema.
+`applicant_profiles.phone` is encrypted in PHP with AES-256-GCM (not the password). The encryption key lives outside the database in `.env` and is never stored in the schema or seed data.
 
 Full details: see `database/ERD.md` and `database/schema.sql`.

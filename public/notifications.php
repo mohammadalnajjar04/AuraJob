@@ -107,7 +107,7 @@ $pageScripts = ['/assets/js/main.js'];
   <main id="main" class="dash-main">
     <div class="container">
 
-      <div class="track-topbar">
+      <div class="track-topbar notifications-topbar">
         <nav class="breadcrumb" aria-label="Breadcrumb">
           <ol>
             <li><a href="<?php echo hirepeak_esc($dashboardDest); ?>">Dashboard</a></li>
@@ -126,7 +126,7 @@ $pageScripts = ['/assets/js/main.js'];
 
       <?php else: ?>
 
-        <header class="dash-head">
+        <header class="dash-head notifications-head">
           <div>
             <p class="dash-eyebrow">Updates</p>
             <h1 class="dash-title">Notifications</h1>
@@ -153,7 +153,7 @@ $pageScripts = ['/assets/js/main.js'];
           <p class="dash-alert dash-alert--error" role="alert"><?php echo hirepeak_esc($error); ?></p>
         <?php endif; ?>
 
-        <section class="dash-panel dash-panel--full" aria-labelledby="notifications-list-title">
+        <section class="dash-panel dash-panel--full notifications-panel" aria-labelledby="notifications-list-title">
           <div class="panel-head">
             <h2 class="panel-head__title" id="notifications-list-title">All notifications</h2>
             <?php if ($notifications !== []): ?>
@@ -184,7 +184,12 @@ $pageScripts = ['/assets/js/main.js'];
                 $createdAt = (string) ($item['created_at'] ?? '');
                 ?>
                 <li class="notif-row<?php echo $isNew ? ' is-unread' : ''; ?>">
-                  <span class="notif-row__dot" aria-hidden="true"></span>
+                  <span class="notif-row__icon" aria-hidden="true">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/>
+                      <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/>
+                    </svg>
+                  </span>
                   <div class="notif-row__body">
                     <p class="notif-row__text"><?php echo hirepeak_esc((string) ($item['message'] ?? '')); ?></p>
                     <p class="notif-row__meta">

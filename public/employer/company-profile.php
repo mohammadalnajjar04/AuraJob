@@ -206,7 +206,7 @@ $pageScripts = ['/assets/js/main.js'];
   <main id="main" class="dash-main">
     <div class="container">
 
-      <header class="dash-head">
+      <header class="dash-head dash-head--profile">
         <div>
           <p class="dash-eyebrow">Employer account</p>
           <h1 class="dash-title">Company Profile</h1>
@@ -230,13 +230,13 @@ $pageScripts = ['/assets/js/main.js'];
           <p class="dash-alert dash-alert--error" role="alert"><?php echo hirepeak_esc($formError); ?></p>
         <?php endif; ?>
 
-        <div class="profile-layout">
+        <div class="profile-layout profile-layout--account">
 
           <div class="profile-main-col">
             <form class="profile-form" id="company-form" action="<?php echo hirepeak_url('employer/company-profile.php'); ?>" method="post">
               <input type="hidden" name="csrf_token" value="<?php echo hirepeak_esc(hirepeak_csrf_token()); ?>">
 
-              <section class="profile-section" aria-labelledby="profile-section-details">
+              <section class="profile-section profile-section--grid" aria-labelledby="profile-section-details">
                 <h2 class="profile-section__title" id="profile-section-details">Company details</h2>
 
                 <div class="field">
@@ -293,7 +293,7 @@ $pageScripts = ['/assets/js/main.js'];
                 </div>
               </section>
 
-              <section class="profile-section" aria-labelledby="profile-section-contact">
+              <section class="profile-section profile-section--grid" aria-labelledby="profile-section-contact">
                 <h2 class="profile-section__title" id="profile-section-contact">Contact information</h2>
 
                 <div class="field">
@@ -317,7 +317,7 @@ $pageScripts = ['/assets/js/main.js'];
                   <?php echo hirepeak_error_slot($errors, 'contact_phone', 'profile'); ?>
                 </div>
 
-                <div class="field field--static">
+                <div class="field field--static field--wide">
                   <span class="field__label" id="profile-account-email-label">Account email</span>
                   <p class="field__static-value" id="profile-account-email"><?php echo hirepeak_esc((string) ($user['email'] ?? '')); ?></p>
                   <p class="field__hint">Your login email can't be changed here.</p>

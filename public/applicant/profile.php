@@ -189,7 +189,7 @@ $pageScripts = ['/assets/js/main.js'];
   <main id="main" class="dash-main">
     <div class="container">
 
-      <header class="dash-head">
+      <header class="dash-head dash-head--profile">
         <div>
           <p class="dash-eyebrow">Applicant profile</p>
           <h1 class="dash-title">My Profile</h1>
@@ -213,13 +213,13 @@ $pageScripts = ['/assets/js/main.js'];
           <p class="dash-alert dash-alert--error" role="alert"><?php echo hirepeak_esc($formError); ?></p>
         <?php endif; ?>
 
-        <div class="profile-layout">
+        <div class="profile-layout profile-layout--account">
 
           <div class="profile-main-col">
             <form class="profile-form" id="profile-form" action="<?php echo hirepeak_url('applicant/profile.php'); ?>" method="post">
               <input type="hidden" name="csrf_token" value="<?php echo hirepeak_esc(hirepeak_csrf_token()); ?>">
 
-              <section class="profile-section" aria-labelledby="profile-section-about">
+              <section class="profile-section profile-section--grid" aria-labelledby="profile-section-about">
                 <h2 class="profile-section__title" id="profile-section-about">About you</h2>
 
                 <div class="field">
@@ -243,7 +243,7 @@ $pageScripts = ['/assets/js/main.js'];
                   <?php echo hirepeak_error_slot($errors, 'location', 'profile'); ?>
                 </div>
 
-                <div class="field">
+                <div class="field field--wide">
                   <label class="field__label" for="profile-experience_years">Years of experience</label>
                   <input class="field__input field__input--number" id="profile-experience_years" name="experience_years"
                          type="number" inputmode="numeric" min="0" max="50" autocomplete="off"
@@ -274,7 +274,7 @@ $pageScripts = ['/assets/js/main.js'];
                 </div>
               </section>
 
-              <section class="profile-section" aria-labelledby="profile-section-contact">
+              <section class="profile-section profile-section--grid" aria-labelledby="profile-section-contact">
                 <h2 class="profile-section__title" id="profile-section-contact">Contact information</h2>
 
                 <div class="field">

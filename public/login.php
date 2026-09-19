@@ -100,14 +100,15 @@ $pageScripts = ['/assets/js/main.js', '/assets/js/auth.js'];
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/assets/css/style.css">
 </head>
-<body class="auth-body">
+<body class="auth-body auth-body--login">
   <?php require dirname(__DIR__) . '/app/Views/header.php'; ?>
 
   <div class="scrim" data-scrim hidden></div>
 
   <main id="main" class="auth-main">
     <div class="auth-shell">
-      <div class="auth-card">
+      <div class="auth-card auth-card--login">
+        <p class="auth-kicker">Secure access</p>
         <h1 class="auth-title">Welcome back</h1>
         <p class="auth-sub">Sign in to continue to HirePeak.</p>
 

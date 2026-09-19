@@ -225,8 +225,8 @@ mysql -u root -p aurajob_db < database/demo-seed.sql
 Run as a MySQL administrator and choose your own strong password:
 
 ```sql
-CREATE USER IF NOT EXISTS 'hirepeak_app'@'localhost' IDENTIFIED BY 'replace-with-a-strong-password';
-GRANT SELECT, INSERT, UPDATE, DELETE ON aurajob_db.* TO 'hirepeak_app'@'localhost';
+CREATE USER IF NOT EXISTS 'aurajob_app'@'localhost' IDENTIFIED BY 'replace-with-a-strong-password';
+GRANT SELECT, INSERT, UPDATE, DELETE ON aurajob_db.* TO 'aurajob_app'@'localhost';
 FLUSH PRIVILEGES;
 ```
 

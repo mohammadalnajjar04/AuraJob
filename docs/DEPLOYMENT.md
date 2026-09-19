@@ -17,7 +17,7 @@ The web server document root must point to the project's `public/` directory, no
 Example layout:
 
 ```text
-/var/www/hirepeak/
+/var/www/aurajob/
 ├── app/
 ├── database/
 ├── docs/
@@ -39,8 +39,8 @@ mysql -u root -p < database/database.sql
 For production, create a dedicated application user with only the permissions AuraJob needs:
 
 ```sql
-CREATE USER 'hirepeak_app'@'localhost' IDENTIFIED BY 'use-a-strong-unique-password';
-GRANT SELECT, INSERT, UPDATE, DELETE ON aurajob_db.* TO 'hirepeak_app'@'localhost';
+CREATE USER 'aurajob_app'@'localhost' IDENTIFIED BY 'use-a-strong-unique-password';
+GRANT SELECT, INSERT, UPDATE, DELETE ON aurajob_db.* TO 'aurajob_app'@'localhost';
 FLUSH PRIVILEGES;
 ```
 
@@ -54,7 +54,7 @@ Copy `.env.example` to `.env` on the server and set real values:
 DB_HOST=127.0.0.1
 DB_PORT=3306
 DB_NAME=aurajob_db
-DB_USER=hirepeak_app
+DB_USER=aurajob_app
 DB_PASS=<production-database-password>
 APP_ENCRYPTION_KEY=<64-hex-character-key>
 ```

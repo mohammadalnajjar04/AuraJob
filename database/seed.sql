@@ -54,13 +54,19 @@ INSERT INTO companies (id, user_id, name, description, industry, location, websi
 -- Applicant profiles
 --   user 2 -> profile 1
 --   user 3 -> profile 2
+--
+-- Phone is intentionally NULL in seed data. applicant_profiles.phone is an
+-- AES-256-GCM encrypted field whose ciphertext depends on the local
+-- APP_ENCRYPTION_KEY and a random nonce. Populate a demo phone through the
+-- Applicant Profile form after import so it is encrypted by the application;
+-- never seed this field as plaintext or commit an encryption key.
 -- ----------------------------------------------------------------------------
 INSERT INTO applicant_profiles (id, user_id, professional_title, bio, phone, location, experience_years, skills) VALUES
     (1, 2, 'Senior PHP Developer',
-     'Fictional developer profile for local testing.', '+63 911 000 0001',
+     'Fictional developer profile for local testing.', NULL,
      'Makati City', 6, 'PHP, MySQL, JavaScript'),
     (2, 3, 'Marketing Specialist',
-     'Fictional marketing profile for local testing.', '+63 917 000 0002',
+     'Fictional marketing profile for local testing.', NULL,
      'Quezon City', 3, 'SEO, Content Marketing, Analytics');
 
 -- ----------------------------------------------------------------------------

@@ -119,60 +119,64 @@
     });
   });
 
-  const saveForms = document.querySelectorAll('form[data-save-job]');
-
+  /* Save/unsave uses delegated submit handling so job cards injected by the
+   * AJAX jobs search keep the same progressive-enhancement behaviour. */
   if ('fetch' in window && 'FormData' in window) {
-    Array.prototype.forEach.call(saveForms, function (form) {
-      form.addEventListener('submit', function (event) {
-        const btn = form.querySelector('[data-bookmark]');
+    document.addEventListener('submit', function (event) {
+      const form = event.target && event.target.closest
+        ? event.target.closest('form[data-save-job]')
+        : null;
 
-        if (btn && btn.disabled) {
-          event.preventDefault();
-          return;
+      if (!form) return;
+
+      const btn = form.querySelector('[data-bookmark]');
+
+      if (btn && btn.disabled) {
+        event.preventDefault();
+        return;
+      }
+
+      event.preventDefault();
+      if (btn) { btn.disabled = true; btn.setAttribute('aria-disabled', 'true'); }
+
+      const payload = new FormData(form);
+
+      fetch(form.getAttribute('action') || '/save-job.php', {
+        method: 'POST',
+        body: payload,
+        credentials: 'same-origin',
+        headers: { 'Accept': 'application/json' }
+      }).then(function (response) {
+        if (response.status === 401) {
+          window.location.assign('/login.php');
+          return null;
+        }
+        if (response.status === 403 || response.status === 404 || response.status === 405 || response.status >= 500) {
+          window.location.reload();
+          return null;
+        }
+        return response.json().then(function (data) {
+          if (!data || !data.ok) { window.location.reload(); return null; }
+          return data;
+        })['catch'](function () { window.location.reload(); return null; });
+      }).then(function (data) {
+        if (!data) return;
+        const saved = !!data.saved;
+
+        if (btn) {
+          btn.disabled = false;
+          btn.removeAttribute('aria-disabled');
+          btn.setAttribute('aria-pressed', saved ? 'true' : 'false');
+          btn.setAttribute('aria-label', saved
+            ? (form.getAttribute('data-saved-label') || btn.getAttribute('aria-label') || 'Unsave job')
+            : (form.getAttribute('data-save-label') || btn.getAttribute('aria-label') || 'Save job'));
         }
 
-        event.preventDefault();
-        if (btn) { btn.disabled = true; btn.setAttribute('aria-disabled', 'true'); }
-
-        const payload = new FormData(form);
-
-        fetch(form.getAttribute('action') || '/save-job.php', {
-          method: 'POST',
-          body: payload,
-          credentials: 'same-origin',
-          headers: { 'Accept': 'application/json' }
-        }).then(function (response) {
-          if (response.status === 401) {
-            window.location.assign('/login.php');
-            return null;
-          }
-          if (response.status === 403 || response.status === 404 || response.status === 405 || response.status >= 500) {
-            window.location.reload();
-            return null;
-          }
-          return response.json().then(function (data) {
-            if (!data || !data.ok) { window.location.reload(); return null; }
-            return data;
-          })['catch'](function () { window.location.reload(); return null; });
-        }).then(function (data) {
-          if (!data) return;
-          const saved = !!data.saved;
-
-          if (btn) {
-            btn.disabled = false;
-            btn.removeAttribute('aria-disabled');
-            btn.setAttribute('aria-pressed', saved ? 'true' : 'false');
-            btn.setAttribute('aria-label', saved
-              ? (form.getAttribute('data-saved-label') || btn.getAttribute('aria-label') || 'Unsave job')
-              : (form.getAttribute('data-save-label') || btn.getAttribute('aria-label') || 'Save job'));
-          }
-
-          const actionInput = form.querySelector('input[name="action"]');
-          if (actionInput) actionInput.value = saved ? 'unsave' : 'save';
-        })['catch'](function () {
-          if (btn) { btn.disabled = false; btn.removeAttribute('aria-disabled'); }
-          form.submit();
-        });
+        const actionInput = form.querySelector('input[name="action"]');
+        if (actionInput) actionInput.value = saved ? 'unsave' : 'save';
+      })['catch'](function () {
+        if (btn) { btn.disabled = false; btn.removeAttribute('aria-disabled'); }
+        form.submit();
       });
     });
   }

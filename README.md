@@ -4,6 +4,33 @@
 
 **AuraJob** is a full-stack **Job Board & Recruitment Management System** built with PHP, MySQL, HTML, CSS, and vanilla JavaScript. It supports two roles—Applicants and Employers—and covers the complete recruitment flow from job discovery and applications to employer review, status tracking, saved jobs, and in-app notifications.
 
+## Screenshots
+
+### Home
+
+![AuraJob home page](docs/screenshots/home.png)
+
+### Find Jobs
+
+![AuraJob find jobs page](docs/screenshots/find-jobs.png)
+
+### For Employers
+
+![AuraJob for employers section](docs/screenshots/for-employers.png)
+
+### Authentication
+
+<table>
+  <tr>
+    <td width="50%"><strong>Sign In</strong><br><img src="docs/screenshots/login.png" alt="AuraJob sign in page"></td>
+    <td width="50%"><strong>Create Account</strong><br><img src="docs/screenshots/register.png" alt="AuraJob registration page"></td>
+  </tr>
+</table>
+
+### Footer
+
+![AuraJob footer](docs/screenshots/footer.png)
+
 ## Key Features
 
 ### Public

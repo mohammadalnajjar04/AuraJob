@@ -125,13 +125,13 @@ Purpose:
 Purpose:
 - Manage applicant profile information
 - Manage professional information
-- Manage CV as a future bonus feature (upload workflow is not part of the current release)
+- Manage the applicant CV upload and replacement workflow (PDF only)
 
 ### 9. Saved Jobs
 Purpose:
 - Display saved jobs
 Note:
-This is a bonus feature and should only be implemented after mandatory features are complete.
+This feature is implemented and available to applicants.
 
 
 # Employer Pages
@@ -203,11 +203,11 @@ Alternative final result:
 - Responsive design
 
 
-# Bonus Features - Implement Only After Mandatory Features
+# Bonus Features / Enhancements
 
-- Saved jobs
-- CV upload
-- Company logo upload
+- Saved jobs — implemented
+- CV upload — implemented
+- Company logo upload — implemented
 - Notifications
 - Dashboard statistics
 - Pagination

@@ -306,6 +306,15 @@ Additional documentation is available in:
 - `docs/DEPLOYMENT.md` — production deployment and launch checklist
 
 
+## Domain Name Note
+
+As of **September 19, 2026**, the domain **`aurajob.com`** is listed on **GoDaddy** as a **Premium / Verified Domain** that is currently for sale.
+
+- **Buy now:** USD **$9,995**
+- **Lease to own:** USD **$217/month**
+
+The domain is **not currently owned by this project**. Availability and pricing are controlled by the domain seller/marketplace and may change at any time. If AuraJob is deployed publicly, a different domain can be used unless `aurajob.com` is purchased separately.
+
 ## Production Deployment
 
 For production, configure the web server document root to `public/`, create a server-only `.env`, use a dedicated least-privilege MySQL account, generate a unique encryption key, enable HTTPS, and disable browser-visible PHP errors.

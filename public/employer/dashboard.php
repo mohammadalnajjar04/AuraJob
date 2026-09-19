@@ -145,7 +145,7 @@ try {
 
   <div class="scrim" data-scrim hidden></div>
 
-  <main id="main" class="dash-main">
+  <main id="main" class="dash-main employer-dashboard">
     <div class="container">
 
       <?php if ($loadError): ?>
@@ -190,9 +190,13 @@ try {
         <div class="dash-grid">
           <section class="dash-panel" aria-labelledby="jobs-title">
             <div class="panel-head">
-              <h2 class="panel-head__title" id="jobs-title">Recent Jobs</h2>
+              <div class="panel-head__title-group">
+                <h2 class="panel-head__title" id="jobs-title">Recent Jobs</h2>
+                <?php if ($hasJobs): ?>
+                  <span class="panel-head__count"><?php echo (int) count($recentJobs); ?></span>
+                <?php endif; ?>
+              </div>
               <?php if ($hasJobs): ?>
-                <span class="panel-head__count"><?php echo (int) count($recentJobs); ?></span>
                 <a class="panel-head__link" href="<?php echo hirepeak_url('employer/my-jobs.php'); ?>">View all jobs</a>
               <?php endif; ?>
             </div>
@@ -350,7 +354,9 @@ try {
                       <span class="app-row__date">Applied <?php echo hirepeak_esc(hirepeak_relative_time((string) $app['applied_at'])); ?></span>
                     </p>
                   </div>
-                  <p class="app-row__note">Review coming next</p>
+                  <div class="app-row__actions">
+                    <a class="btn btn--outline btn--sm app-row__action" href="<?php echo hirepeak_url('employer/application.php?id=' . (int) $app['application_id']); ?>">Review</a>
+                  </div>
                 </li>
               <?php endforeach; ?>
             </ul>

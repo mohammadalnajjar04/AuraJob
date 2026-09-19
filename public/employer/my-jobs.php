@@ -124,7 +124,7 @@ $deadlineLabel = static function (?string $ts): string {
 
   <div class="scrim" data-scrim hidden></div>
 
-  <main id="main" class="dash-main">
+  <main id="main" class="dash-main myjobs-page">
     <div class="container">
 
       <header class="dash-head">
@@ -166,7 +166,7 @@ $deadlineLabel = static function (?string $ts): string {
                 <path d="M3 12h18"/>
               </svg>
             </div>
-            <h1 class="empty-state__title">No jobs yet.</h1>
+            <h2 class="empty-state__title">No jobs yet.</h2>
             <p class="empty-state__text">Post your first role and start connecting with candidates.</p>
             <?php if ($company !== null): ?>
               <div class="empty-state__actions">
@@ -177,7 +177,7 @@ $deadlineLabel = static function (?string $ts): string {
 
         <?php else: ?>
 
-          <div class="myjobs-toolbar">
+          <div class="myjobs-toolbar" aria-label="Job management controls">
             <nav class="jobs-tabs" aria-label="Filter jobs by status">
               <a class="jobs-tab<?php echo $statusFilter === '' ? ' is-active' : ''; ?>" href="<?php echo hirepeak_url('employer/my-jobs.php'); ?>">All <span class="jobs-tab__count"><?php echo (int) $counts['total']; ?></span></a>
               <?php foreach ($allowedStatuses as $status): ?>
@@ -201,7 +201,7 @@ $deadlineLabel = static function (?string $ts): string {
                   <path d="m9 9 6 6"/>
                 </svg>
               </div>
-              <h1 class="empty-state__title">No <?php echo hirepeak_esc(strtolower($statusLabels[$statusFilter] ?? 'matching')); ?> jobs.</h1>
+              <h2 class="empty-state__title">No <?php echo hirepeak_esc(strtolower($statusLabels[$statusFilter] ?? 'matching')); ?> jobs.</h2>
               <p class="empty-state__text">Try another filter to see more of your postings.</p>
               <div class="empty-state__actions">
                 <a class="btn btn--primary" href="<?php echo hirepeak_url('employer/my-jobs.php'); ?>">View all jobs</a>
@@ -235,7 +235,7 @@ $deadlineLabel = static function (?string $ts): string {
                     </p>
                   </div>
                   <div class="app-row__actions">
-                    <a class="btn btn--outline btn--sm app-row__action" href="<?php echo hirepeak_url('employer/applicants.php?job_id=' . (int) $job['id']); ?>">View Applicants</a>
+                    <a class="btn btn--outline btn--sm app-row__action app-row__action--primary" href="<?php echo hirepeak_url('employer/applicants.php?job_id=' . (int) $job['id']); ?>">View Applicants</a>
                     <?php if (($job['status'] ?? '') !== 'draft'): ?>
                       <a class="btn btn--outline btn--sm app-row__action" href="<?php echo hirepeak_url('job-details.php?id=' . (int) $job['id']); ?>">View</a>
                     <?php endif; ?>

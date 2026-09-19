@@ -242,6 +242,8 @@ $deadlineLabel = static function (?string $ts): string {
                     <a class="btn btn--outline btn--sm app-row__action" href="<?php echo hirepeak_url('employer/edit-job.php?id=' . (int) $job['id']); ?>"><?php echo ($job['status'] ?? '') === 'draft' ? 'Edit / Publish' : 'Edit'; ?></a>
                     <?php if (($job['status'] ?? '') === 'active'): ?>
                       <a class="btn btn--outline btn--sm app-row__action app-row__action--danger" href="<?php echo hirepeak_url('employer/close-job.php?id=' . (int) $job['id']); ?>">Close</a>
+                    <?php else: ?>
+                      <a class="btn btn--outline btn--sm app-row__action app-row__action--danger" href="<?php echo hirepeak_url('employer/delete-job.php?id=' . (int) $job['id']); ?>">Delete</a>
                     <?php endif; ?>
                   </div>
                 </li>

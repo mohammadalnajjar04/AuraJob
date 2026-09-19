@@ -9,6 +9,12 @@ require dirname(__DIR__, 2) . '/app/Support/html.php';
 $user = hirepeak_require_role('applicant');
 $uid = (int) $user['id'];
 
+$flash = '';
+if (isset($_GET['notice'], $_SESSION['application_flash']) && $_SESSION['application_flash'] !== '') {
+    $flash = (string) $_SESSION['application_flash'];
+    unset($_SESSION['application_flash']);
+}
+
 /*
  * My Applications — real joined data from applications + jobs + companies,
  * always scoped to the authenticated session user id. Filtering and sorting
@@ -142,6 +148,10 @@ $pageScripts = ['/assets/js/main.js'];
         </a>
       </header>
 
+      <?php if ($flash !== ''): ?>
+        <p class="dash-flash" role="status"><?php echo hirepeak_esc($flash); ?></p>
+      <?php endif; ?>
+
       <?php if ($loadError): ?>
         <section class="dash-alert" role="alert" aria-labelledby="apps-error-title">
           <h2 id="apps-error-title">Something went wrong on our side.</h2>
@@ -265,6 +275,9 @@ $pageScripts = ['/assets/js/main.js'];
                 <div class="app-row__actions">
                   <a class="btn btn--outline btn--sm" href="<?php echo hirepeak_url('job-details.php?id=' . (int) $jobId); ?>">View Job</a>
                   <a class="btn btn--primary btn--sm" href="<?php echo hirepeak_url('applicant/tracking.php?id=' . (int) $appId); ?>">Track Application</a>
+                  <?php if (in_array((string) ($app['status'] ?? ''), ['applied', 'under_review', 'interview'], true)): ?>
+                    <a class="btn btn--outline btn--sm app-row__action--danger" href="<?php echo hirepeak_url('applicant/cancel-application.php?id=' . (int) $appId); ?>">Cancel Application</a>
+                  <?php endif; ?>
                 </div>
               </li>
             <?php endforeach; ?>

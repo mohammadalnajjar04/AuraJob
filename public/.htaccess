@@ -1,0 +1,13 @@
+# AuraJob public-root Apache defaults.
+# Requires AllowOverride FileInfo (and Options for -Indexes) to be enabled.
+
+DirectoryIndex index.php
+Options -Indexes
+
+ErrorDocument 404 /404.php
+ErrorDocument 500 /500.php
+
+# Never serve hidden files from the web root.
+<FilesMatch "^\.">
+    Require all denied
+</FilesMatch>

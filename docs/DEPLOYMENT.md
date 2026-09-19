@@ -126,3 +126,20 @@ Verify these public routes first:
 Then verify one applicant account and one employer account end-to-end.
 
 Also confirm that requests for repository-internal paths do not expose raw files, including `.env`, `app/`, `database/`, `docs/`, and `storage/`.
+
+
+## Branded Error Pages
+
+AuraJob includes public `404.php` and `500.php` pages. On Apache, the bundled
+`public/.htaccess` maps HTTP 404/500 responses to these branded pages when
+`AllowOverride FileInfo` is enabled.
+
+For Nginx, add equivalent rules inside the server block:
+
+```nginx
+error_page 404 /404.php;
+error_page 500 502 503 504 /500.php;
+```
+
+Keep detailed PHP/database errors in server logs only; never expose stack traces
+or database messages to visitors.

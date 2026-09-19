@@ -455,50 +455,18 @@ function hirepeak_categories(\mysqli $db): array
  */
 function hirepeak_job_not_found(): void
 {
-    $pageActive = '';
-    $pageScripts = ['/assets/js/main.js'];
     http_response_code(404);
-    ?><!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Job not found — AuraJob</title>
-  <meta name="description" content="We couldn't find this job.">
-  <meta name="theme-color" content="#ffffff">
-  <link rel="icon" href="/assets/images/aurajob-mark.png" type="image/png">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/assets/css/style.css">
-</head>
-<body>
-  <?php require __DIR__ . '/header.php'; ?>
 
-  <div class="scrim" data-scrim hidden></div>
+    $errorCode = '404';
+    $errorEyebrow = 'Job unavailable';
+    $errorTitle = 'We couldn\'t find this job.';
+    $errorText = 'It may have been closed, removed, or the link may be incorrect.';
+    $errorPrimaryLabel = 'Find Jobs';
+    $errorPrimaryHref = hirepeak_url('jobs.php');
+    $errorSecondaryLabel = 'Back to AuraJob';
+    $errorSecondaryHref = hirepeak_url('index.php');
 
-  <main id="main" class="dash-main">
-    <div class="container">
-      <section class="empty-state">
-        <div class="empty-state__icon" aria-hidden="true">
-          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
-            <circle cx="12" cy="12" r="9"/>
-            <path d="m15 9-6 6"/>
-            <path d="m9 9 6 6"/>
-          </svg>
-        </div>
-        <h1 class="empty-state__title">Job not found</h1>
-        <p class="empty-state__text">We couldn't find this job. It may have been removed, or the link may be incorrect.</p>
-        <div class="empty-state__actions">
-          <a class="btn btn--primary" href="<?php echo hirepeak_url('jobs.php'); ?>">Find Jobs</a>
-        </div>
-      </section>
-    </div>
-  </main>
-
-  <?php require __DIR__ . '/footer.php'; ?>
-</body>
-</html><?php
+    require __DIR__ . '/../Views/error-page.php';
     exit;
 }
 

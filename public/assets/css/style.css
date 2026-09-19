@@ -7363,3 +7363,118 @@ textarea {
   border-radius: var(--radius-lg);
   background: var(--color-bg-surface);
 }
+
+
+/* ==========================================================================
+   Branded HTTP error pages
+   ========================================================================== */
+
+.error-page {
+  display: flex;
+  align-items: center;
+  min-height: min(680px, calc(100vh - 64px));
+  padding: var(--space-8) 0 var(--space-9);
+  background:
+    radial-gradient(circle at 50% 14%, rgba(79, 70, 229, .12), transparent 34%),
+    var(--color-bg-page);
+}
+
+.error-page__container {
+  display: flex;
+  justify-content: center;
+}
+
+.error-card {
+  width: min(100%, 680px);
+  padding: clamp(32px, 6vw, 64px);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-xl);
+  background: rgba(255, 255, 255, .94);
+  box-shadow: var(--shadow-lg);
+  text-align: center;
+}
+
+.error-card__visual {
+  position: relative;
+  width: 88px;
+  height: 88px;
+  margin: 0 auto var(--space-4);
+  display: grid;
+  place-items: center;
+}
+
+.error-card__visual img {
+  position: relative;
+  z-index: 1;
+  width: 56px;
+  height: 56px;
+  object-fit: contain;
+}
+
+.error-card__halo {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: linear-gradient(135deg, rgba(79, 70, 229, .14), rgba(124, 58, 237, .06));
+  border: 1px solid rgba(79, 70, 229, .12);
+}
+
+.error-card__eyebrow {
+  color: var(--color-brand);
+  font-size: var(--text-caption);
+  font-weight: 700;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+.error-card__code {
+  margin-top: var(--space-2);
+  color: var(--color-text-primary);
+  font-size: clamp(56px, 10vw, 88px);
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: -.06em;
+}
+
+.error-card__title {
+  margin-top: var(--space-3);
+  color: var(--color-text-primary);
+  font-size: clamp(26px, 4vw, 36px);
+  line-height: 1.2;
+  letter-spacing: -.03em;
+}
+
+.error-card__text {
+  max-width: 54ch;
+  margin: var(--space-4) auto 0;
+  color: var(--color-text-secondary);
+  font-size: var(--text-body-large);
+}
+
+.error-card__actions {
+  margin-top: var(--space-6);
+  display: flex;
+  justify-content: center;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+}
+
+@media (max-width: 480px) {
+  .error-page {
+    align-items: flex-start;
+    min-height: auto;
+    padding: var(--space-6) 0 var(--space-8);
+  }
+
+  .error-card {
+    padding: var(--space-6) var(--space-4);
+  }
+
+  .error-card__actions {
+    flex-direction: column;
+  }
+
+  .error-card__actions .btn {
+    width: 100%;
+  }
+}

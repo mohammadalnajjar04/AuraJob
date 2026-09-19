@@ -68,7 +68,17 @@ try {
     }
 } catch (\Throwable $e) {
     error_log('[AuraJob] delete job failed: ' . $e->getMessage());
-    $formError = 'Something went wrong deleting this job. Please try again.';
+    http_response_code(500);
+    $errorCode = '500';
+    $errorEyebrow = 'Temporary issue';
+    $errorTitle = 'We couldn\'t load this job.';
+    $errorText = 'AuraJob could not load the delete-job screen right now. No changes were made.';
+    $errorPrimaryLabel = 'My Jobs';
+    $errorPrimaryHref = hirepeak_url('employer/my-jobs.php');
+    $errorSecondaryLabel = 'Employer Dashboard';
+    $errorSecondaryHref = hirepeak_url('employer/dashboard.php');
+    require dirname(__DIR__, 2) . '/app/Views/error-page.php';
+    exit;
 }
 
 $jobStatus = (string) ($job['status'] ?? '');

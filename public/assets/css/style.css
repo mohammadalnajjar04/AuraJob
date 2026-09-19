@@ -7794,3 +7794,22 @@ textarea {
     width: auto;
   }
 }
+
+
+/* ==========================================================================
+   Final apply-flow polish — optional cover letter
+   ========================================================================== */
+
+.apply-cover-letter {
+  margin-bottom: var(--space-4);
+}
+
+.apply-cover-letter .field__textarea {
+  min-height: 150px;
+}
+
+.field__optional {
+  color: var(--color-text-secondary);
+  font-size: var(--text-body-small);
+  font-weight: 500;
+}

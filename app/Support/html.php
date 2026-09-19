@@ -127,6 +127,7 @@ function hirepeak_company_completeness_fields(): array
         'description'   => 'Add a company description',
         'contact_email' => 'Add a contact email',
         'contact_phone' => 'Add a contact phone',
+        'logo_path'     => 'Add a company logo',
     ];
 }
 
@@ -593,6 +594,33 @@ function hirepeak_company_avatar_class(string $companyName): string
     $palette = ($hash % 6) + 1;
 
     return 'company-avatar company-avatar--' . $palette;
+}
+
+/**
+ * Render an uploaded company logo when one exists, otherwise fall back to the
+ * deterministic initials avatar. The wrapping classes preserve each page's
+ * existing sizing/layout rules.
+ */
+function hirepeak_company_identity_markup(
+    string $companyName,
+    ?string $logoPath,
+    string $extraClasses = ''
+): string {
+    $companyName = trim($companyName);
+    $classes = trim($extraClasses . ' ' . hirepeak_company_avatar_class($companyName));
+    $safeClasses = hirepeak_esc($classes);
+
+    $logoPath = trim((string) $logoPath);
+    if (preg_match('#^company-logos/([a-f0-9]{32}\.(?:png|jpg|webp))$#D', $logoPath, $match) === 1) {
+        $src = hirepeak_url('company-logo.php?file=' . rawurlencode($match[1]));
+        return '<span class="' . $safeClasses . '" aria-hidden="true">'
+            . '<img class="company-avatar__image" src="' . hirepeak_esc($src) . '" alt="" loading="lazy" decoding="async">'
+            . '</span>';
+    }
+
+    return '<span class="' . $safeClasses . '" aria-hidden="true">'
+        . hirepeak_esc(hirepeak_initials($companyName))
+        . '</span>';
 }
 
 /**

@@ -222,7 +222,7 @@ try {
         'SELECT j.id, j.title, j.location, j.salary_min, j.salary_max,
                 j.employment_type, j.work_mode, j.experience_level,
                 j.created_at, j.description, j.requirements,
-                c.name AS company_name, ct.name AS category_name
+                c.name AS company_name, c.logo_path AS company_logo_path, ct.name AS category_name
          ' . $fromSql . $whereSql . ' ' . $orderBy . ' LIMIT ? OFFSET ?'
     );
     $params[] = $pageSize;
@@ -590,7 +590,7 @@ $activeFilterCount = count($categorySel)
                 ?>
                 <article class="job-card job-card--row" data-keywords="<?php echo hirepeak_esc(hirepeak_job_keywords($job)); ?>" data-job-id="<?php echo (int) $job['id']; ?>">
                   <div class="job-card--row__main">
-                    <span class="job-card__logo <?php echo hirepeak_esc(hirepeak_company_avatar_class((string) $job['company_name'])); ?>" aria-hidden="true"><?php echo hirepeak_esc(hirepeak_initials((string) $job['company_name'])); ?></span>
+                    <?php echo hirepeak_company_identity_markup((string) $job['company_name'], isset($job['company_logo_path']) ? (string) $job['company_logo_path'] : null, 'job-card__logo'); ?>
                     <div class="job-card--row__body">
                       <h3 class="job-card__title"><a href="<?php echo hirepeak_url('job-details.php?id=' . (int) $job['id']); ?>"><?php echo hirepeak_esc((string) $job['title']); ?></a></h3>
                       <p class="job-card--row__company"><?php echo $companyLine; ?></p>

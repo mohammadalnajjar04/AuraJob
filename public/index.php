@@ -25,7 +25,7 @@ try {
     $stmt = $db->prepare(
         "SELECT j.id, j.title, j.location, j.salary_min, j.salary_max,
                 j.employment_type, j.work_mode, j.created_at,
-                c.name AS company_name, ct.name AS category_name
+                c.name AS company_name, c.logo_path AS company_logo_path, ct.name AS category_name
          FROM jobs j
          INNER JOIN companies c ON c.id = j.company_id
          INNER JOIN categories ct ON ct.id = j.category_id
@@ -212,7 +212,7 @@ try {
               ?>
               <article class="job-card">
                 <div class="job-card__top">
-                  <span class="job-card__logo <?php echo hirepeak_esc(hirepeak_company_avatar_class($company)); ?>" aria-hidden="true"><?php echo hirepeak_esc(hirepeak_initials($company)); ?></span>
+                  <?php echo hirepeak_company_identity_markup($company, isset($job['company_logo_path']) ? (string) $job['company_logo_path'] : null, 'job-card__logo'); ?>
                   <?php if ($viewerRole === 'applicant'): ?>
                     <form class="save-form" method="post" action="<?php echo hirepeak_url('save-job.php'); ?>" data-save-job data-job-id="<?php echo $jobId; ?>" data-save-label="<?php echo hirepeak_esc($saveLabel); ?>" data-saved-label="<?php echo hirepeak_esc($savedLabel); ?>">
                       <input type="hidden" name="csrf_token" value="<?php echo hirepeak_esc($saveCsrf); ?>">

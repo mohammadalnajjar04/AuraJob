@@ -47,7 +47,7 @@ try {
                 j.id AS job_id, j.title AS job_title, j.location AS job_location,
                 j.salary_min, j.salary_max, j.employment_type, j.work_mode,
                 j.experience_level, j.status AS job_status, j.application_deadline,
-                c.name AS company_name, ct.name AS category_name
+                c.name AS company_name, c.logo_path AS company_logo_path, ct.name AS category_name
          FROM applications a
          INNER JOIN jobs j ON j.id = a.job_id
          INNER JOIN companies c ON c.id = j.company_id
@@ -347,7 +347,7 @@ $showSalary = $salary !== 'Salary not disclosed';
 
         <article class="track-card track-hero">
           <div class="track-hero__identity">
-            <span class="track-hero__logo <?php echo hirepeak_esc(hirepeak_company_avatar_class($companyName)); ?>" aria-hidden="true"><?php echo hirepeak_esc(hirepeak_initials($companyName)); ?></span>
+            <?php echo hirepeak_company_identity_markup($companyName, isset($application['company_logo_path']) ? (string) $application['company_logo_path'] : null, 'track-hero__logo'); ?>
             <div class="track-hero__text">
               <h2 class="track-hero__title"><?php echo hirepeak_esc($jobTitle); ?></h2>
               <p class="track-hero__company">

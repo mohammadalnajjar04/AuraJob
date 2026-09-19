@@ -5,6 +5,7 @@ require dirname(__DIR__, 2) . '/app/Core/config.php';
 require dirname(__DIR__, 2) . '/app/Core/auth.php';
 require dirname(__DIR__, 2) . '/app/Core/db.php';
 require dirname(__DIR__, 2) . '/app/Support/html.php';
+require dirname(__DIR__, 2) . '/app/Services/company-logo.php';
 
 $user = hirepeak_require_role('employer');
 $uid = (int) $user['id'];
@@ -35,7 +36,7 @@ try {
 
     $stmt = $db->prepare(
         'SELECT name, description, industry, location, website,
-                contact_email, contact_phone
+                contact_email, contact_phone, logo_path
          FROM companies
          WHERE user_id = ?'
     );
@@ -52,6 +53,7 @@ try {
         'website'       => $company['website'] ?? '',
         'contact_email' => $company['contact_email'] ?? '',
         'contact_phone' => $company['contact_phone'] ?? '',
+        'logo_path'     => $company['logo_path'] ?? null,
     ];
 
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -115,6 +117,16 @@ try {
                 }
             }
 
+            $logoUpload = $_FILES['company_logo'] ?? null;
+            $logoUploadCheck = ['ok' => false, 'error' => ''];
+
+            if (is_array($logoUpload)) {
+                $logoUploadCheck = hirepeak_validate_company_logo_upload($logoUpload);
+                if ($logoUploadCheck['error'] !== '') {
+                    $errors['company_logo'] = $logoUploadCheck['error'];
+                }
+            }
+
             if (!$errors) {
                 $name = $old['name'];
                 $description = $old['description'] !== '' ? $old['description'] : null;
@@ -124,20 +136,36 @@ try {
                 $contactEmail = $old['contact_email'] !== '' ? $old['contact_email'] : null;
                 $contactPhone = $old['contact_phone'] !== '' ? $old['contact_phone'] : null;
 
+                $previousLogoPath = $company !== null ? (string) ($company['logo_path'] ?? '') : '';
+                $logoPath = $previousLogoPath !== '' ? $previousLogoPath : null;
+                $storedNewLogo = null;
+                $removeLogo = isset($_POST['remove_logo']) && $_POST['remove_logo'] === '1';
+
+                if (is_array($logoUpload) && ($logoUploadCheck['ok'] ?? false) === true) {
+                    $storedNewLogo = hirepeak_store_company_logo(
+                        $logoUpload,
+                        (string) $logoUploadCheck['extension']
+                    );
+                    $logoPath = $storedNewLogo;
+                } elseif ($removeLogo) {
+                    $logoPath = null;
+                }
+
                 $created = false;
 
+                try {
                 if ($company === null) {
                     try {
                         $stmt = $db->prepare(
                             'INSERT INTO companies
                                (user_id, name, description, industry, location,
-                                website, contact_email, contact_phone)
-                             VALUES (?, ?, ?, ?, ?, ?, ?, ?)'
+                                website, contact_email, contact_phone, logo_path)
+                             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)'
                         );
                         $stmt->bind_param(
-                            'isssssss',
+                            'issssssss',
                             $uid, $name, $description, $industry, $location,
-                            $website, $contactEmail, $contactPhone
+                            $website, $contactEmail, $contactPhone, $logoPath
                         );
                         $stmt->execute();
                         $stmt->close();
@@ -154,16 +182,30 @@ try {
                     $stmt = $db->prepare(
                         'UPDATE companies
                          SET name = ?, description = ?, industry = ?, location = ?,
-                             website = ?, contact_email = ?, contact_phone = ?
+                             website = ?, contact_email = ?, contact_phone = ?, logo_path = ?
                          WHERE user_id = ?'
                     );
                     $stmt->bind_param(
-                        'sssssssi',
+                        'ssssssssi',
                         $name, $description, $industry, $location,
-                        $website, $contactEmail, $contactPhone, $uid
+                        $website, $contactEmail, $contactPhone, $logoPath, $uid
                     );
                     $stmt->execute();
                     $stmt->close();
+                }
+
+                if (
+                    $previousLogoPath !== ''
+                    && $previousLogoPath !== (string) $logoPath
+                ) {
+                    hirepeak_delete_company_logo($previousLogoPath);
+                }
+
+                } catch (\Throwable $saveError) {
+                    if ($storedNewLogo !== null) {
+                        hirepeak_delete_company_logo($storedNewLogo);
+                    }
+                    throw $saveError;
                 }
 
                 $_SESSION['company_flash'] = 'Your company profile has been updated.';
@@ -172,6 +214,7 @@ try {
             }
 
             $company = $old; // re-render with the submitted values on validation failure
+            $company['logo_path'] = $defaults['logo_path'] ?? null;
         }
     } else {
         $old = $defaults;
@@ -233,8 +276,47 @@ $pageScripts = ['/assets/js/main.js'];
         <div class="profile-layout profile-layout--account">
 
           <div class="profile-main-col">
-            <form class="profile-form" id="company-form" action="<?php echo hirepeak_url('employer/company-profile.php'); ?>" method="post">
+            <form class="profile-form" id="company-form" action="<?php echo hirepeak_url('employer/company-profile.php'); ?>" method="post" enctype="multipart/form-data">
               <input type="hidden" name="csrf_token" value="<?php echo hirepeak_esc(hirepeak_csrf_token()); ?>">
+
+              <section class="profile-section company-branding" aria-labelledby="profile-section-branding">
+                <h2 class="profile-section__title" id="profile-section-branding">Company branding</h2>
+
+                <div class="company-branding__row">
+                  <div class="company-branding__preview">
+                    <?php
+                    echo hirepeak_company_identity_markup(
+                        (string) ($old['name'] ?? 'Company'),
+                        isset($company['logo_path']) ? (string) $company['logo_path'] : null,
+                        'company-branding__avatar'
+                    );
+                    ?>
+                  </div>
+
+                  <div class="company-branding__controls">
+                    <div class="field">
+                      <label class="field__label" for="profile-company_logo">Company logo</label>
+                      <input
+                        class="field__input field__input--file"
+                        id="profile-company_logo"
+                        name="company_logo"
+                        type="file"
+                        accept="image/png,image/jpeg,image/webp"
+                        <?php echo isset($errors['company_logo']) ? ' aria-invalid="true" aria-describedby="profile-company_logo-hint profile-company_logo-error"' : ' aria-describedby="profile-company_logo-hint"'; ?>
+                      >
+                      <p class="field__hint" id="profile-company_logo-hint">PNG, JPEG, or WebP. Maximum 2 MB. Use a square logo for best results.</p>
+                      <?php echo hirepeak_error_slot($errors, 'company_logo', 'profile'); ?>
+                    </div>
+
+                    <?php if (!empty($company['logo_path'])): ?>
+                      <label class="check-row company-branding__remove">
+                        <input type="checkbox" name="remove_logo" value="1">
+                        <span>Remove current logo</span>
+                      </label>
+                    <?php endif; ?>
+                  </div>
+                </div>
+              </section>
 
               <section class="profile-section profile-section--grid" aria-labelledby="profile-section-details">
                 <h2 class="profile-section__title" id="profile-section-details">Company details</h2>

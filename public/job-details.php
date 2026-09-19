@@ -31,7 +31,7 @@ try {
                 j.salary_min, j.salary_max, j.employment_type, j.work_mode,
                 j.experience_level, j.application_deadline, j.status,
                 j.category_id, j.created_at, j.employer_id,
-                c.name AS company_name, c.industry,
+                c.name AS company_name, c.logo_path AS company_logo_path, c.industry,
                 c.description AS company_description,
                 c.location AS company_location,
                 ct.name AS category_name,
@@ -92,7 +92,7 @@ if (isset($_SESSION['hp_save_flash_error']) && $_SESSION['hp_save_flash_error'] 
     $stmt = $db->prepare(
         'SELECT j.id, j.title, j.location, j.employment_type, j.work_mode,
                 j.salary_min, j.salary_max, j.created_at,
-                c.name AS company_name
+                c.name AS company_name, c.logo_path AS company_logo_path
          FROM jobs j
          INNER JOIN companies c ON c.id = j.company_id
          WHERE j.category_id = ? AND j.id <> ?
@@ -233,7 +233,7 @@ $companyMetaLine = trim(hirepeak_esc($companyIndustry) . ($companyLocation !== '
         <article class="jd-main">
           <header class="jd-head">
             <div class="jd-head__row">
-              <span class="job-card__logo jd-head__logo <?php echo hirepeak_esc(hirepeak_company_avatar_class($companyName)); ?>" aria-hidden="true"><?php echo hirepeak_esc(hirepeak_initials($companyName)); ?></span>
+              <?php echo hirepeak_company_identity_markup($companyName, isset($job['company_logo_path']) ? (string) $job['company_logo_path'] : null, 'job-card__logo jd-head__logo'); ?>
               <div>
                 <h1 class="jd-head__title"><?php echo hirepeak_esc($jobTitle); ?></h1>
                 <p class="jd-head__company"><?php echo hirepeak_esc($companyName); ?></p>
@@ -328,7 +328,7 @@ $companyMetaLine = trim(hirepeak_esc($companyIndustry) . ($companyLocation !== '
           <div class="jd-panel jd-company">
             <h2 class="jd-facts__title">About the company</h2>
             <div class="jd-company__head">
-              <span class="job-card__logo jd-company__logo <?php echo hirepeak_esc(hirepeak_company_avatar_class($companyName)); ?>" aria-hidden="true"><?php echo hirepeak_esc(hirepeak_initials($companyName)); ?></span>
+              <?php echo hirepeak_company_identity_markup($companyName, isset($job['company_logo_path']) ? (string) $job['company_logo_path'] : null, 'job-card__logo jd-company__logo'); ?>
               <div>
                 <p class="jd-company__name"><?php echo hirepeak_esc($companyName); ?></p>
                 <?php if ($companyMetaLine !== ''): ?>
@@ -355,7 +355,7 @@ $companyMetaLine = trim(hirepeak_esc($companyIndustry) . ($companyLocation !== '
             <?php foreach ($related as $rj): ?>
               <article class="job-card job-card--related">
                 <div class="job-card__top">
-                  <span class="job-card__logo <?php echo hirepeak_esc(hirepeak_company_avatar_class((string) $rj['company_name'])); ?>" aria-hidden="true"><?php echo hirepeak_esc(hirepeak_initials((string) $rj['company_name'])); ?></span>
+                  <?php echo hirepeak_company_identity_markup((string) $rj['company_name'], isset($rj['company_logo_path']) ? (string) $rj['company_logo_path'] : null, 'job-card__logo'); ?>
                   <?php if ($viewerRole === 'applicant'): ?>
                     <?php $rjSaved = isset($savedRelated[(int) $rj['id']]); ?>
                     <?php $rjSaveLabel = 'Save ' . (string) $rj['title'] . ' at ' . (string) $rj['company_name']; ?>

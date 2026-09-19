@@ -107,7 +107,7 @@ try {
         'SELECT j.id, j.title, j.location, j.salary_min, j.salary_max,
                 j.employment_type, j.work_mode, j.experience_level, j.status,
                 j.application_deadline, j.employer_id,
-                c.name AS company_name, ct.name AS category_name,
+                c.name AS company_name, c.logo_path AS company_logo_path, ct.name AS category_name,
                 (j.status = "active"
                     AND (j.application_deadline IS NULL
                          OR j.application_deadline >= CURDATE())) AS is_open
@@ -430,7 +430,7 @@ $pageScripts = ['/assets/js/main.js'];
             </div>
 
             <div class="apply-job-head">
-              <span class="apply-job-head__logo <?php echo hirepeak_esc(hirepeak_company_avatar_class($companyName)); ?>" aria-hidden="true"><?php echo hirepeak_esc(hirepeak_initials($companyName)); ?></span>
+              <?php echo hirepeak_company_identity_markup($companyName, isset($job['company_logo_path']) ? (string) $job['company_logo_path'] : null, 'apply-job-head__logo'); ?>
               <div class="apply-job-head__text">
                 <h3 class="apply-job-head__title"><?php echo hirepeak_esc($jobTitle); ?></h3>
                 <p class="apply-job-head__company">

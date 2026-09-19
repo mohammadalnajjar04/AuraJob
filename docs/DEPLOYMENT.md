@@ -156,3 +156,18 @@ Open Graph, and Twitter Card metadata. The shared social preview image is:
 
 Because absolute metadata URLs are built from the current HTTPS/host request,
 configure the production domain correctly and force HTTPS before launch.
+
+
+## Company Logo Uploads
+
+Employer company logos are stored outside the public web root under:
+
+```text
+storage/uploads/company-logos/
+```
+
+The directory must be writable by the PHP/web-server process. Logos are
+validated as PNG, JPEG, or WebP images, limited to 2 MB, renamed to random
+server-generated filenames, and served through `public/company-logo.php`.
+
+Do not point the web server directly at `storage/`.

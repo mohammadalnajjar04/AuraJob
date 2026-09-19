@@ -45,7 +45,7 @@ Create a full-stack recruitment platform that connects job seekers with employer
 - Responsive design
 - Security and validation
 
-## Planned Application Statuses
+## Application Statuses
 - Applied
 - Under Review
 - Interview
@@ -299,7 +299,7 @@ Employer Dashboard
 → Create Job
 → Publish Job
 
-Employer can later:
+Employer can:
 
 My Jobs
 → Select Job

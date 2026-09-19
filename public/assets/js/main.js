@@ -210,6 +210,82 @@
     });
   }
 
+  const shareButtons = document.querySelectorAll('[data-share-job]');
+
+  async function copyText(text) {
+    if (navigator.clipboard && window.isSecureContext) {
+      await navigator.clipboard.writeText(text);
+      return true;
+    }
+
+    const textarea = document.createElement('textarea');
+    textarea.value = text;
+    textarea.setAttribute('readonly', '');
+    textarea.style.position = 'fixed';
+    textarea.style.opacity = '0';
+    textarea.style.pointerEvents = 'none';
+    document.body.appendChild(textarea);
+    textarea.select();
+
+    let copied = false;
+    try {
+      copied = document.execCommand('copy');
+    } catch (error) {
+      copied = false;
+    }
+
+    textarea.remove();
+    return copied;
+  }
+
+  for (const button of shareButtons) {
+    button.addEventListener('click', async function () {
+      const title = button.getAttribute('data-share-title') || document.title;
+      const text = button.getAttribute('data-share-text') || '';
+      const url = button.getAttribute('data-share-url') || window.location.href;
+      const label = button.querySelector('[data-share-label]');
+      const status = button.parentElement
+        ? button.parentElement.parentElement.querySelector('[data-share-status]')
+        : null;
+      const originalLabel = label ? label.textContent : 'Share job';
+
+      button.disabled = true;
+      button.setAttribute('aria-disabled', 'true');
+
+      try {
+        if (navigator.share) {
+          await navigator.share({ title: title, text: text, url: url });
+          if (status) status.textContent = 'Share options opened for this job.';
+        } else {
+          const copied = await copyText(url);
+          if (!copied) throw new Error('Copy failed');
+          if (label) label.textContent = 'Link copied';
+          if (status) status.textContent = 'Job link copied to clipboard.';
+        }
+      } catch (error) {
+        if (error && error.name === 'AbortError') {
+          if (status) status.textContent = 'Sharing cancelled.';
+        } else {
+          try {
+            const copied = await copyText(url);
+            if (!copied) throw new Error('Copy fallback failed');
+            if (label) label.textContent = 'Link copied';
+            if (status) status.textContent = 'Job link copied to clipboard.';
+          } catch (copyError) {
+            if (label) label.textContent = 'Copy failed';
+            if (status) status.textContent = 'Could not copy the job link. You can copy it from the browser address bar.';
+          }
+        }
+      } finally {
+        window.setTimeout(function () {
+          if (label) label.textContent = originalLabel;
+          button.disabled = false;
+          button.removeAttribute('aria-disabled');
+        }, 1800);
+      }
+    });
+  }
+
   const year = document.getElementById('year');
 
   if (year) {

@@ -275,6 +275,24 @@ $companyMetaLine = trim(hirepeak_esc($companyIndustry) . ($companyLocation !== '
               <p class="jd-apply__deadline">Not accepting applications yet</p>
             <?php endif; ?>
             <div class="jd-apply__actions">
+              <button
+                class="btn btn--outline jd-share"
+                type="button"
+                data-share-job
+                data-share-title="<?php echo hirepeak_esc($jobTitle . ' at ' . $companyName); ?>"
+                data-share-text="<?php echo hirepeak_esc('Check out this ' . $jobTitle . ' role at ' . $companyName . ' on AuraJob.'); ?>"
+                data-share-url="<?php echo hirepeak_esc(hirepeak_absolute_url('job-details.php?id=' . (string) $jobId)); ?>"
+              >
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <circle cx="18" cy="5" r="3"/>
+                  <circle cx="6" cy="12" r="3"/>
+                  <circle cx="18" cy="19" r="3"/>
+                  <path d="m8.59 13.51 6.83 3.98"/>
+                  <path d="m15.41 6.51-6.82 3.98"/>
+                </svg>
+                <span data-share-label>Share job</span>
+              </button>
+
               <?php if ($isDraft): ?>
                 <a class="btn btn--primary" href="<?php echo hirepeak_url('employer/edit-job.php?id=' . (int) $jobId); ?>">Edit Draft</a>
               <?php else: ?>
@@ -302,6 +320,8 @@ $companyMetaLine = trim(hirepeak_esc($companyIndustry) . ($companyLocation !== '
                 </a>
               <?php endif; ?>
             </div>
+            <p class="jd-share-status sr-only" data-share-status role="status" aria-live="polite" aria-atomic="true"></p>
+
             <?php if (!$isDraft): ?>
               <p class="jd-apply__note"><?php echo hirepeak_esc($applyNote); ?></p>
             <?php else: ?>

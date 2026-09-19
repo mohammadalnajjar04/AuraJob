@@ -38,6 +38,7 @@
 - Server-side job search, filtering, sorting, and pagination
 - AJAX-enhanced job search/filtering with a normal GET fallback when JavaScript is unavailable
 - Job details with company, salary, location, work mode, experience level, and deadline information
+- Share jobs with the native Web Share API when available, with clipboard-copy fallback
 
 ### Applicant
 - Registration, login, logout, and optional **Remember me** session cookie

@@ -7773,3 +7773,24 @@ textarea {
     width: 100%;
   }
 }
+
+
+/* ==========================================================================
+   Stage 34 — Job sharing
+   ========================================================================== */
+
+.jd-share {
+  width: 100%;
+  justify-content: center;
+}
+
+.jd-share:disabled {
+  cursor: wait;
+  opacity: .72;
+}
+
+@media (min-width: 640px) {
+  .jd-share {
+    width: auto;
+  }
+}

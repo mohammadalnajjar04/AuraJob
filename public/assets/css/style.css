@@ -5572,3 +5572,241 @@ a.account-menu__item:hover {
   }
 }
 
+/* ========================================================================== 
+   Stage 10 polish — Job Details + Application Tracking
+   ========================================================================== */
+
+.jd-main {
+  padding: clamp(20px, 3vw, 32px);
+  background: var(--color-bg-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+}
+
+.jd-head {
+  margin-bottom: var(--space-6);
+  padding-bottom: var(--space-5);
+}
+
+.jd-head__row > div {
+  min-width: 0;
+}
+
+.jd-head__company {
+  color: var(--color-text-secondary);
+}
+
+.jd-head__pay {
+  width: fit-content;
+  max-width: 100%;
+  padding: 10px 14px;
+  border-radius: var(--radius-md);
+  background: var(--color-bg-subtle);
+}
+
+.jd-prose {
+  max-width: 68ch;
+}
+
+.jd-prose h2 {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.jd-prose h2::before {
+  content: "";
+  width: 4px;
+  height: 20px;
+  border-radius: var(--radius-full);
+  background: var(--color-brand);
+}
+
+.jd-apply {
+  border-top: 3px solid var(--color-brand);
+  box-shadow: var(--shadow-md);
+}
+
+.jd-apply__deadline {
+  line-height: 1.45;
+}
+
+.jd-facts .jd-fact:first-child {
+  border-top: 0;
+  padding-top: 0;
+}
+
+.jd-company {
+  background: linear-gradient(180deg, var(--color-bg-surface) 0%, var(--color-bg-subtle) 100%);
+}
+
+.jd-related {
+  border-top: 1px solid var(--color-border);
+}
+
+.track-card {
+  padding: var(--space-5);
+  background: var(--color-bg-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+}
+
+.track-hero {
+  position: relative;
+  overflow: hidden;
+  margin-bottom: 0;
+  border-top: 3px solid var(--color-brand);
+}
+
+.track-hero__identity {
+  flex: 1 1 520px;
+}
+
+.track-hero__logo {
+  width: 56px;
+  height: 56px;
+  border-radius: 16px;
+}
+
+.track-hero__status {
+  min-width: 150px;
+  padding: var(--space-3);
+  border-radius: var(--radius-md);
+  background: var(--color-bg-subtle);
+}
+
+.track-hero__status .btn {
+  width: 100%;
+  justify-content: center;
+}
+
+.track-summary .panel-head,
+.track-next .panel-head {
+  margin-bottom: var(--space-3);
+}
+
+.track-summary .jd-fact {
+  grid-template-columns: 92px minmax(0, 1fr);
+}
+
+.track-summary .jd-fact:first-child {
+  border-top: 0;
+  padding-top: 0;
+}
+
+.track-next {
+  position: relative;
+  overflow: hidden;
+  border-color: rgba(79, 70, 229, .18);
+  background: linear-gradient(180deg, #FFFFFF 0%, #F8F7FF 100%);
+}
+
+.track-next::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 4px;
+  height: 100%;
+  background: var(--color-brand);
+}
+
+.track-next__body {
+  max-width: 56ch;
+  line-height: 1.65;
+  color: var(--color-text-secondary);
+}
+
+.track-next__hint {
+  display: inline-flex;
+  margin-top: var(--space-4);
+  padding: 8px 10px;
+  border-radius: var(--radius-md);
+  background: var(--color-brand-soft);
+  color: var(--color-brand-active);
+  font-weight: 500;
+}
+
+.track-step--current .track-step__body {
+  padding: 8px 10px;
+  border-radius: var(--radius-md);
+  background: var(--color-bg-subtle);
+}
+
+@media (max-width: 1024px) {
+  .jd-main {
+    padding: var(--space-5);
+  }
+}
+
+@media (max-width: 767px) {
+  .jd-main {
+    padding: var(--space-4);
+  }
+
+  .jd-head {
+    margin-bottom: var(--space-5);
+    padding-bottom: var(--space-4);
+  }
+
+  .jd-head__row {
+    gap: var(--space-3);
+  }
+
+  .jd-head__logo {
+    width: 48px;
+    height: 48px;
+  }
+
+  .jd-head__pay {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .track-card {
+    padding: var(--space-4);
+  }
+
+  .track-hero__status {
+    width: 100%;
+    min-width: 0;
+    padding: var(--space-3);
+  }
+
+  .track-step--current .track-step__body {
+    padding: 8px 10px;
+  }
+}
+
+@media (max-width: 479px) {
+  .jd-main {
+    margin-inline: calc(var(--gutter-m) * -0.25);
+    border-radius: var(--radius-md);
+  }
+
+  .jd-head__title {
+    font-size: 24px;
+  }
+
+  .jd-fact {
+    grid-template-columns: 88px minmax(0, 1fr);
+    gap: var(--space-2);
+  }
+
+  .track-hero__identity {
+    align-items: flex-start;
+  }
+
+  .track-hero__logo {
+    width: 48px;
+    height: 48px;
+    border-radius: var(--radius-lg);
+  }
+
+  .track-summary .jd-fact {
+    grid-template-columns: 84px minmax(0, 1fr);
+  }
+}
+

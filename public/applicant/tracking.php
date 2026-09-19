@@ -414,7 +414,7 @@ $showSalary = $salary !== 'Salary not disclosed';
         </section>
 
         <div class="track-grid">
-          <section class="dash-panel" aria-labelledby="track-summary-title">
+          <section class="dash-panel track-summary" aria-labelledby="track-summary-title">
             <div class="panel-head">
               <h2 class="panel-head__title" id="track-summary-title">Application summary</h2>
             </div>
@@ -452,7 +452,7 @@ $showSalary = $salary !== 'Salary not disclosed';
             </dl>
           </section>
 
-          <section class="dash-panel" aria-labelledby="track-next-title">
+          <section class="dash-panel track-next" aria-labelledby="track-next-title">
             <div class="panel-head">
               <h2 class="panel-head__title" id="track-next-title"><?php echo hirepeak_esc($nextStep['heading']); ?></h2>
             </div>

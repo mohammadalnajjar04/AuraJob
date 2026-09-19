@@ -39,18 +39,18 @@ $pageScripts = $pageScripts ?? [];
         <div class="footer-col">
           <h3 class="footer-col__title">Employers</h3>
           <ul>
-            <li><a href="#">Post a Job</a></li>
+            <li><a href="<?php echo hirepeak_url('employer/post-job.php'); ?>">Post a Job</a></li>
             <li><a href="<?php echo hirepeak_url('index.php#for-employers'); ?>">For Employers</a></li>
-            <li><a href="#">Applicant Pipeline</a></li>
+            <li><a href="<?php echo hirepeak_url('employer/my-jobs.php'); ?>">Applicant Pipeline</a></li>
           </ul>
         </div>
 
         <div class="footer-col">
-          <h3 class="footer-col__title">Company</h3>
+          <h3 class="footer-col__title">HirePeak</h3>
           <ul>
-            <li><a href="#">About</a></li>
-            <li><a href="#">Support</a></li>
-            <li><a href="#">Contact</a></li>
+            <li><a href="<?php echo hirepeak_url('index.php'); ?>">Home</a></li>
+            <li><a href="<?php echo hirepeak_url('index.php#why-hirepeak'); ?>">How It Works</a></li>
+            <li><a href="<?php echo hirepeak_url('index.php#for-employers'); ?>">For Employers</a></li>
           </ul>
         </div>
       </div>
@@ -58,10 +58,7 @@ $pageScripts = $pageScripts ?? [];
 
     <div class="footer-bottom">
       <p>&copy; <span id="year">2026</span> HirePeak. All rights reserved.</p>
-      <ul class="footer-bottom__legal">
-        <li><a href="#">Terms</a></li>
-        <li><a href="#">Privacy</a></li>
-      </ul>
+      <p class="footer-bottom__legal">Job Board &amp; Recruitment Management System</p>
     </div>
   </div>
 </footer>

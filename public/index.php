@@ -431,7 +431,7 @@ $pageScripts = ['/assets/js/main.js'];
             <h2 class="benefit__title">Build your team with confidence.</h2>
             <p class="benefit__text">Post a job in minutes, review applicants from one place, and update every application as it moves through your pipeline.</p>
             <div class="benefit__actions">
-              <a class="btn btn--outline" href="#">
+              <a class="btn btn--outline" href="<?php echo hirepeak_url('employer/post-job.php'); ?>">
                 Post a Job
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                   <path d="M5 12h14"/>

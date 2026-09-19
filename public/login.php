@@ -133,7 +133,6 @@ $pageScripts = ['/assets/js/main.js', '/assets/js/auth.js'];
           <div class="field">
             <div class="field__label-row">
               <label class="field__label" for="login-password">Password</label>
-              <a class="field__link" href="#">Forgot password?</a>
             </div>
             <div class="field__control">
               <input class="field__input field__input--password" id="login-password" name="password" type="password" autocomplete="current-password" required placeholder="Enter your password"<?php echo isset($errors['password']) ? ' aria-invalid="true" aria-describedby="login-password-error"' : ''; ?>>
@@ -182,7 +181,7 @@ $pageScripts = ['/assets/js/main.js', '/assets/js/auth.js'];
         <p class="auth-switch">New to HirePeak? <a href="<?php echo hirepeak_url('register.php'); ?>">Create an account</a></p>
       </div>
 
-      <p class="auth-foot">HirePeak &middot; <a href="#">Terms</a> &middot; <a href="#">Privacy</a></p>
+      <p class="auth-foot">HirePeak &middot; Job Board &amp; Recruitment Management System</p>
     </div>
   </main>
 

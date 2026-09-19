@@ -72,7 +72,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
 
         if (!$terms) {
-            $errors['terms'] = 'Please accept the Terms and Privacy Policy.';
+            $errors['terms'] = 'Please confirm before creating your account.';
         }
 
         if (!$errors) {
@@ -229,7 +229,7 @@ $pageScripts = ['/assets/js/main.js', '/assets/js/auth.js'];
 
           <label class="auth-check">
             <input type="checkbox" id="reg-terms" name="terms" value="1" required<?php echo ($_POST['terms'] ?? '') === '1' ? ' checked' : ''; ?>>
-            <span>I agree to the <a class="auth-check__link" href="#">Terms</a> and <a class="auth-check__link" href="#">Privacy Policy</a></span>
+            <span>I confirm that the information provided is accurate and I want to create this HirePeak account.</span>
           </label>
           <?php echo hirepeak_error_slot($errors, 'terms', 'reg'); ?>
 
@@ -259,7 +259,7 @@ $pageScripts = ['/assets/js/main.js', '/assets/js/auth.js'];
         <p class="auth-switch">Already have an account? <a href="<?php echo hirepeak_url('login.php'); ?>">Sign In</a></p>
       </div>
 
-      <p class="auth-foot">HirePeak &middot; <a href="#">Terms</a> &middot; <a href="#">Privacy</a></p>
+      <p class="auth-foot">HirePeak &middot; Job Board &amp; Recruitment Management System</p>
     </div>
   </main>
 

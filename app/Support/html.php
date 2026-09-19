@@ -19,6 +19,33 @@ function hirepeak_url(string $path): string
     return $path === '' ? '/' : '/' . $path;
 }
 
+
+/**
+ * Build an absolute AuraJob URL for canonical/Open Graph metadata.
+ *
+ * The current request host is accepted only when it contains ordinary
+ * hostname/port characters; otherwise localhost is used as a safe fallback.
+ */
+function hirepeak_absolute_url(string $path = ''): string
+{
+    $host = isset($_SERVER['HTTP_HOST']) && is_string($_SERVER['HTTP_HOST'])
+        ? trim($_SERVER['HTTP_HOST'])
+        : 'localhost';
+
+    if ($host === '' || preg_match('/^[A-Za-z0-9.\-:\[\]]+$/D', $host) !== 1) {
+        $host = 'localhost';
+    }
+
+    $https = isset($_SERVER['HTTPS'])
+        && is_string($_SERVER['HTTPS'])
+        && $_SERVER['HTTPS'] !== ''
+        && strtolower($_SERVER['HTTPS']) !== 'off';
+
+    $scheme = $https ? 'https' : 'http';
+
+    return $scheme . '://' . $host . hirepeak_url($path);
+}
+
 /**
  * Escapes a value for safe HTML output. Shared by the header and all pages;
  * every piece of user-controlled output goes through this.

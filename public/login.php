@@ -93,6 +93,7 @@ $pageScripts = ['/assets/js/main.js', '/assets/js/auth.js'];
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Sign In — AuraJob</title>
   <meta name="description" content="Sign in to your AuraJob account to manage your applications and continue your job search.">
+  <meta name="robots" content="noindex, follow">
   <meta name="theme-color" content="#ffffff">
   <link rel="icon" href="/assets/images/aurajob-mark.png" type="image/png">
   <link rel="preconnect" href="https://fonts.googleapis.com">

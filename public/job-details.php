@@ -142,6 +142,20 @@ $companyMetaLine = trim(hirepeak_esc($companyIndustry) . ($companyLocation !== '
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title><?php echo hirepeak_esc($jobTitle . ' at ' . $companyName . ' — AuraJob'); ?></title>
   <meta name="description" content="<?php echo hirepeak_esc($jobTitle . ' job at ' . $companyName . ' in ' . $jobLocation . '. Apply on AuraJob.'); ?>">
+  <link rel="canonical" href="<?php echo hirepeak_esc(hirepeak_absolute_url('job-details.php?id=' . (string) $jobId)); ?>">
+  <meta property="og:site_name" content="AuraJob">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="<?php echo hirepeak_esc($jobTitle . ' at ' . $companyName . ' — AuraJob'); ?>">
+  <meta property="og:description" content="<?php echo hirepeak_esc($jobTitle . ' job at ' . $companyName . ' in ' . $jobLocation . '. Apply on AuraJob.'); ?>">
+  <meta property="og:url" content="<?php echo hirepeak_esc(hirepeak_absolute_url('job-details.php?id=' . (string) $jobId)); ?>">
+  <meta property="og:image" content="<?php echo hirepeak_esc(hirepeak_absolute_url('assets/images/aurajob-social-preview.jpg')); ?>">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="AuraJob — Find the right opportunity. Build your next move.">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="<?php echo hirepeak_esc($jobTitle . ' at ' . $companyName . ' — AuraJob'); ?>">
+  <meta name="twitter:description" content="<?php echo hirepeak_esc($jobTitle . ' job at ' . $companyName . ' in ' . $jobLocation . '. Apply on AuraJob.'); ?>">
+  <meta name="twitter:image" content="<?php echo hirepeak_esc(hirepeak_absolute_url('assets/images/aurajob-social-preview.jpg')); ?>">
   <meta name="theme-color" content="#ffffff">
   <link rel="icon" href="/assets/images/aurajob-mark.png" type="image/png">
   <link rel="preconnect" href="https://fonts.googleapis.com">

@@ -143,3 +143,16 @@ error_page 500 502 503 504 /500.php;
 
 Keep detailed PHP/database errors in server logs only; never expose stack traces
 or database messages to visitors.
+
+
+## Social Sharing Metadata
+
+AuraJob's public Home, Find Jobs, and Job Details pages include canonical,
+Open Graph, and Twitter Card metadata. The shared social preview image is:
+
+```text
+/public/assets/images/aurajob-social-preview.jpg
+```
+
+Because absolute metadata URLs are built from the current HTTPS/host request,
+configure the production domain correctly and force HTTPS before launch.

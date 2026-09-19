@@ -67,6 +67,20 @@ try {
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>AuraJob — Find the right opportunity. Build your next move.</title>
   <meta name="description" content="AuraJob is a modern recruitment platform connecting talented candidates with employers, with clear application tracking and a straightforward hiring workflow.">
+  <link rel="canonical" href="<?php echo hirepeak_esc(hirepeak_absolute_url('index.php')); ?>">
+  <meta property="og:site_name" content="AuraJob">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="<?php echo hirepeak_esc('AuraJob — Find the right opportunity. Build your next move.'); ?>">
+  <meta property="og:description" content="<?php echo hirepeak_esc('AuraJob is a modern recruitment platform connecting talented candidates with employers, with clear application tracking and a straightforward hiring workflow.'); ?>">
+  <meta property="og:url" content="<?php echo hirepeak_esc(hirepeak_absolute_url('index.php')); ?>">
+  <meta property="og:image" content="<?php echo hirepeak_esc(hirepeak_absolute_url('assets/images/aurajob-social-preview.jpg')); ?>">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="AuraJob — Find the right opportunity. Build your next move.">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="<?php echo hirepeak_esc('AuraJob — Find the right opportunity. Build your next move.'); ?>">
+  <meta name="twitter:description" content="<?php echo hirepeak_esc('AuraJob is a modern recruitment platform connecting talented candidates with employers, with clear application tracking and a straightforward hiring workflow.'); ?>">
+  <meta name="twitter:image" content="<?php echo hirepeak_esc(hirepeak_absolute_url('assets/images/aurajob-social-preview.jpg')); ?>">
   <meta name="theme-color" content="#ffffff">
   <link rel="icon" href="/assets/images/aurajob-mark.png" type="image/png">
   <link rel="preconnect" href="https://fonts.googleapis.com">

@@ -389,6 +389,20 @@ $activeFilterCount = count($categorySel)
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Find Jobs — AuraJob</title>
   <meta name="description" content="Search for jobs on AuraJob. Filter roles by category, work mode, employment type, experience level, and location.">
+  <link rel="canonical" href="<?php echo hirepeak_esc(hirepeak_absolute_url('jobs.php')); ?>">
+  <meta property="og:site_name" content="AuraJob">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="<?php echo hirepeak_esc('Find Jobs — AuraJob'); ?>">
+  <meta property="og:description" content="<?php echo hirepeak_esc('Search for jobs on AuraJob. Filter roles by category, work mode, employment type, experience level, and location.'); ?>">
+  <meta property="og:url" content="<?php echo hirepeak_esc(hirepeak_absolute_url('jobs.php')); ?>">
+  <meta property="og:image" content="<?php echo hirepeak_esc(hirepeak_absolute_url('assets/images/aurajob-social-preview.jpg')); ?>">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="AuraJob — Find the right opportunity. Build your next move.">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="<?php echo hirepeak_esc('Find Jobs — AuraJob'); ?>">
+  <meta name="twitter:description" content="<?php echo hirepeak_esc('Search for jobs on AuraJob. Filter roles by category, work mode, employment type, experience level, and location.'); ?>">
+  <meta name="twitter:image" content="<?php echo hirepeak_esc(hirepeak_absolute_url('assets/images/aurajob-social-preview.jpg')); ?>">
   <meta name="theme-color" content="#ffffff">
   <link rel="icon" href="/assets/images/aurajob-mark.png" type="image/png">
   <link rel="preconnect" href="https://fonts.googleapis.com">

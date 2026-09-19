@@ -3,11 +3,62 @@ declare(strict_types=1);
 
 require dirname(__DIR__) . '/app/Core/config.php';
 require dirname(__DIR__) . '/app/Core/auth.php';
+require dirname(__DIR__) . '/app/Core/db.php';
+require dirname(__DIR__) . '/app/Support/html.php';
 
 hirepeak_start_session();
 
 $pageActive = 'home';
 $pageScripts = ['/assets/js/main.js'];
+
+$latestJobs = [];
+$homeCategories = [];
+$homeDbError = false;
+$viewer = hirepeak_user();
+$viewerRole = (string) ($viewer['role'] ?? '');
+$saveCsrf = $viewerRole === 'applicant' ? hirepeak_csrf_token() : '';
+$savedSet = [];
+
+try {
+    $db = hirepeak_db();
+
+    $stmt = $db->prepare(
+        "SELECT j.id, j.title, j.location, j.salary_min, j.salary_max,
+                j.employment_type, j.work_mode, j.created_at,
+                c.name AS company_name, ct.name AS category_name
+         FROM jobs j
+         INNER JOIN companies c ON c.id = j.company_id
+         INNER JOIN categories ct ON ct.id = j.category_id
+         WHERE j.status = 'active'
+           AND (j.application_deadline IS NULL OR j.application_deadline >= CURDATE())
+         ORDER BY j.created_at DESC, j.id DESC
+         LIMIT 3"
+    );
+    $stmt->execute();
+    $latestJobs = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+    $stmt->close();
+
+    $result = $db->query(
+        "SELECT ct.id, ct.name, ct.slug, COUNT(j.id) AS open_jobs
+         FROM categories ct
+         LEFT JOIN jobs j
+           ON j.category_id = ct.id
+          AND j.status = 'active'
+          AND (j.application_deadline IS NULL OR j.application_deadline >= CURDATE())
+         GROUP BY ct.id, ct.name, ct.slug
+         ORDER BY open_jobs DESC, ct.name ASC
+         LIMIT 6"
+    );
+    $homeCategories = $result->fetch_all(MYSQLI_ASSOC);
+    $result->close();
+
+    if ($viewerRole === 'applicant' && $viewer !== null) {
+        $savedSet = array_fill_keys(hirepeak_saved_job_ids($db, (int) $viewer['id']), true);
+    }
+} catch (\Throwable $e) {
+    error_log('[aurajob] home data load failed: ' . $e->getMessage());
+    $homeDbError = true;
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -69,12 +120,15 @@ $pageScripts = ['/assets/js/main.js'];
         </form>
 
         <div class="hero-popular">
-          <span class="hero-popular__label" id="popular-label">Popular:</span>
+          <span class="hero-popular__label" id="popular-label">Popular categories:</span>
           <ul aria-labelledby="popular-label">
-            <li><button type="button" class="chip" data-chip="Backend">Backend</button></li>
-            <li><button type="button" class="chip" data-chip="Design">Design</button></li>
-            <li><button type="button" class="chip" data-chip="Remote">Remote</button></li>
-            <li><button type="button" class="chip" data-chip="Finance">Finance</button></li>
+            <?php foreach (array_slice($homeCategories, 0, 4) as $category): ?>
+              <?php $categoryUrl = hirepeak_url('jobs.php?category%5B%5D=' . rawurlencode((string) $category['name'])); ?>
+              <li><a class="chip" href="<?php echo hirepeak_esc($categoryUrl); ?>"><?php echo hirepeak_esc((string) $category['name']); ?></a></li>
+            <?php endforeach; ?>
+            <?php if ($homeCategories === []): ?>
+              <li><a class="chip" href="<?php echo hirepeak_url('jobs.php'); ?>">Browse jobs</a></li>
+            <?php endif; ?>
           </ul>
         </div>
         </div>
@@ -104,62 +158,77 @@ $pageScripts = ['/assets/js/main.js'];
         </div>
 
         <div class="job-grid">
-          <article class="job-card">
-            <div class="job-card__top">
-              <span class="job-card__logo job-card__logo--nl" aria-hidden="true">NL</span>
-              <button class="icon-button job-card__save" type="button" data-bookmark aria-pressed="false" aria-label="Save Senior PHP Developer at Northstar Labs">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                  <path d="M19 21 12 16 5 21V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2Z"/>
+          <?php if ($homeDbError): ?>
+            <section class="empty-state" aria-labelledby="home-jobs-error-title">
+              <div class="empty-state__icon" aria-hidden="true">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="12" cy="12" r="9"/><path d="M12 8v4"/><path d="M12 16h.01"/>
                 </svg>
-              </button>
-            </div>
-            <h3 class="job-card__title"><a href="<?php echo hirepeak_url('job-details.php?id=1'); ?>">Senior PHP Developer</a></h3>
-            <p class="job-card__company">Northstar Labs &middot; Makati</p>
-            <ul class="job-card__meta" aria-label="Job type and work mode">
-              <li class="chip">Full-time</li>
-              <li class="chip">Hybrid</li>
-            </ul>
-            <p class="job-card__salary">PHP 80,000 &ndash; 120,000 / month</p>
-            <p class="job-card__posted">Posted 2 days ago</p>
-          </article>
-
-          <article class="job-card">
-            <div class="job-card__top">
-              <span class="job-card__logo job-card__logo--vd" aria-hidden="true">VD</span>
-              <button class="icon-button job-card__save" type="button" data-bookmark aria-pressed="false" aria-label="Save Product Designer at Vertex Digital">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                  <path d="M19 21 12 16 5 21V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2Z"/>
+              </div>
+              <h3 class="empty-state__title" id="home-jobs-error-title">Jobs are temporarily unavailable.</h3>
+              <p class="empty-state__text">Please try again in a moment.</p>
+              <a class="btn btn--outline btn--sm" href="<?php echo hirepeak_url('jobs.php'); ?>">Open Find Jobs</a>
+            </section>
+          <?php elseif ($latestJobs === []): ?>
+            <section class="empty-state" aria-labelledby="home-jobs-empty-title">
+              <div class="empty-state__icon" aria-hidden="true">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="3" y="7" width="18" height="13" rx="2"/><path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><path d="M3 12h18"/>
                 </svg>
-              </button>
-            </div>
-            <h3 class="job-card__title"><a href="<?php echo hirepeak_url('job-details.php?id=1'); ?>">Product Designer</a></h3>
-            <p class="job-card__company">Vertex Digital &middot; Remote</p>
-            <ul class="job-card__meta" aria-label="Job type and work mode">
-              <li class="chip">Full-time</li>
-              <li class="chip">Remote</li>
-            </ul>
-            <p class="job-card__salary">PHP 60,000 &ndash; 90,000 / month</p>
-            <p class="job-card__posted">Posted yesterday</p>
-          </article>
-
-          <article class="job-card">
-            <div class="job-card__top">
-              <span class="job-card__logo job-card__logo--nw" aria-hidden="true">NW</span>
-              <button class="icon-button job-card__save" type="button" data-bookmark aria-pressed="false" aria-label="Save Marketing Specialist at NovaWorks">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                  <path d="M19 21 12 16 5 21V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2Z"/>
-                </svg>
-              </button>
-            </div>
-            <h3 class="job-card__title"><a href="<?php echo hirepeak_url('job-details.php?id=1'); ?>">Marketing Specialist</a></h3>
-            <p class="job-card__company">NovaWorks &middot; Quezon City</p>
-            <ul class="job-card__meta" aria-label="Job type and work mode">
-              <li class="chip">Full-time</li>
-              <li class="chip">On-site</li>
-            </ul>
-            <p class="job-card__salary">PHP 45,000 &ndash; 70,000 / month</p>
-            <p class="job-card__posted">Posted 4 days ago</p>
-          </article>
+              </div>
+              <h3 class="empty-state__title" id="home-jobs-empty-title">No open jobs yet.</h3>
+              <p class="empty-state__text">New opportunities will appear here as soon as employers publish them.</p>
+              <a class="btn btn--outline btn--sm" href="<?php echo hirepeak_url('jobs.php'); ?>">Browse all jobs</a>
+            </section>
+          <?php else: ?>
+            <?php foreach ($latestJobs as $job): ?>
+              <?php
+              $jobId = (int) $job['id'];
+              $title = (string) $job['title'];
+              $company = (string) $job['company_name'];
+              $location = (string) $job['location'];
+              $saved = isset($savedSet[$jobId]);
+              $saveLabel = 'Save ' . $title . ' at ' . $company;
+              $savedLabel = 'Remove ' . $title . ' at ' . $company . ' from saved jobs';
+              $salary = hirepeak_salary_range(
+                  isset($job['salary_min']) ? (string) $job['salary_min'] : '',
+                  isset($job['salary_max']) ? (string) $job['salary_max'] : ''
+              );
+              $posted = hirepeak_relative_time((string) $job['created_at']);
+              ?>
+              <article class="job-card">
+                <div class="job-card__top">
+                  <span class="job-card__logo" aria-hidden="true"><?php echo hirepeak_esc(hirepeak_initials($company)); ?></span>
+                  <?php if ($viewerRole === 'applicant'): ?>
+                    <form class="save-form" method="post" action="<?php echo hirepeak_url('save-job.php'); ?>" data-save-job data-job-id="<?php echo $jobId; ?>" data-save-label="<?php echo hirepeak_esc($saveLabel); ?>" data-saved-label="<?php echo hirepeak_esc($savedLabel); ?>">
+                      <input type="hidden" name="csrf_token" value="<?php echo hirepeak_esc($saveCsrf); ?>">
+                      <input type="hidden" name="job_id" value="<?php echo $jobId; ?>">
+                      <input type="hidden" name="action" value="<?php echo $saved ? 'unsave' : 'save'; ?>">
+                      <button class="icon-button job-card__save" type="submit" data-bookmark aria-pressed="<?php echo $saved ? 'true' : 'false'; ?>" aria-label="<?php echo hirepeak_esc($saved ? $savedLabel : $saveLabel); ?>">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                          <path d="M19 21 12 16 5 21V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2Z"/>
+                        </svg>
+                      </button>
+                    </form>
+                  <?php elseif ($viewerRole === ''): ?>
+                    <a class="icon-button job-card__save" href="<?php echo hirepeak_url('login.php'); ?>" aria-label="Sign in to save <?php echo hirepeak_esc($title); ?> at <?php echo hirepeak_esc($company); ?>">
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <path d="M19 21 12 16 5 21V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2Z"/>
+                      </svg>
+                    </a>
+                  <?php endif; ?>
+                </div>
+                <h3 class="job-card__title"><a href="<?php echo hirepeak_url('job-details.php?id=' . $jobId); ?>"><?php echo hirepeak_esc($title); ?></a></h3>
+                <p class="job-card__company"><?php echo hirepeak_esc($company); ?><?php echo $location !== '' ? ' &middot; ' . hirepeak_esc($location) : ''; ?></p>
+                <ul class="job-card__meta" aria-label="Job type and work mode">
+                  <li class="chip"><?php echo hirepeak_esc(hirepeak_employment_type_label((string) $job['employment_type'])); ?></li>
+                  <li class="chip"><?php echo hirepeak_esc(hirepeak_work_mode_label((string) $job['work_mode'])); ?></li>
+                </ul>
+                <p class="job-card__salary"><?php echo $salary; ?></p>
+                <p class="job-card__posted"><?php echo $posted !== '' ? 'Posted ' . hirepeak_esc($posted) : ''; ?></p>
+              </article>
+            <?php endforeach; ?>
+          <?php endif; ?>
         </div>
       </div>
     </section>
@@ -178,124 +247,46 @@ $pageScripts = ['/assets/js/main.js'];
         </div>
 
         <div class="category-grid">
-          <a class="category-card" href="<?php echo hirepeak_url('jobs.php'); ?>">
-            <span class="category-card__icon">
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                <path d="m8 7-5 5 5 5"/>
-                <path d="m16 7 5 5-5 5"/>
-                <path d="m13 4-2 16"/>
-              </svg>
-            </span>
-            <span class="category-card__body">
-              <span class="category-card__name">IT &amp; Software</span>
-              <span class="category-card__cta">
-                Browse jobs
-                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                  <path d="M5 12h14"/>
-                  <path d="m13 6 6 6-6 6"/>
-                </svg>
-              </span>
-            </span>
-          </a>
-
-          <a class="category-card" href="<?php echo hirepeak_url('jobs.php'); ?>">
-            <span class="category-card__icon">
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                <path d="M12 3a9 9 0 1 0 0 18c1.6 0 2-.9 2-1.7 0-.8-.6-1.3-.6-2.3 0-1.1 1-2 2.3-2H19a5 5 0 0 0 .5-10A9 9 0 0 0 12 3Z"/>
-                <circle cx="7.5" cy="10.5" r="1"/>
-                <circle cx="12" cy="7.5" r="1"/>
-                <circle cx="16.5" cy="10.5" r="1"/>
-              </svg>
-            </span>
-            <span class="category-card__body">
-              <span class="category-card__name">Design &amp; Creative</span>
-              <span class="category-card__cta">
-                Browse jobs
-                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                  <path d="M5 12h14"/>
-                  <path d="m13 6 6 6-6 6"/>
-                </svg>
-              </span>
-            </span>
-          </a>
-
-          <a class="category-card" href="<?php echo hirepeak_url('jobs.php'); ?>">
-            <span class="category-card__icon">
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                <path d="M3 21h18"/>
-                <rect x="6" y="13" width="3" height="5" rx="1"/>
-                <rect x="11" y="9" width="3" height="9" rx="1"/>
-                <rect x="16" y="5" width="3" height="13" rx="1"/>
-              </svg>
-            </span>
-            <span class="category-card__body">
-              <span class="category-card__name">Finance &amp; Accounting</span>
-              <span class="category-card__cta">
-                Browse jobs
-                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                  <path d="M5 12h14"/>
-                  <path d="m13 6 6 6-6 6"/>
-                </svg>
-              </span>
-            </span>
-          </a>
-
-          <a class="category-card" href="<?php echo hirepeak_url('jobs.php'); ?>">
-            <span class="category-card__icon">
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                <path d="M12 20s-7-4.5-9-9a5 5 0 0 1 9-3 5 5 0 0 1 9 3c-2 4.5-9 9-9 9Z"/>
-              </svg>
-            </span>
-            <span class="category-card__body">
-              <span class="category-card__name">Healthcare</span>
-              <span class="category-card__cta">
-                Browse jobs
-                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                  <path d="M5 12h14"/>
-                  <path d="m13 6 6 6-6 6"/>
-                </svg>
-              </span>
-            </span>
-          </a>
-
-          <a class="category-card" href="<?php echo hirepeak_url('jobs.php'); ?>">
-            <span class="category-card__icon">
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                <path d="M3 11v2a1 1 0 0 0 1 1h2l3 4a1 1 0 0 0 1.7-.7V6.7A1 1 0 0 0 9 6l-3 4H4a1 1 0 0 0-1 1Z"/>
-                <path d="M18 9a4 4 0 0 1 0 6"/>
-                <path d="M21 7a8 8 0 0 1 0 10"/>
-              </svg>
-            </span>
-            <span class="category-card__body">
-              <span class="category-card__name">Marketing</span>
-              <span class="category-card__cta">
-                Browse jobs
-                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                  <path d="M5 12h14"/>
-                  <path d="m13 6 6 6-6 6"/>
-                </svg>
-              </span>
-            </span>
-          </a>
-
-          <a class="category-card" href="<?php echo hirepeak_url('jobs.php'); ?>">
-            <span class="category-card__icon">
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                <path d="M4 4.5A2.5 2.5 0 0 1 6.5 2H20v18H6.5A2.5 2.5 0 0 0 4 22V4.5Z"/>
-                <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
-              </svg>
-            </span>
-            <span class="category-card__body">
-              <span class="category-card__name">Education</span>
-              <span class="category-card__cta">
-                Browse jobs
-                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                  <path d="M5 12h14"/>
-                  <path d="m13 6 6 6-6 6"/>
-                </svg>
-              </span>
-            </span>
-          </a>
+          <?php if ($homeDbError): ?>
+            <section class="empty-state">
+              <h3 class="empty-state__title">Categories are temporarily unavailable.</h3>
+              <p class="empty-state__text">You can still browse all open roles.</p>
+              <a class="btn btn--outline btn--sm" href="<?php echo hirepeak_url('jobs.php'); ?>">Browse jobs</a>
+            </section>
+          <?php elseif ($homeCategories === []): ?>
+            <section class="empty-state">
+              <h3 class="empty-state__title">No categories available yet.</h3>
+              <p class="empty-state__text">Categories will appear here once they are added.</p>
+            </section>
+          <?php else: ?>
+            <?php foreach ($homeCategories as $category): ?>
+              <?php
+              $categoryName = (string) $category['name'];
+              $openJobs = (int) $category['open_jobs'];
+              $categoryUrl = hirepeak_url('jobs.php?category%5B%5D=' . rawurlencode($categoryName));
+              ?>
+              <a class="category-card" href="<?php echo hirepeak_esc($categoryUrl); ?>">
+                <span class="category-card__icon">
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <rect x="3" y="3" width="7" height="7" rx="1"/>
+                    <rect x="14" y="3" width="7" height="7" rx="1"/>
+                    <rect x="3" y="14" width="7" height="7" rx="1"/>
+                    <rect x="14" y="14" width="7" height="7" rx="1"/>
+                  </svg>
+                </span>
+                <span class="category-card__body">
+                  <span class="category-card__name"><?php echo hirepeak_esc($categoryName); ?></span>
+                  <span class="category-card__cta">
+                    <?php echo $openJobs === 1 ? '1 open job' : $openJobs . ' open jobs'; ?>
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                      <path d="M5 12h14"/>
+                      <path d="m13 6 6 6-6 6"/>
+                    </svg>
+                  </span>
+                </span>
+              </a>
+            <?php endforeach; ?>
+          <?php endif; ?>
         </div>
       </div>
     </section>

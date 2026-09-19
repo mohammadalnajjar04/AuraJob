@@ -7352,3 +7352,14 @@ textarea {
     padding-inline: 18px;
   }
 }
+
+/* Home database-backed sections: empty/error states span the full responsive grid. */
+.home-page .job-grid > .empty-state,
+.home-page .category-grid > .empty-state {
+  grid-column: 1 / -1;
+  min-height: 180px;
+  justify-content: center;
+  border: 1px dashed var(--color-border);
+  border-radius: var(--radius-lg);
+  background: var(--color-bg-surface);
+}

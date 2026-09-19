@@ -7478,3 +7478,87 @@ textarea {
     width: 100%;
   }
 }
+
+
+/* ==========================================================================
+   Stage 30 — Company identity avatars
+   ========================================================================== */
+
+/*
+ * Companies do not require an uploaded logo in the current data model.
+ * These deterministic initial avatars give every company a recognizable,
+ * consistent visual identity without adding a new database/upload feature.
+ */
+.company-avatar {
+  --company-avatar-bg-start: #eef2ff;
+  --company-avatar-bg-end: #e0e7ff;
+  --company-avatar-text: #4338ca;
+  --company-avatar-border: #c7d2fe;
+
+  flex: 0 0 auto;
+  overflow: hidden;
+  border: 1px solid var(--company-avatar-border);
+  background: linear-gradient(
+    145deg,
+    var(--company-avatar-bg-start),
+    var(--company-avatar-bg-end)
+  );
+  color: var(--company-avatar-text);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, .72),
+    0 1px 2px rgba(15, 23, 42, .04);
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.company-avatar--1 {
+  --company-avatar-bg-start: #eef2ff;
+  --company-avatar-bg-end: #e0e7ff;
+  --company-avatar-text: #4338ca;
+  --company-avatar-border: #c7d2fe;
+}
+
+.company-avatar--2 {
+  --company-avatar-bg-start: #ecfdf5;
+  --company-avatar-bg-end: #d1fae5;
+  --company-avatar-text: #047857;
+  --company-avatar-border: #a7f3d0;
+}
+
+.company-avatar--3 {
+  --company-avatar-bg-start: #fff7ed;
+  --company-avatar-bg-end: #ffedd5;
+  --company-avatar-text: #c2410c;
+  --company-avatar-border: #fed7aa;
+}
+
+.company-avatar--4 {
+  --company-avatar-bg-start: #fdf2f8;
+  --company-avatar-bg-end: #fce7f3;
+  --company-avatar-text: #be185d;
+  --company-avatar-border: #fbcfe8;
+}
+
+.company-avatar--5 {
+  --company-avatar-bg-start: #f0f9ff;
+  --company-avatar-bg-end: #e0f2fe;
+  --company-avatar-text: #0369a1;
+  --company-avatar-border: #bae6fd;
+}
+
+.company-avatar--6 {
+  --company-avatar-bg-start: #f5f3ff;
+  --company-avatar-bg-end: #ede9fe;
+  --company-avatar-text: #6d28d9;
+  --company-avatar-border: #ddd6fe;
+}
+
+/* Give the larger job/company identity marks a little more presence. */
+.jd-head__logo.company-avatar,
+.jd-company__logo.company-avatar,
+.track-hero__logo.company-avatar,
+.apply-job-head__logo.company-avatar {
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, .78),
+    0 4px 12px rgba(15, 23, 42, .07);
+}

@@ -589,7 +589,7 @@ $activeFilterCount = count($categorySel)
                 ?>
                 <article class="job-card job-card--row" data-keywords="<?php echo hirepeak_esc(hirepeak_job_keywords($job)); ?>" data-job-id="<?php echo (int) $job['id']; ?>">
                   <div class="job-card--row__main">
-                    <span class="job-card__logo" aria-hidden="true"><?php echo hirepeak_esc(hirepeak_initials((string) $job['company_name'])); ?></span>
+                    <span class="job-card__logo <?php echo hirepeak_esc(hirepeak_company_avatar_class((string) $job['company_name'])); ?>" aria-hidden="true"><?php echo hirepeak_esc(hirepeak_initials((string) $job['company_name'])); ?></span>
                     <div class="job-card--row__body">
                       <h3 class="job-card__title"><a href="<?php echo hirepeak_url('job-details.php?id=' . (int) $job['id']); ?>"><?php echo hirepeak_esc((string) $job['title']); ?></a></h3>
                       <p class="job-card--row__company"><?php echo $companyLine; ?></p>

@@ -212,7 +212,7 @@ try {
               ?>
               <article class="job-card">
                 <div class="job-card__top">
-                  <span class="job-card__logo" aria-hidden="true"><?php echo hirepeak_esc(hirepeak_initials($company)); ?></span>
+                  <span class="job-card__logo <?php echo hirepeak_esc(hirepeak_company_avatar_class($company)); ?>" aria-hidden="true"><?php echo hirepeak_esc(hirepeak_initials($company)); ?></span>
                   <?php if ($viewerRole === 'applicant'): ?>
                     <form class="save-form" method="post" action="<?php echo hirepeak_url('save-job.php'); ?>" data-save-job data-job-id="<?php echo $jobId; ?>" data-save-label="<?php echo hirepeak_esc($saveLabel); ?>" data-saved-label="<?php echo hirepeak_esc($savedLabel); ?>">
                       <input type="hidden" name="csrf_token" value="<?php echo hirepeak_esc($saveCsrf); ?>">

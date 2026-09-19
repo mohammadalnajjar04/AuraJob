@@ -347,7 +347,7 @@ $showSalary = $salary !== 'Salary not disclosed';
 
         <article class="track-card track-hero">
           <div class="track-hero__identity">
-            <span class="track-hero__logo" aria-hidden="true"><?php echo hirepeak_esc(hirepeak_initials($jobTitle)); ?></span>
+            <span class="track-hero__logo <?php echo hirepeak_esc(hirepeak_company_avatar_class($companyName)); ?>" aria-hidden="true"><?php echo hirepeak_esc(hirepeak_initials($companyName)); ?></span>
             <div class="track-hero__text">
               <h2 class="track-hero__title"><?php echo hirepeak_esc($jobTitle); ?></h2>
               <p class="track-hero__company">

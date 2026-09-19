@@ -571,6 +571,31 @@ function hirepeak_initials(string $name): string
 }
 
 /**
+ * Stable visual identity for companies that do not have an uploaded logo.
+ *
+ * The same company name always receives the same palette across Home, Find
+ * Jobs, Job Details, Apply, Tracking, and dashboard cards.
+ */
+function hirepeak_company_avatar_class(string $companyName): string
+{
+    $normalized = trim($companyName);
+    if ($normalized === '') {
+        return 'company-avatar company-avatar--1';
+    }
+
+    if (\function_exists('mb_strtolower')) {
+        $normalized = mb_strtolower($normalized, 'UTF-8');
+    } else {
+        $normalized = strtolower($normalized);
+    }
+
+    $hash = (int) sprintf('%u', crc32($normalized));
+    $palette = ($hash % 6) + 1;
+
+    return 'company-avatar company-avatar--' . $palette;
+}
+
+/**
  * String length for validation limits. Uses mbstring when available and falls
  * back to plain strlen so the profile editor never hard-crashes on minimal
  * PHP installs without the mbstring extension.
@@ -653,7 +678,8 @@ function hirepeak_dashboard_job_card(array $job): string
 {
     $id = (int) ($job['id'] ?? 0);
     $title = hirepeak_esc((string) ($job['title'] ?? 'Untitled role'));
-    $company = hirepeak_esc((string) ($job['company_name'] ?? ''));
+    $companyRaw = (string) ($job['company_name'] ?? '');
+    $company = hirepeak_esc($companyRaw);
     $location = hirepeak_esc((string) ($job['location'] ?? ''));
     $companyLine = trim($company . ($location !== '' ? ' &middot; ' . $location : ''));
     $type = hirepeak_employment_type_label((string) ($job['employment_type'] ?? ''));
@@ -663,7 +689,9 @@ function hirepeak_dashboard_job_card(array $job): string
         isset($job['salary_max']) ? (string) $job['salary_max'] : ''
     );
     $posted = hirepeak_relative_time(isset($job['created_at']) ? (string) $job['created_at'] : null);
-    $logo = hirepeak_esc(hirepeak_initials($company !== '' ? $company : $title));
+    $logoSource = trim($companyRaw) !== '' ? $companyRaw : (string) ($job['title'] ?? 'AuraJob');
+    $logo = hirepeak_esc(hirepeak_initials($logoSource));
+    $logoClass = hirepeak_esc(hirepeak_company_avatar_class($logoSource));
     $closed = isset($job['status']) && $job['status'] !== 'active';
     $url = hirepeak_url('job-details.php?id=' . $id);
 
@@ -681,7 +709,7 @@ function hirepeak_dashboard_job_card(array $job): string
 
     return '<article class="mini-card">'
         . '<div class="mini-card__top">'
-        . '<span class="mini-card__logo" aria-hidden="true">' . $logo . '</span>'
+        . '<span class="mini-card__logo ' . $logoClass . '" aria-hidden="true">' . $logo . '</span>'
         . '</div>'
         . '<h3 class="mini-card__title"><a href="' . $url . '">' . $title . '</a></h3>'
         . '<p class="mini-card__company">' . $companyLine . '</p>'

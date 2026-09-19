@@ -430,7 +430,7 @@ $pageScripts = ['/assets/js/main.js'];
             </div>
 
             <div class="apply-job-head">
-              <span class="apply-job-head__logo" aria-hidden="true"><?php echo hirepeak_esc(hirepeak_initials($jobTitle)); ?></span>
+              <span class="apply-job-head__logo <?php echo hirepeak_esc(hirepeak_company_avatar_class($companyName)); ?>" aria-hidden="true"><?php echo hirepeak_esc(hirepeak_initials($companyName)); ?></span>
               <div class="apply-job-head__text">
                 <h3 class="apply-job-head__title"><?php echo hirepeak_esc($jobTitle); ?></h3>
                 <p class="apply-job-head__company">

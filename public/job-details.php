@@ -233,7 +233,7 @@ $companyMetaLine = trim(hirepeak_esc($companyIndustry) . ($companyLocation !== '
         <article class="jd-main">
           <header class="jd-head">
             <div class="jd-head__row">
-              <span class="job-card__logo jd-head__logo" aria-hidden="true"><?php echo hirepeak_esc(hirepeak_initials($companyName)); ?></span>
+              <span class="job-card__logo jd-head__logo <?php echo hirepeak_esc(hirepeak_company_avatar_class($companyName)); ?>" aria-hidden="true"><?php echo hirepeak_esc(hirepeak_initials($companyName)); ?></span>
               <div>
                 <h1 class="jd-head__title"><?php echo hirepeak_esc($jobTitle); ?></h1>
                 <p class="jd-head__company"><?php echo hirepeak_esc($companyName); ?></p>
@@ -328,7 +328,7 @@ $companyMetaLine = trim(hirepeak_esc($companyIndustry) . ($companyLocation !== '
           <div class="jd-panel jd-company">
             <h2 class="jd-facts__title">About the company</h2>
             <div class="jd-company__head">
-              <span class="job-card__logo jd-company__logo" aria-hidden="true"><?php echo hirepeak_esc(hirepeak_initials($companyName)); ?></span>
+              <span class="job-card__logo jd-company__logo <?php echo hirepeak_esc(hirepeak_company_avatar_class($companyName)); ?>" aria-hidden="true"><?php echo hirepeak_esc(hirepeak_initials($companyName)); ?></span>
               <div>
                 <p class="jd-company__name"><?php echo hirepeak_esc($companyName); ?></p>
                 <?php if ($companyMetaLine !== ''): ?>
@@ -355,7 +355,7 @@ $companyMetaLine = trim(hirepeak_esc($companyIndustry) . ($companyLocation !== '
             <?php foreach ($related as $rj): ?>
               <article class="job-card job-card--related">
                 <div class="job-card__top">
-                  <span class="job-card__logo" aria-hidden="true"><?php echo hirepeak_esc(hirepeak_initials((string) $rj['company_name'])); ?></span>
+                  <span class="job-card__logo <?php echo hirepeak_esc(hirepeak_company_avatar_class((string) $rj['company_name'])); ?>" aria-hidden="true"><?php echo hirepeak_esc(hirepeak_initials((string) $rj['company_name'])); ?></span>
                   <?php if ($viewerRole === 'applicant'): ?>
                     <?php $rjSaved = isset($savedRelated[(int) $rj['id']]); ?>
                     <?php $rjSaveLabel = 'Save ' . (string) $rj['title'] . ' at ' . (string) $rj['company_name']; ?>

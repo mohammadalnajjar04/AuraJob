@@ -33,9 +33,10 @@ The database name is `aurajob_db`.
 
 ### applicant_profiles
 
-- **Purpose:** Detailed, applicant-only information (job title, bio, phone, skills, and a placeholder for a future CV). This keeps `users` lean by avoiding many empty (NULL) columns on shared table rows.
+- **Purpose:** Detailed, applicant-only information (professional title, bio, encrypted phone, skills, and the applicant's uploaded CV path). This keeps `users` lean by avoiding many empty (NULL) columns on shared table rows.
 - **Primary key:** `id`
 - **Important columns:** `professional_title`, `bio`, `phone`, `location`, `experience_years`, `skills`, `cv_path`
+- **CV workflow:** `cv_path` references a validated PDF stored under `storage/uploads/cvs/` outside the public web root. Upload/removal happens in the applicant profile, the applicant can download their own CV, and an employer can download it only through an application to one of that employer's jobs.
 - **Foreign keys:** `user_id` → `users.id`
 - **Unique constraints:** `user_id` is unique — one applicant profile per applicant.
 
@@ -44,6 +45,7 @@ The database name is `aurajob_db`.
 - **Purpose:** The company that an employer manages. Companies are where jobs belong.
 - **Primary key:** `id`
 - **Important columns:** `name`, `description`, `industry`, `location`, `website`, `logo_path`, `contact_email`, `contact_phone`
+- **Logo workflow:** `logo_path` references a validated PNG/JPEG/WebP image stored under `storage/uploads/company-logos/` outside the public web root. Employers manage the logo from Company Profile, and AuraJob falls back to deterministic company initials when no logo is uploaded.
 - **Foreign keys:** `user_id` → `users.id`
 - **Unique constraints:** `user_id` is unique — one company per employer.
 
@@ -78,7 +80,7 @@ The database name is `aurajob_db`.
 
 ### saved_jobs
 
-- **Purpose:** A "bookmark" table (a junction table) letting applicants save jobs to view later. This is a **bonus feature** whose schema is reserved now.
+- **Purpose:** A junction table used by the implemented Saved Jobs feature, letting applicants bookmark jobs and view or remove those saved jobs later.
 - **Primary key:** the composite key `(applicant_id, job_id)` — which also automatically prevents an applicant from saving the same job twice.
 - **Important columns:** `saved_at`
 - **Foreign keys:** `applicant_id` → `users.id`, `job_id` → `jobs.id`
@@ -86,7 +88,7 @@ The database name is `aurajob_db`.
 
 ### notifications
 
-- **Purpose:** In-app messages sent to a specific user (for example, "your application status changed"). A **bonus feature** whose schema is reserved now.
+- **Purpose:** Stores the implemented in-app notifications sent to users, including new-application alerts for employers and application-status updates for applicants.
 - **Primary key:** `id`
 - **Important columns:** `type` (application_status/application_new/system/job_update), `message`, `is_read` (0 = unread, 1 = read)
 - **Foreign keys:** `user_id` → `users.id`

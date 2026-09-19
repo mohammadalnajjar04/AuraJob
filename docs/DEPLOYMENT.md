@@ -83,7 +83,12 @@ Do not show stack traces, SQL errors, or secrets to visitors.
 
 Application source code should normally be read-only to the web-server process.
 
-`storage/uploads/` is reserved for runtime uploads. The current release does not expose an upload workflow, so it does not require public write access for normal use. If an upload feature is enabled later, grant the narrowest required write permission only to this directory and keep it outside `public/`.
+AuraJob includes two implemented upload workflows:
+
+- applicant PDF CVs → `storage/uploads/cvs/`
+- employer company logos → `storage/uploads/company-logos/`
+
+Keep `storage/` outside the public web root. Grant the PHP/web-server process write permission only to the required upload directories, not to the entire application source tree. Uploaded files use server-generated names and are delivered through AuraJob's PHP endpoints rather than by exposing `storage/` directly.
 
 ## 7. HTTPS and Domain
 

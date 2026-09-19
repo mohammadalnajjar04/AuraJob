@@ -383,6 +383,7 @@ Before submitting or publishing the repository:
 
 ## Notes
 
-- `storage/uploads/` is reserved for runtime uploads and is excluded from Git except for `.gitkeep`.
-- CV/logo uploads remain optional future enhancements; the current project does not claim an implemented upload workflow.
+- `storage/uploads/` is the runtime upload area and is excluded from Git except for `.gitkeep`.
+- **Applicant CV upload is implemented:** PDF only, maximum 5 MB, stored under `storage/uploads/cvs/` outside the public web root. Applicants can download their own CV; employers can access a CV only when reviewing an application submitted to one of their jobs.
+- **Company logo upload is implemented:** PNG/JPEG/WebP, maximum 2 MB, stored under `storage/uploads/company-logos/` outside the public web root and served through the validated `public/company-logo.php` endpoint. Initials remain the fallback when no logo is uploaded.
 - `database/database.sql` is generated from `schema.sql` + the clean baseline `seed.sql`; it contains no demo users or transactional data. Optional fictional demo data lives only in `database/demo-seed.sql`.

@@ -19,7 +19,7 @@ The design emphasizes:
 - `categories` is a lookup table rather than an ENUM so categories are dynamic and manageable.
 - Employment type, work mode, and experience level are stored as ENUM columns because they are fixed, small, closed sets defined at design time.
 - Application and user `status` values are ENUMs (closed, known value sets).
-- Notifications are user-scoped (not role-scoped) so the same mechanism serves applicants and employers later.
+- Notifications are user-scoped (not role-scoped), allowing the same implemented notification system to serve both applicants and employers.
 
 ---
 
@@ -76,14 +76,15 @@ One-to-one detail record for applicant users.
 | `location` | VARCHAR(120) | NULL | Searchable preference |
 | `experience_years` | TINYINT UNSIGNED | NULL | Years of experience |
 | `skills` | TEXT | NULL | Comma-separated or free text; kept simple |
-| `cv_path` | VARCHAR(255) | NULL | Reserved for CV upload (bonus feature) |
+| `cv_path` | VARCHAR(255) | NULL | Relative path to the applicant's uploaded PDF CV stored outside `public/` |
 | `created_at` | TIMESTAMP | NOT NULL, DEFAULT CURRENT_TIMESTAMP | |
 | `updated_at` | TIMESTAMP | NOT NULL, DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP | |
 
 **Notes**
 - `user_id` is UNIQUE because the relationship is one-to-one.
 - The table is optional — a profile row exists only once the applicant fills it in. Columns are nullable accordingly.
-- `cv_path` stores a file path string, never the file binary.
+- `cv_path` stores only the generated relative file path; the PDF itself is stored under `storage/uploads/cvs/` outside the public web root and is delivered through authenticated download endpoints.
+- CV upload is implemented from `public/applicant/profile.php`; applicants can download their own CV, and employers can download it only for applications to jobs they own.
 
 ---
 
@@ -100,7 +101,7 @@ Employer-owned company/recruiting entity.
 | `industry` | VARCHAR(100) | NULL | Free text industry |
 | `location` | VARCHAR(150) | NULL | Company headquarters |
 | `website` | VARCHAR(255) | NULL | Company URL |
-| `logo_path` | VARCHAR(255) | NULL | Uploaded logo path (bonus feature) |
+| `logo_path` | VARCHAR(255) | NULL | Relative path to the employer's uploaded PNG/JPEG/WebP company logo stored outside `public/` |
 | `contact_email` | VARCHAR(190) | NULL | Public contact email |
 | `contact_phone` | VARCHAR(30) | NULL | Public contact phone |
 | `created_at` | TIMESTAMP | NOT NULL, DEFAULT CURRENT_TIMESTAMP | |
@@ -108,7 +109,8 @@ Employer-owned company/recruiting entity.
 
 **Notes**
 - `user_id` UNIQUE = one company per employer user (one-to-one), but a single company can own many jobs (one-to-many).
-- `website` and `logo_path` hold URLs/paths, not files.
+- `website` stores the company URL. `logo_path` stores only the generated relative path; the logo file itself is stored under `storage/uploads/company-logos/` outside the public web root and is served through the validated logo endpoint.
+- Company-logo upload is implemented from `public/employer/company-profile.php`, with validated PNG/JPEG/WebP uploads and initials fallback when no logo exists.
 
 ---
 
@@ -200,7 +202,7 @@ Tracks an applicant's application to a specific job.
 
 ### saved_jobs
 
-Junction table for applicants bookmarking jobs (many-to-many). **Bonus feature — reserved schema (implemented later).**
+Junction table for the implemented Saved Jobs feature, allowing applicants to bookmark jobs (many-to-many).
 
 | Column | Type | Constraints | Notes |
 |--------|------|-------------|-------|
@@ -218,7 +220,7 @@ Junction table for applicants bookmarking jobs (many-to-many). **Bonus feature �
 
 ### notifications
 
-User-scoped in-app messages (base infrastructure for the notification bonus feature).
+User-scoped in-app messages used by the implemented notification workflow, including new-application and application-status updates.
 
 | Column | Type | Constraints | Notes |
 |--------|------|-------------|-------|
@@ -302,7 +304,7 @@ saved_jobs   * ── * jobs                (Many-to-Many via junction)
 ## Security / Encryption Notes
 
 - **Passwords**: stored as a hash in `users.password_hash` using PHP `password_hash()` (bcrypt/argon2id). Never reversible; never stored in plain text. **Hash only — do not encrypt.**
-- **Encryption target (recoverable sensitive field):** `applicant_profiles.phone` — a sensitive personal data point that may need to be recovered/read back de-encrypted (unlike a password). It will later be encrypted **in the application layer using PHP AES-256-GCM**.
+- **Encrypted recoverable field:** `applicant_profiles.phone` — a sensitive personal data point that is encrypted and decrypted in the PHP application layer using **AES-256-GCM** (`app/Services/crypto.php`).
   - Rationale: it's personally identifying, is not used for lookups (so encryption does not block queries), and may need to be shown back to the user or to employers.
   - The encrypted value will be stored in a column large enough to hold the ciphertext + IV + tag (**`phone` was widened from VARCHAR(30) → VARCHAR(255)` for this; see `database/migrations/2026-09-14-phone-encryption.sql`**). The schema keeps the column as an opaque text field; the key lives only in the application configuration (`.env`), **never in the database**.
 - No encryption keys, salts, or IVs are stored in this schema.
@@ -459,4 +461,4 @@ erDiagram
 5. **Delete rules are intentional**: CASCADE for ownership chains, RESTRICT for reference data (`categories`), no blind global CASCADE.
 6. **`jobs.employer_id`** is stored alongside `company_id` to make ownership authorization and "my jobs" queries cheap and index-friendly.
 7. **Indexes are targeted** at search (title/location via category/status/created indexes) and the most common joins (applicant ↔ applications, job ↔ applications, employer ↔ jobs, user ↔ notifications), without over-indexing.
-8. **`saved_jobs` and `notifications` are designed now** but are bonus features; their schema is reserved and ready for later implementation without altering mandatory tables.
+8. **`saved_jobs` and `notifications` are fully implemented features.** Saved Jobs supports applicant bookmarking, while notifications support new-application and application-status messages with read/unread state.

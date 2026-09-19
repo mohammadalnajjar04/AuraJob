@@ -396,7 +396,7 @@ $activeFilterCount = count($categorySel)
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/assets/css/style.css">
 </head>
-<body>
+<body class="jobs-page">
   <?php require dirname(__DIR__) . '/app/Views/header.php'; ?>
 
   <div class="scrim" data-scrim hidden></div>

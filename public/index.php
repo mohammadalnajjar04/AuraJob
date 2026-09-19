@@ -23,7 +23,7 @@ $pageScripts = ['/assets/js/main.js'];
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/assets/css/style.css">
 </head>
-<body>
+<body class="home-page">
   <?php require dirname(__DIR__) . '/app/Views/header.php'; ?>
 
   <div class="scrim" data-scrim hidden></div>
@@ -92,7 +92,6 @@ $pageScripts = ['/assets/js/main.js'];
           <span class="hero-preview__step is-next"><span class="hero-preview__dot"></span>Interview</span>
         </div>
       </div>
-    </div>
   </section>
 
   <section class="section" aria-labelledby="latest-jobs-title">

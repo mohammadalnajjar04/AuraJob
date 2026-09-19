@@ -57,8 +57,12 @@ $pageScripts = $pageScripts ?? [];
     </div>
 
     <div class="footer-bottom">
-      <p>&copy; <span id="year">2026</span> HirePeak. All rights reserved.</p>
-      <p class="footer-bottom__legal">Job Board &amp; Recruitment Management System</p>
+      <div class="footer-bottom__credit">
+        <p>&copy; <span id="year">2026</span> Mohammad Al-Najjar. All rights reserved.</p>
+        <span class="footer-bottom__separator" aria-hidden="true">&bull;</span>
+        <p>Developed in collaboration with <a href="https://unicoders.co/" target="_blank" rel="noopener noreferrer">UniCoders</a>.</p>
+      </div>
+      <p class="footer-bottom__legal">HirePeak &mdash; Job Board &amp; Recruitment Management System</p>
     </div>
   </div>
 </footer>

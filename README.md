@@ -82,8 +82,9 @@ AuraJob/
 │   └── assets/        # CSS and JavaScript
 ├── database/
 │   ├── schema.sql
-│   ├── seed.sql
-│   ├── database.sql   # combined submission/import file
+│   ├── seed.sql        # baseline categories only; no accounts
+│   ├── demo-seed.sql   # optional fictional demo data
+│   ├── database.sql    # clean combined schema + baseline categories
 │   ├── ERD.md
 │   ├── DATABASE_NOTES.md
 │   └── migrations/
@@ -195,17 +196,28 @@ cd AuraJob
 
 ### 2. Create the database
 
-For a fresh local setup, import the combined file:
+For a fresh local setup, import the clean combined file:
 
 ```bash
 mysql -u root -p < database/database.sql
 ```
 
-Alternatively, import the two source files in order:
+`database/database.sql` creates the complete schema plus the baseline job
+categories. It intentionally creates **no users, companies, jobs,
+applications, saved jobs, or notifications**.
+
+Alternatively, import the maintainable source files in order:
 
 ```bash
 mysql -u root -p < database/schema.sql
 mysql -u root -p aurajob_db < database/seed.sql
+```
+
+If you explicitly want fictional demo accounts and recruitment activity for
+local testing, import the optional demo file afterward:
+
+```bash
+mysql -u root -p aurajob_db < database/demo-seed.sql
 ```
 
 ### 3. Create an application database user (recommended)
@@ -270,15 +282,22 @@ Open:
 http://localhost:8000/
 ```
 
-## Development Seed Accounts
+## Optional Demo Data
 
-`database/seed.sql` contains fictional development accounts. Their development-only password is:
+The normal submission/import path starts with an empty user base.
+
+- `database/seed.sql` contains only baseline job categories.
+- `database/database.sql` contains the schema plus those baseline categories.
+- `database/demo-seed.sql` is optional and contains fictional accounts,
+  company/job/application data for local demonstrations only.
+
+If `demo-seed.sql` is imported, its development-only account password is:
 
 ```text
 password
 ```
 
-Examples:
+Example fictional accounts:
 
 | Role | Email |
 |---|---|
@@ -286,7 +305,7 @@ Examples:
 | Applicant | `john.applicant@example.test` |
 | Applicant | `emma.seekers@example.test` |
 
-These accounts and hashes are for local development/demo use only.
+Do not import `demo-seed.sql` for a clean submission or production database.
 
 ## Application Status Workflow
 
@@ -355,7 +374,7 @@ Before submitting or publishing the repository:
 - import-test `database/database.sql` on a clean MySQL instance
 - keep `.env` and runtime uploads out of Git
 - serve the application from `public/`
-- verify Applicant and Employer demo flows
+- verify Applicant and Employer flows by registering fresh accounts (or optionally use `database/demo-seed.sql` for local demo testing)
 - confirm PHP/JavaScript syntax checks pass
 - confirm no placeholder/dead links remain
 - include `README.md`, `database/database.sql`, ERD/database notes, and project documentation
@@ -365,4 +384,4 @@ Before submitting or publishing the repository:
 
 - `storage/uploads/` is reserved for runtime uploads and is excluded from Git except for `.gitkeep`.
 - CV/logo uploads remain optional future enhancements; the current project does not claim an implemented upload workflow.
-- `database/database.sql` is generated from the current `schema.sql` + `seed.sql` for convenient submission/import. The two source files remain the maintainable originals.
+- `database/database.sql` is generated from `schema.sql` + the clean baseline `seed.sql`; it contains no demo users or transactional data. Optional fictional demo data lives only in `database/demo-seed.sql`.

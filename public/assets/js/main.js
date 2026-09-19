@@ -98,6 +98,35 @@
     updateHeaderState();
   }
 
+  /* The Home and For Employers links share index.php, so PHP cannot see the
+   * URL fragment. Keep the active navigation state in sync with the hash on
+   * initial load and whenever the fragment changes. */
+  const navLinks = document.querySelectorAll('.site-nav__link[data-nav-key]');
+
+  function syncHashNavigation() {
+    if (!navLinks.length) return;
+
+    const path = window.location.pathname.replace(/\/+$/, '');
+    const isHomePage = path === '' || path === '/' || /\/index\.php$/i.test(path);
+    if (!isHomePage) return;
+
+    const activeKey = window.location.hash === '#for-employers' ? 'employers' : 'home';
+
+    for (const link of navLinks) {
+      const isActive = link.getAttribute('data-nav-key') === activeKey;
+      link.classList.toggle('is-active', isActive);
+
+      if (isActive) {
+        link.setAttribute('aria-current', activeKey === 'employers' ? 'location' : 'page');
+      } else {
+        link.removeAttribute('aria-current');
+      }
+    }
+  }
+
+  syncHashNavigation();
+  window.addEventListener('hashchange', syncHashNavigation);
+
   const chips = document.querySelectorAll('[data-chip]');
   const keyword = document.getElementById('hero-keyword');
 

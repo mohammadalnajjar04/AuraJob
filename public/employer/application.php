@@ -106,6 +106,9 @@ try {
     error_log('[hirepeak] employer application load failed: ' . $e->getMessage());
     $loadError = true;
 }
+
+$pageActive = '';
+$pageScripts = ['/assets/js/main.js'];
 ?>
 <!DOCTYPE html>
 <html lang="en">

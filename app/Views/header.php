@@ -5,7 +5,7 @@ declare(strict_types=1);
  * HirePeak shared site header (public nav + authenticated user menu).
  *
  * Renders the SVG sprite defs, skip link, and the .site-header navigation.
- * Pages set $pageActive ('home' | 'jobs' | '') before including this file to
+ * Pages set $pageActive ('home' | 'jobs' | 'employers' | '') before including this file to
  * mark the active nav item. The authenticated/guest right-hand state is derived
  * server-side from the session and never from client input.
  */
@@ -127,7 +127,7 @@ $hpNavItems = [
       <ul class="site-nav__links">
         <?php foreach ($hpNavItems as $hpItem): ?>
           <li>
-            <a class="site-nav__link<?php echo $pageActive === $hpItem['key'] ? ' is-active' : ''; ?>" href="<?php echo hirepeak_esc($hpItem['href']); ?>"<?php echo $pageActive === $hpItem['key'] ? ' aria-current="page"' : ''; ?>><?php echo hirepeak_esc($hpItem['label']); ?></a>
+            <a class="site-nav__link<?php echo $pageActive === $hpItem['key'] ? ' is-active' : ''; ?>" data-nav-key="<?php echo hirepeak_esc($hpItem['key']); ?>" href="<?php echo hirepeak_esc($hpItem['href']); ?>"<?php echo $pageActive === $hpItem['key'] ? ' aria-current="page"' : ''; ?>><?php echo hirepeak_esc($hpItem['label']); ?></a>
           </li>
         <?php endforeach; ?>
       </ul>

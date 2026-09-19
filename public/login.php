@@ -77,7 +77,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                 $formError = 'Email or password is incorrect.';
             } catch (\Throwable $e) {
-                error_log('[hirepeak] Login verification failed: ' . $e->getMessage());
+                error_log('[AuraJob] Login verification failed: ' . $e->getMessage());
                 $formError = 'Sign in is temporarily unavailable. Please try again shortly.';
             }
         }

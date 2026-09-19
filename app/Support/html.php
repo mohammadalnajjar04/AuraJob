@@ -211,7 +211,7 @@ function hirepeak_apply_cta(int $jobId): array
         $job = $stmt->get_result()->fetch_assoc();
         $stmt->close();
     } catch (\Throwable $e) {
-        error_log('[hirepeak] apply CTA job lookup failed: ' . $e->getMessage());
+        error_log('[AuraJob] apply CTA job lookup failed: ' . $e->getMessage());
         $dbDown = true;
     }
 
@@ -270,7 +270,7 @@ function hirepeak_apply_cta(int $jobId): array
         $existing = $stmt->get_result()->fetch_assoc();
         $stmt->close();
     } catch (\Throwable $e) {
-        error_log('[hirepeak] apply CTA existing-application check failed: ' . $e->getMessage());
+        error_log('[AuraJob] apply CTA existing-application check failed: ' . $e->getMessage());
         $existing = null;
     }
 

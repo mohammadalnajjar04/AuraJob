@@ -103,7 +103,7 @@ try {
         /* Never echo ciphertext: if it can't be decrypted, we simply omit it. */
     }
 } catch (\Throwable $e) {
-    error_log('[hirepeak] employer application load failed: ' . $e->getMessage());
+    error_log('[AuraJob] employer application load failed: ' . $e->getMessage());
     $loadError = true;
 }
 

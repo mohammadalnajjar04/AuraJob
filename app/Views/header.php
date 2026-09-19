@@ -45,7 +45,7 @@ if ($hpLogged && $hpUser !== null) {
         $hpDb = hirepeak_db();
         $hpUnread = hirepeak_notification_unread_count($hpDb, (int) $hpUser['id']);
     } catch (\Throwable $e) {
-        error_log('[hirepeak] header unread badge failed: ' . $e->getMessage());
+        error_log('[AuraJob] header unread badge failed: ' . $e->getMessage());
         $hpUnread = 0;
     }
 }

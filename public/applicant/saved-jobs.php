@@ -35,7 +35,7 @@ try {
     $savedJobs = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
     $stmt->close();
 } catch (\Throwable $e) {
-    error_log('[hirepeak] saved-jobs page load failed: ' . $e->getMessage());
+    error_log('[AuraJob] saved-jobs page load failed: ' . $e->getMessage());
     $loadError = true;
 }
 

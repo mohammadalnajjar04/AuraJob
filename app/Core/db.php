@@ -20,7 +20,7 @@ function hirepeak_db(): mysqli
     }
 
     if (!class_exists('mysqli')) {
-        error_log('[hirepeak] mysqli extension is not loaded');
+        error_log('[AuraJob] mysqli extension is not loaded');
         throw new RuntimeException('The mysqli PHP extension is not enabled.');
     }
 
@@ -30,7 +30,7 @@ function hirepeak_db(): mysqli
         $db = new mysqli(DB_HOST, DB_USER, DB_PASS, DB_NAME, (int) DB_PORT);
         $db->set_charset('utf8mb4');
     } catch (\mysqli_sql_exception $e) {
-        error_log('[hirepeak] Database connection failed: ' . $e->getMessage());
+        error_log('[AuraJob] Database connection failed: ' . $e->getMessage());
         throw new RuntimeException('Database connection unavailable.', 0, $e);
     }
 

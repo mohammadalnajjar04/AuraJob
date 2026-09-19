@@ -120,7 +120,7 @@ try {
         ];
     }
 } catch (\Throwable $e) {
-    error_log('[hirepeak] edit job load/save failed: ' . $e->getMessage());
+    error_log('[AuraJob] edit job load/save failed: ' . $e->getMessage());
     hirepeak_job_not_found();
 }
 ?>

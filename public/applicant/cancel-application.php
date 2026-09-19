@@ -72,7 +72,7 @@ try {
         }
     }
 } catch (\Throwable $e) {
-    error_log('[hirepeak] cancel application failed: ' . $e->getMessage());
+    error_log('[AuraJob] cancel application failed: ' . $e->getMessage());
     $formError = 'Something went wrong cancelling this application. Please try again.';
 }
 

@@ -70,7 +70,7 @@ if ($viewerRole === 'applicant' && $viewerId > 0) {
         }
         $savedThis = isset($savedRelated[$jobId]);
     } catch (\Throwable $e) {
-        error_log('[hirepeak] saved-jobs details state failed: ' . $e->getMessage());
+        error_log('[AuraJob] saved-jobs details state failed: ' . $e->getMessage());
     }
 }
 
@@ -108,7 +108,7 @@ if (isset($_SESSION['hp_save_flash_error']) && $_SESSION['hp_save_flash_error'] 
     $related = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
     $stmt->close();
 } catch (\Throwable $e) {
-    error_log('[hirepeak] job details load failed: ' . $e->getMessage());
+    error_log('[AuraJob] job details load failed: ' . $e->getMessage());
     hirepeak_job_not_found();
 }
 

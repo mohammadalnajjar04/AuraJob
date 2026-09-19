@@ -122,7 +122,7 @@ try {
     $recentApplications = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
     $stmt->close();
 } catch (Throwable $e) {
-    error_log('[hirepeak] employer dashboard load failed: ' . $e->getMessage());
+    error_log('[AuraJob] employer dashboard load failed: ' . $e->getMessage());
     $loadError = true;
 }
 ?>

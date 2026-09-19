@@ -220,7 +220,7 @@ try {
         $old = $defaults;
     }
 } catch (\Throwable $e) {
-    error_log('[hirepeak] company profile load/save failed: ' . $e->getMessage());
+    error_log('[AuraJob] company profile load/save failed: ' . $e->getMessage());
     $hasError = true;
 }
 

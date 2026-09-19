@@ -76,7 +76,7 @@ try {
     $notifications = hirepeak_notification_recent($db, $uid, 50);
     $unread = hirepeak_notification_unread_count($db, $uid);
 } catch (\Throwable $e) {
-    error_log('[hirepeak] notifications load failed: ' . $e->getMessage());
+    error_log('[AuraJob] notifications load failed: ' . $e->getMessage());
     $loadError = true;
     $notifications = [];
     $unread = 0;

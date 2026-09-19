@@ -198,7 +198,7 @@ try {
         $old = $defaults;
     }
 } catch (\Throwable $e) {
-    error_log('[hirepeak] applicant profile load/save failed: ' . $e->getMessage());
+    error_log('[AuraJob] applicant profile load/save failed: ' . $e->getMessage());
     $hasError = true;
 }
 

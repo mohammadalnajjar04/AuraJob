@@ -86,7 +86,7 @@ try {
         }
     }
 } catch (\Throwable $e) {
-    error_log('[hirepeak] post job load/save failed: ' . $e->getMessage());
+    error_log('[AuraJob] post job load/save failed: ' . $e->getMessage());
     $loadError = true;
 }
 ?>

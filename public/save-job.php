@@ -100,7 +100,7 @@ try {
     $job = $stmt->get_result()->fetch_assoc();
     $stmt->close();
 } catch (\Throwable $e) {
-    error_log('[hirepeak] saved-jobs job lookup failed: ' . $e->getMessage());
+    error_log('[AuraJob] saved-jobs job lookup failed: ' . $e->getMessage());
     hirepeak_save_fail(500, 'Something went wrong. Please try again.', 'jobs.php');
 }
 
@@ -130,7 +130,7 @@ try {
         $stmt->close();
     }
 } catch (\Throwable $e) {
-    error_log('[hirepeak] saved-jobs write failed: ' . $e->getMessage());
+    error_log('[AuraJob] saved-jobs write failed: ' . $e->getMessage());
     hirepeak_save_fail(500, 'We couldn\'t update your saved jobs right now. Please try again.', 'jobs.php');
 }
 

@@ -68,7 +68,7 @@ try {
         });
     }
 } catch (\Throwable $e) {
-    error_log('[hirepeak] my applications load failed: ' . $e->getMessage());
+    error_log('[AuraJob] my applications load failed: ' . $e->getMessage());
     $loadError = true;
     $applications = [];
 }
@@ -98,7 +98,7 @@ if (!$loadError) {
         }
         $stmt->close();
     } catch (\Throwable $e) {
-        error_log('[hirepeak] my applications counts failed: ' . $e->getMessage());
+        error_log('[AuraJob] my applications counts failed: ' . $e->getMessage());
     }
 }
 

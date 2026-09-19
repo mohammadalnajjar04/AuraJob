@@ -67,7 +67,7 @@ try {
         }
     }
 } catch (\Throwable $e) {
-    error_log('[hirepeak] delete job failed: ' . $e->getMessage());
+    error_log('[AuraJob] delete job failed: ' . $e->getMessage());
     $formError = 'Something went wrong deleting this job. Please try again.';
 }
 

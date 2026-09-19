@@ -72,7 +72,7 @@ final class AuraJobNotificationService implements AuraJobNotificationServiceInte
             $stmt->close();
             return $affected === 1;
         } catch (\Throwable $e) {
-            error_log('[hirepeak] notification create failed: ' . $e->getMessage());
+            error_log('[AuraJob] notification create failed: ' . $e->getMessage());
             return false;
         }
     }
@@ -89,7 +89,7 @@ final class AuraJobNotificationService implements AuraJobNotificationServiceInte
             $stmt->close();
             return $count;
         } catch (\Throwable $e) {
-            error_log('[hirepeak] notification count failed: ' . $e->getMessage());
+            error_log('[AuraJob] notification count failed: ' . $e->getMessage());
             return 0;
         }
     }
@@ -119,7 +119,7 @@ final class AuraJobNotificationService implements AuraJobNotificationServiceInte
             }
             return $list;
         } catch (\Throwable $e) {
-            error_log('[hirepeak] notification list failed: ' . $e->getMessage());
+            error_log('[AuraJob] notification list failed: ' . $e->getMessage());
             return [];
         }
     }
@@ -135,7 +135,7 @@ final class AuraJobNotificationService implements AuraJobNotificationServiceInte
             $stmt->close();
             return true;
         } catch (\Throwable $e) {
-            error_log('[hirepeak] notification mark-one failed: ' . $e->getMessage());
+            error_log('[AuraJob] notification mark-one failed: ' . $e->getMessage());
             return false;
         }
     }
@@ -151,7 +151,7 @@ final class AuraJobNotificationService implements AuraJobNotificationServiceInte
             $stmt->close();
             return true;
         } catch (\Throwable $e) {
-            error_log('[hirepeak] notification mark-all failed: ' . $e->getMessage());
+            error_log('[AuraJob] notification mark-all failed: ' . $e->getMessage());
             return false;
         }
     }

@@ -68,7 +68,7 @@ try {
         }
     }
 } catch (\Throwable $e) {
-    error_log('[hirepeak] close job failed: ' . $e->getMessage());
+    error_log('[AuraJob] close job failed: ' . $e->getMessage());
     hirepeak_job_not_found();
 }
 ?>

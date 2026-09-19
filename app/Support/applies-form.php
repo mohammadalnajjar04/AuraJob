@@ -192,7 +192,7 @@ function hirepeak_process_application_status_update(\mysqli $db, int $applicatio
         $result['flash'] = 'Application status updated.';
         return $result;
     } catch (\Throwable $e) {
-        error_log('[hirepeak] application status update failed: ' . $e->getMessage());
+        error_log('[AuraJob] application status update failed: ' . $e->getMessage());
         $result['errors'] = ['Something went wrong updating this application. Please try again.'];
         return $result;
     }

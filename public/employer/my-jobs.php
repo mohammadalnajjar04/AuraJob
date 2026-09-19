@@ -94,7 +94,7 @@ try {
     $jobRows = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
     $stmt->close();
 } catch (\Throwable $e) {
-    error_log('[hirepeak] my jobs load failed: ' . $e->getMessage());
+    error_log('[AuraJob] my jobs load failed: ' . $e->getMessage());
     $loadError = true;
 }
 

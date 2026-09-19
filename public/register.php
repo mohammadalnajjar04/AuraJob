@@ -87,7 +87,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 }
                 $stmt->close();
             } catch (\Throwable $e) {
-                error_log('[hirepeak] Duplicate email check failed: ' . $e->getMessage());
+                error_log('[AuraJob] Duplicate email check failed: ' . $e->getMessage());
                 $formError = 'Registration is temporarily unavailable. Please try again shortly.';
             }
         }
@@ -108,11 +108,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 if ($e->getCode() === 1062) {
                     $errors['email'] = 'An account with this email already exists.';
                 } else {
-                    error_log('[hirepeak] User insert failed: ' . $e->getMessage());
+                    error_log('[AuraJob] User insert failed: ' . $e->getMessage());
                     $formError = 'Registration is temporarily unavailable. Please try again shortly.';
                 }
             } catch (\Throwable $e) {
-                error_log('[hirepeak] User insert failed: ' . $e->getMessage());
+                error_log('[AuraJob] User insert failed: ' . $e->getMessage());
                 $formError = 'Registration is temporarily unavailable. Please try again shortly.';
             }
         }

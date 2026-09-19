@@ -234,7 +234,7 @@ try {
     $jobs = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
     $stmt->close();
 } catch (\Throwable $e) {
-    error_log('[hirepeak] jobs listing load failed: ' . $e->getMessage());
+    error_log('[AuraJob] jobs listing load failed: ' . $e->getMessage());
     $dbError = true;
 }
 
@@ -279,7 +279,7 @@ if ($viewerRole === 'applicant' && $viewerId > 0) {
             $savedSet[$savedJobId] = true;
         }
     } catch (\Throwable $e) {
-        error_log('[hirepeak] saved-jobs listing state failed: ' . $e->getMessage());
+        error_log('[AuraJob] saved-jobs listing state failed: ' . $e->getMessage());
         $savedSet = [];
     }
 }

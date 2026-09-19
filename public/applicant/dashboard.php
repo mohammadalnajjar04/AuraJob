@@ -184,7 +184,7 @@ try {
         ? 'Ranked by jobs like the ones you\'ve applied to or saved.'
         : 'The newest active jobs on AuraJob.';
 } catch (Throwable $e) {
-    error_log('[hirepeak] applicant dashboard load failed: ' . $e->getMessage());
+    error_log('[AuraJob] applicant dashboard load failed: ' . $e->getMessage());
     $loadError = true;
 }
 ?>

@@ -210,13 +210,13 @@ try {
                     throw $e;
                 }
             } catch (\Throwable $e) {
-                error_log('[hirepeak] application submit failed: ' . $e->getMessage());
+                error_log('[AuraJob] application submit failed: ' . $e->getMessage());
                 $formError = 'We couldn\'t submit your application right now. Please try again in a moment.';
             }
         }
     }
 } catch (\Throwable $e) {
-    error_log('[hirepeak] application review load failed: ' . $e->getMessage());
+    error_log('[AuraJob] application review load failed: ' . $e->getMessage());
     $state = 'error';
     $job = null;
     $profile = null;

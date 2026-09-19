@@ -60,7 +60,7 @@ try {
     $application = $stmt->get_result()->fetch_assoc();
     $stmt->close();
 } catch (\Throwable $e) {
-    error_log('[hirepeak] application tracking load failed: ' . $e->getMessage());
+    error_log('[AuraJob] application tracking load failed: ' . $e->getMessage());
     $loadError = true;
     $application = null;
 }

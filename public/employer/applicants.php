@@ -109,7 +109,7 @@ try {
     $applications = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
     $stmt->close();
 } catch (\Throwable $e) {
-    error_log('[hirepeak] job applicants load failed: ' . $e->getMessage());
+    error_log('[AuraJob] job applicants load failed: ' . $e->getMessage());
     $loadError = true;
 }
 

@@ -6724,3 +6724,220 @@ a.account-menu__item:hover {
     grid-template-columns: 1fr;
   }
 }
+
+/* ========================================================================== 
+   Stage 14 polish — Global consistency + responsive finishing pass
+   ========================================================================== */
+
+/* Defensive layout rules: long user/database content should never force a
+   page wider than the viewport, especially inside dashboard/card layouts. */
+body {
+  overflow-x: clip;
+}
+
+main,
+section,
+.container,
+.dash-grid,
+.dash-panel,
+.profile-layout,
+.jd-layout,
+.track-grid,
+.apply-layout,
+.app-row__main,
+.job-card__top,
+.panel-head {
+  min-width: 0;
+}
+
+h1,
+h2,
+h3,
+h4,
+.dash-title,
+.panel-head__title,
+.job-card__title,
+.app-row__title,
+.jd-head__title,
+.track-hero__title,
+.apply-job-head__title {
+  overflow-wrap: anywhere;
+}
+
+select,
+textarea {
+  max-width: 100%;
+  font: inherit;
+  color: inherit;
+}
+
+.btn,
+.icon-button,
+.bell,
+.site-nav__link {
+  touch-action: manipulation;
+}
+
+.panel-head > *,
+.dash-head > * {
+  min-width: 0;
+}
+
+.empty-state__actions {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin-top: var(--space-5);
+}
+
+.empty-state__actions .btn,
+.empty-state__actions .inline-form {
+  margin-top: 0;
+}
+
+/* Keep horizontally scrollable filter/tab controls easy to use on touch
+   screens without showing a heavy browser scrollbar. */
+@media (max-width: 767px) {
+  .jobs-tabs,
+  .status-pills,
+  .applicants-toolbar .jobs-tabs,
+  .applications-page .status-pills {
+    scroll-snap-type: x proximity;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+
+  .jobs-tabs::-webkit-scrollbar,
+  .status-pills::-webkit-scrollbar,
+  .applicants-toolbar .jobs-tabs::-webkit-scrollbar,
+  .applications-page .status-pills::-webkit-scrollbar {
+    display: none;
+  }
+
+  .jobs-tab,
+  .status-pill {
+    scroll-snap-align: start;
+  }
+
+  .dash-main {
+    padding-top: var(--space-6);
+    padding-bottom: var(--space-8);
+  }
+
+  .dash-head {
+    align-items: flex-start;
+    gap: var(--space-4);
+    margin-bottom: var(--space-5);
+  }
+
+  .dash-title {
+    font-size: clamp(26px, 7vw, 30px);
+  }
+
+  .dash-text {
+    max-width: 64ch;
+    font-size: var(--text-body);
+    line-height: 1.6;
+  }
+
+  .panel-head {
+    align-items: flex-start;
+  }
+
+  .app-row {
+    align-items: flex-start;
+  }
+
+  .jd-head__title,
+  .track-hero__title {
+    font-size: clamp(24px, 7vw, 30px);
+  }
+
+  .footer-grid {
+    gap: var(--space-6);
+  }
+}
+
+@media (max-width: 479px) {
+  .container {
+    padding-inline: 16px;
+  }
+
+  .site-header__inner {
+    height: 60px;
+    gap: var(--space-2);
+  }
+
+  .brand {
+    gap: var(--space-2);
+  }
+
+  .brand__mark {
+    width: 24px;
+    height: 24px;
+  }
+
+  .brand__name {
+    font-size: 16px;
+  }
+
+  .dash-main {
+    padding-top: var(--space-5);
+    padding-bottom: var(--space-7);
+  }
+
+  .dash-head {
+    margin-bottom: var(--space-4);
+  }
+
+  .dash-head__cta,
+  .dash-head__cta-wrap {
+    width: 100%;
+  }
+
+  .dash-head__cta .btn,
+  .dash-head__cta-wrap .btn {
+    width: 100%;
+  }
+
+  .profile-form__actions,
+  .apply-actions,
+  .track-next__actions {
+    display: grid;
+    grid-template-columns: 1fr;
+    width: 100%;
+    gap: var(--space-2);
+  }
+
+  .profile-form__actions .btn,
+  .apply-actions .btn,
+  .track-next__actions .btn,
+  .empty-state__actions .btn,
+  .empty-state__actions .inline-form {
+    width: 100%;
+  }
+
+  .empty-state__actions {
+    width: 100%;
+  }
+
+  .empty-state__actions .inline-form .btn {
+    width: 100%;
+  }
+
+  .pagination {
+    gap: var(--space-3);
+  }
+
+  .pagination__controls {
+    max-width: 100%;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .footer-bottom {
+    gap: var(--space-2);
+  }
+}

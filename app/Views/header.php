@@ -68,25 +68,13 @@ $hpNavItems = [
     ['key' => 'employers', 'label' => 'For Employers', 'href' => hirepeak_url('index.php#for-employers'), 'target' => ''],
 ];
 ?>
-<svg class="svg-defs" aria-hidden="true">
-  <defs>
-    <symbol id="mark-peak" viewBox="0 0 24 24">
-      <rect x="1" y="1" width="22" height="22" rx="7" fill="#4F46E5"/>
-      <path d="M12 4.8 18 16H6Z" fill="#FFFFFF" stroke="#FFFFFF" stroke-width="3" stroke-linejoin="round"/>
-      <path d="M12 6.6 8.8 16H5.9Z" fill="#EEF2FF" stroke="#EEF2FF" stroke-width="3" stroke-linejoin="round"/>
-    </symbol>
-  </defs>
-</svg>
-
 <a class="skip-link" href="#main">Skip to content</a>
 
 <header class="site-header">
   <div class="container site-header__inner">
     <a class="brand" href="<?php echo hirepeak_url('index.php'); ?>" aria-label="HirePeak home">
-      <svg class="brand__mark" width="26" height="26" aria-hidden="true">
-        <use href="#mark-peak"/>
-      </svg>
-      <span class="brand__name">HirePeak</span>
+      <img class="brand__mark" src="<?php echo hirepeak_url('assets/images/hirepeak-mark.svg'); ?>" width="32" height="32" alt="" aria-hidden="true">
+      <span class="brand__name"><span class="brand__name-hire">Hire</span><span class="brand__name-peak">Peak</span></span>
     </a>
 
     <div class="site-header__actions">
@@ -111,10 +99,8 @@ $hpNavItems = [
     <nav class="site-nav" id="site-nav" data-drawer aria-hidden="true" aria-label="Main">
       <div class="site-nav__head">
         <span class="brand">
-          <svg class="brand__mark" width="26" height="26" aria-hidden="true">
-            <use href="#mark-peak"/>
-          </svg>
-          <span class="brand__name">HirePeak</span>
+          <img class="brand__mark" src="<?php echo hirepeak_url('assets/images/hirepeak-mark.svg'); ?>" width="32" height="32" alt="" aria-hidden="true">
+          <span class="brand__name"><span class="brand__name-hire">Hire</span><span class="brand__name-peak">Peak</span></span>
         </span>
         <button class="icon-button" type="button" data-drawer-close aria-label="Close menu">
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">

@@ -17,10 +17,8 @@ $pageScripts = $pageScripts ?? [];
     <div class="footer-grid">
       <div class="footer-brand">
         <a class="brand" href="<?php echo hirepeak_url('index.php'); ?>" aria-label="HirePeak home">
-          <svg class="brand__mark" width="26" height="26" aria-hidden="true">
-            <use href="#mark-peak"/>
-          </svg>
-          <span class="brand__name">HirePeak</span>
+          <img class="brand__mark" src="<?php echo hirepeak_url('assets/images/hirepeak-mark.svg'); ?>" width="32" height="32" alt="" aria-hidden="true">
+          <span class="brand__name"><span class="brand__name-hire">Hire</span><span class="brand__name-peak">Peak</span></span>
         </a>
         <p class="footer-brand__text">Helping talent and employers reach their peak.</p>
       </div>

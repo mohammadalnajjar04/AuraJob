@@ -124,7 +124,7 @@ $pageScripts = ['/assets/js/main.js'];
   <title><?php echo $job !== null ? hirepeak_esc((string) $job['title']) . ' — Applicants' : 'Applicants'; ?> — HirePeak</title>
   <meta name="description" content="Review every applicant for your job posting on HirePeak.">
   <meta name="theme-color" content="#ffffff">
-  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect x='1' y='1' width='22' height='22' rx='7' fill='%234F46E5'/%3E%3Cpath d='M12 4.8 18 16H6Z' fill='%23FFFFFF' stroke='%23FFFFFF' stroke-width='3' stroke-linejoin='round'/%3E%3Cpath d='M12 6.6 8.8 16H5.9Z' fill='%23EEF2FF' stroke='%23EEF2FF' stroke-width='3' stroke-linejoin='round'/%3E%3C/svg%3E">
+  <link rel="icon" href="/assets/images/hirepeak-mark.svg" type="image/svg+xml">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">

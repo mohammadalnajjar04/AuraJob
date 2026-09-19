@@ -17,7 +17,7 @@ $pageScripts = ['/assets/js/main.js'];
   <title>HirePeak — Find the right opportunity. Reach your peak.</title>
   <meta name="description" content="HirePeak is a modern recruitment platform connecting talented candidates with employers, with clear application tracking and a straightforward hiring workflow.">
   <meta name="theme-color" content="#ffffff">
-  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect x='1' y='1' width='22' height='22' rx='7' fill='%234F46E5'/%3E%3Cpath d='M12 4.8 18 16H6Z' fill='%23FFFFFF' stroke='%23FFFFFF' stroke-width='3' stroke-linejoin='round'/%3E%3Cpath d='M12 6.6 8.8 16H5.9Z' fill='%23EEF2FF' stroke='%23EEF2FF' stroke-width='3' stroke-linejoin='round'/%3E%3C/svg%3E">
+  <link rel="icon" href="/assets/images/hirepeak-mark.svg" type="image/svg+xml">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -30,7 +30,8 @@ $pageScripts = ['/assets/js/main.js'];
 
   <main id="main">
     <section class="hero">
-      <div class="container hero__inner">
+      <div class="container hero__layout">
+        <div class="hero__inner">
         <h1 class="hero__title">
           <span class="hero__title-line">Find the right opportunity.</span>
           <span class="hero__title-line">Reach your peak.</span>
@@ -75,24 +76,19 @@ $pageScripts = ['/assets/js/main.js'];
             <li><button type="button" class="chip" data-chip="Remote">Remote</button></li>
             <li><button type="button" class="chip" data-chip="Finance">Finance</button></li>
           </ul>
-</div>
-      </div>
+        </div>
+        </div>
 
-      <div class="hero-preview" aria-hidden="true">
-        <div class="hero-preview__job">
-          <span class="hero-preview__tile">BD</span>
-          <div>
-            <p class="hero-preview__title">Backend Developer</p>
-            <p class="hero-preview__company">Northstar Labs &middot; Amman &middot; Hybrid</p>
-          </div>
-        </div>
-        <div class="hero-preview__track">
-          <span class="hero-preview__step is-done"><span class="hero-preview__dot"></span>Applied</span>
-          <span class="hero-preview__step is-current"><span class="hero-preview__dot"></span>Under Review <span class="hero-preview__now">now</span></span>
-          <span class="hero-preview__step is-next"><span class="hero-preview__dot"></span>Interview</span>
-        </div>
+        <figure class="hero-visual">
+          <img src="/assets/images/hero-career.webp" alt="Modern workspace with a laptop focused on career growth" width="960" height="514" fetchpriority="high">
+          <figcaption class="hero-visual__card">
+            <span class="hero-visual__eyebrow">Your next move</span>
+            <strong>Search. Apply. Track.</strong>
+            <span>One focused place for your career journey.</span>
+          </figcaption>
+        </figure>
       </div>
-  </section>
+    </section>
 
   <section class="section" aria-labelledby="latest-jobs-title">
       <div class="container">
@@ -392,33 +388,13 @@ $pageScripts = ['/assets/js/main.js'];
             </div>
           </div>
 
-          <div class="benefit__preview" aria-hidden="true">
-            <div class="preview-card__head">
-              <span class="job-card__logo job-card__logo--nl">NL</span>
-              <div>
-                <p class="preview-card__title">Senior PHP Developer</p>
-                <p class="preview-card__sub">Northstar Labs &middot; Makati</p>
-              </div>
-            </div>
-            <ul class="preview-track">
-              <li class="preview-track__step is-done">
-                <span class="preview-track__dot"></span>
-                Applied
-              </li>
-              <li class="preview-track__step is-current">
-                <span class="preview-track__dot"></span>
-                <span class="preview-track__label">Under Review <span class="preview-track__now">now</span></span>
-              </li>
-              <li class="preview-track__step">
-                <span class="preview-track__dot"></span>
-                Interview
-              </li>
-              <li class="preview-track__step">
-                <span class="preview-track__dot"></span>
-                Accepted
-              </li>
-            </ul>
-          </div>
+          <figure class="benefit-visual benefit-visual--talent">
+            <img src="/assets/images/talent-career.webp" alt="Job seeker working on a laptop" width="720" height="816" loading="lazy">
+            <figcaption class="benefit-visual__card">
+              <span class="benefit-visual__icon" aria-hidden="true">✓</span>
+              <span><strong>Stay in control</strong><small>Save jobs and track every application.</small></span>
+            </figcaption>
+          </figure>
         </div>
       </div>
     </section>
@@ -441,15 +417,13 @@ $pageScripts = ['/assets/js/main.js'];
             </div>
           </div>
 
-          <div class="benefit__preview" aria-hidden="true">
-            <p class="preview-head">Recruitment pipeline</p>
-            <ul class="pipeline">
-              <li class="pipeline__stage"><span class="pipeline__dot"></span>Applied</li>
-              <li class="pipeline__stage is-active"><span class="pipeline__dot"></span>Under Review</li>
-              <li class="pipeline__stage"><span class="pipeline__dot"></span>Interview</li>
-              <li class="pipeline__stage is-done"><span class="pipeline__dot"></span>Hired</li>
-            </ul>
-          </div>
+          <figure class="benefit-visual benefit-visual--employer">
+            <img src="/assets/images/employer-hiring.webp" alt="Recruiter reviewing candidates on a laptop" width="900" height="574" loading="lazy">
+            <figcaption class="benefit-visual__card">
+              <span class="benefit-visual__icon" aria-hidden="true">↗</span>
+              <span><strong>Hire with clarity</strong><small>Review applicants and move them through your pipeline.</small></span>
+            </figcaption>
+          </figure>
         </div>
       </div>
     </section>

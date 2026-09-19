@@ -126,7 +126,7 @@ try {
 
   <div class="scrim" data-scrim hidden></div>
 
-  <main id="main" class="dash-main">
+  <main id="main" class="dash-main employer-application-page">
     <div class="container">
 
       <?php if ($loadError): ?>
@@ -159,7 +159,7 @@ try {
         }
         ?>
 
-        <header class="dash-head">
+        <header class="dash-head dash-head--application-review">
           <div>
             <p class="dash-eyebrow">Employer account</p>
             <h1 class="dash-title"><?php echo hirepeak_esc((string) $application['applicant_name']); ?></h1>
@@ -183,39 +183,41 @@ try {
           <p class="dash-alert dash-alert--error" role="alert"><?php echo hirepeak_esc($error); ?></p>
         <?php endif; ?>
 
-        <section class="dash-panel dash-panel--full" aria-labelledby="application-status-title">
+        <section class="dash-panel dash-panel--full application-status-panel" aria-labelledby="application-status-title">
           <div class="panel-head">
             <h2 class="panel-head__title" id="application-status-title">Application Status</h2>
           </div>
-          <p class="app-row__meta">
-            <?php echo hirepeak_application_status_badge($status); ?>
-          </p>
-          <?php if ($nextStatuses !== []): ?>
-            <div class="profile-form__actions">
-              <?php foreach ($nextStatuses as $nextStatus): ?>
-                <form class="inline-form" action="<?php echo hirepeak_url('employer/application.php?id=' . (int) $appId); ?>" method="post">
-                  <input type="hidden" name="csrf_token" value="<?php echo hirepeak_esc(hirepeak_csrf_token()); ?>">
-                  <input type="hidden" name="status" value="<?php echo hirepeak_esc((string) $nextStatus); ?>">
-                  <button class="btn <?php echo $nextStatus === 'rejected' ? 'btn--danger' : 'btn--primary'; ?>" type="submit">
-                    <?php echo hirepeak_esc((string) ($transitionLabel[$nextStatus] ?? hirepeak_application_status_label((string) $nextStatus))); ?>
-                  </button>
-                </form>
-              <?php endforeach; ?>
+          <div class="application-status-panel__body">
+            <div class="application-status-panel__current">
+              <span class="application-status-panel__label">Current status</span>
+              <?php echo hirepeak_application_status_badge($status); ?>
             </div>
-          <?php else: ?>
-            <p class="jd-fact"><?php echo hirepeak_esc($statusLabel); ?> is a final status — no further status changes are available.</p>
-          <?php endif; ?>
+            <?php if ($nextStatuses !== []): ?>
+              <div class="application-status-panel__actions" aria-label="Available status actions">
+                <?php foreach ($nextStatuses as $nextStatus): ?>
+                  <form class="inline-form" action="<?php echo hirepeak_url('employer/application.php?id=' . (int) $appId); ?>" method="post">
+                    <input type="hidden" name="csrf_token" value="<?php echo hirepeak_esc(hirepeak_csrf_token()); ?>">
+                    <input type="hidden" name="status" value="<?php echo hirepeak_esc((string) $nextStatus); ?>">
+                    <button class="btn <?php echo $nextStatus === 'rejected' ? 'btn--danger' : 'btn--primary'; ?>" type="submit">
+                      <?php echo hirepeak_esc((string) ($transitionLabel[$nextStatus] ?? hirepeak_application_status_label((string) $nextStatus))); ?>
+                    </button>
+                  </form>
+                <?php endforeach; ?>
+              </div>
+            <?php else: ?>
+              <p class="application-status-panel__final"><?php echo hirepeak_esc($statusLabel); ?> is a final status — no further status changes are available.</p>
+            <?php endif; ?>
+          </div>
         </section>
 
-        <div class="jd-layout">
+        <div class="jd-layout employer-application-layout">
 
-          <section class="dash-panel jd-main" aria-labelledby="application-overview-title">
+          <section class="dash-panel jd-main employer-application-card" aria-labelledby="application-overview-title">
             <div class="panel-head">
               <h2 class="panel-head__title" id="application-overview-title">Application</h2>
             </div>
 
-            <p class="app-row__meta">
-              <?php echo hirepeak_application_status_badge($status); ?>
+            <p class="application-overview__meta">
               <span class="app-row__date">Applied <?php echo hirepeak_esc(hirepeak_relative_time((string) $application['applied_at'])); ?></span>
             </p>
 
@@ -235,7 +237,7 @@ try {
             <?php endif; ?>
           </section>
 
-          <aside class="dash-panel jd-aside" aria-labelledby="applicant-details-title">
+          <aside class="dash-panel jd-aside employer-applicant-card" aria-labelledby="applicant-details-title">
             <div class="panel-head">
               <h2 class="panel-head__title" id="applicant-details-title">Applicant</h2>
             </div>

@@ -6464,3 +6464,263 @@ a.account-menu__item:hover {
     padding-bottom: var(--space-4);
   }
 }
+
+
+/* ========================================================================== 
+   Stage 13 polish — Employer Applicants + Application Review
+   ========================================================================== */
+
+.employer-applicants-page .dash-head,
+.employer-application-page .dash-head {
+  margin-bottom: var(--space-5);
+}
+
+/* Candidate pipeline: keep filters compact and treat each applicant as a
+   discrete review card so the list scans quickly even with longer profiles. */
+.applicants-toolbar {
+  margin-top: 0;
+  margin-bottom: var(--space-4);
+  padding: var(--space-3);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  background: var(--color-bg-surface);
+}
+
+.applicants-toolbar .jobs-tabs {
+  min-width: 0;
+  gap: var(--space-1);
+}
+
+.applicants-toolbar .jobs-tab {
+  min-height: 34px;
+  padding-inline: 12px;
+}
+
+.applicants-toolbar .myjobs-sort {
+  padding-left: var(--space-3);
+  border-left: 1px solid var(--color-border);
+}
+
+.app-list--candidates {
+  display: grid;
+  gap: var(--space-3);
+}
+
+.app-list--candidates .candidate-card {
+  align-items: flex-start;
+  padding: var(--space-4);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  background: var(--color-bg-surface);
+  box-shadow: var(--shadow-sm);
+  transition: border-color var(--dur-1) var(--ease-out), box-shadow var(--dur-1) var(--ease-out), transform var(--dur-1) var(--ease-out);
+}
+
+.app-list--candidates .candidate-card + .candidate-card {
+  border-top: 1px solid var(--color-border);
+}
+
+.app-list--candidates .candidate-card:hover {
+  border-color: var(--color-border-strong);
+  box-shadow: var(--shadow-md);
+  transform: translateY(-1px);
+}
+
+.app-list--candidates .candidate-card .app-row__main {
+  flex: 1 1 520px;
+}
+
+.app-list--candidates .candidate-card .app-row__company {
+  max-width: 68ch;
+}
+
+.app-list--candidates .candidate-card .app-row__meta {
+  gap: var(--space-2) var(--space-3);
+}
+
+.app-list--candidates .candidate-card .app-row__actions {
+  flex: 0 0 auto;
+  align-self: center;
+}
+
+/* Application review: status is the primary employer action, so keep its
+   current state and transitions together in one compact decision surface. */
+.application-status-panel {
+  margin-top: 0;
+  margin-bottom: var(--space-4);
+  padding: var(--space-4);
+  box-shadow: none;
+}
+
+.application-status-panel .panel-head {
+  margin-bottom: var(--space-3);
+}
+
+.application-status-panel__body {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  flex-wrap: wrap;
+}
+
+.application-status-panel__current {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-width: 0;
+}
+
+.application-status-panel__label {
+  font-size: var(--text-caption);
+  font-weight: 600;
+  color: var(--color-text-secondary);
+}
+
+.application-status-panel__actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+}
+
+.application-status-panel__actions .inline-form {
+  margin: 0;
+}
+
+.application-status-panel__actions .btn {
+  min-height: 40px;
+  white-space: nowrap;
+}
+
+.application-status-panel__final {
+  margin: 0;
+  max-width: 64ch;
+  font-size: var(--text-body-small);
+  color: var(--color-text-secondary);
+}
+
+.employer-application-layout {
+  gap: var(--space-4);
+}
+
+.employer-application-card,
+.employer-applicant-card {
+  padding: clamp(20px, 3vw, 28px);
+  box-shadow: none;
+}
+
+.employer-application-card .panel-head,
+.employer-applicant-card .panel-head {
+  margin-bottom: var(--space-3);
+}
+
+.application-overview__meta {
+  margin: 0 0 var(--space-4);
+  padding-bottom: var(--space-3);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.employer-application-card .jd-facts__list,
+.employer-applicant-card .jd-facts__list {
+  gap: var(--space-2);
+}
+
+.employer-application-card .jd-prose,
+.employer-applicant-card .jd-prose {
+  margin-top: var(--space-5);
+  padding-top: var(--space-4);
+  border-top: 1px solid var(--color-border);
+}
+
+.employer-application-card .apply-details__note,
+.employer-applicant-card .apply-details__note {
+  max-width: 72ch;
+  line-height: 1.7;
+}
+
+@media (min-width: 1025px) {
+  .employer-application-layout {
+    grid-template-columns: minmax(0, 1.45fr) minmax(300px, .75fr);
+  }
+}
+
+@media (max-width: 767px) {
+  .applicants-toolbar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .applicants-toolbar .jobs-tabs {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    padding-bottom: var(--space-1);
+    scrollbar-width: thin;
+  }
+
+  .applicants-toolbar .jobs-tab {
+    flex: 0 0 auto;
+  }
+
+  .applicants-toolbar .myjobs-sort {
+    padding-left: 0;
+    border-left: 0;
+  }
+
+  .app-list--candidates .candidate-card {
+    padding: var(--space-3);
+  }
+
+  .app-list--candidates .candidate-card .app-row__actions {
+    width: 100%;
+    align-self: stretch;
+  }
+
+  .app-list--candidates .candidate-card .app-row__action {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .application-status-panel__body,
+  .application-status-panel__actions {
+    align-items: stretch;
+  }
+
+  .application-status-panel__actions {
+    width: 100%;
+    justify-content: flex-start;
+  }
+
+  .application-status-panel__actions .inline-form {
+    flex: 1 1 220px;
+  }
+
+  .application-status-panel__actions .btn {
+    width: 100%;
+    justify-content: center;
+    white-space: normal;
+  }
+
+  .employer-application-card,
+  .employer-applicant-card,
+  .application-status-panel {
+    padding: var(--space-3);
+  }
+}
+
+@media (max-width: 479px) {
+  .applicants-toolbar {
+    padding: var(--space-2);
+  }
+
+  .application-status-panel__current {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .application-status-panel__actions {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+}

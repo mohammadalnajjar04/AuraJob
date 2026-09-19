@@ -132,7 +132,7 @@ try {
 
   <div class="scrim" data-scrim hidden></div>
 
-  <main id="main" class="dash-main">
+  <main id="main" class="dash-main employer-applicants-page">
     <div class="container">
 
       <?php if ($loadError): ?>
@@ -144,7 +144,7 @@ try {
 
       <?php else: ?>
 
-        <header class="dash-head">
+        <header class="dash-head dash-head--applicants">
           <div>
             <p class="dash-eyebrow">Employer account</p>
             <h1 class="dash-title">Applicants</h1>
@@ -156,7 +156,7 @@ try {
           </div>
         </header>
 
-        <div class="myjobs-toolbar">
+        <div class="myjobs-toolbar applicants-toolbar">
           <nav class="jobs-tabs" aria-label="Filter applicants by status">
             <a class="jobs-tab<?php echo $statusFilter === '' ? ' is-active' : ''; ?>" href="<?php echo hirepeak_url('employer/applicants.php?job_id=' . (int) $jobId); ?>">All <span class="jobs-tab__count"><?php echo (int) $counts['total']; ?></span></a>
             <?php foreach ($pipeline as $status => $label): ?>
@@ -180,7 +180,7 @@ try {
                 <path d="m9 9 6 6"/>
               </svg>
             </div>
-            <h1 class="empty-state__title">No <?php echo $statusFilter !== '' ? hirepeak_esc(strtolower((string) $pipeline[$statusFilter])) : ''; ?>applicants yet.</h1>
+            <h2 class="empty-state__title">No <?php echo $statusFilter !== '' ? hirepeak_esc(strtolower((string) $pipeline[$statusFilter])) : ''; ?>applicants yet.</h2>
             <p class="empty-state__text"><?php echo $statusFilter !== '' ? 'Try another filter to see more of this pipeline.' : 'When candidates apply, they\'ll show up here for review.'; ?></p>
             <div class="empty-state__actions">
               <a class="btn btn--outline" href="<?php echo hirepeak_url('employer/applicants.php?job_id=' . (int) $jobId); ?>">View all applicants</a>
@@ -189,9 +189,9 @@ try {
 
         <?php else: ?>
 
-          <ul class="app-list">
+          <ul class="app-list app-list--candidates">
             <?php foreach ($applications as $application): ?>
-              <li class="app-row">
+              <li class="app-row candidate-card">
                 <div class="app-row__main">
                   <h3 class="app-row__title">
                     <a href="<?php echo hirepeak_url('employer/application.php?id=' . (int) $application['id']); ?>"><?php echo hirepeak_esc((string) $application['applicant_name']); ?></a>
@@ -213,7 +213,7 @@ try {
                   </p>
                 </div>
                 <div class="app-row__actions">
-                  <a class="btn btn--outline btn--sm app-row__action" href="<?php echo hirepeak_url('employer/application.php?id=' . (int) $application['id']); ?>">Review</a>
+                  <a class="btn btn--outline btn--sm app-row__action app-row__action--primary" href="<?php echo hirepeak_url('employer/application.php?id=' . (int) $application['id']); ?>">Review</a>
                 </div>
               </li>
             <?php endforeach; ?>

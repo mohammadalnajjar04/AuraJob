@@ -133,7 +133,7 @@ $applyNote = $isDraft ? '' : ($apply['note'] ?? '');
 $companyDescription = trim((string) ($job['company_description'] ?? ''));
 $companyIndustry = trim((string) ($job['industry'] ?? ''));
 $companyLocation = trim((string) ($job['company_location'] ?? ''));
-$companyMetaLine = trim($companyIndustry . ($companyLocation !== '' ? ' &middot; ' . $companyLocation : ''));
+$companyMetaLine = trim(hirepeak_esc($companyIndustry) . ($companyLocation !== '' ? ' &middot; ' . hirepeak_esc($companyLocation) : ''));
 ?>
 <!DOCTYPE html>
 <html lang="en">

@@ -177,14 +177,6 @@
     });
   }
 
-  var heroSearch = document.querySelector('[data-hero-search]');
-
-  if (heroSearch) {
-    heroSearch.addEventListener('submit', function (event) {
-      event.preventDefault();
-    });
-  }
-
   var year = document.getElementById('year');
 
   if (year) {

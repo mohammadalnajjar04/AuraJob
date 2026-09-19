@@ -566,11 +566,11 @@ $activeFilterCount = count($categorySel)
                 $cardMeta = hirepeak_employment_type_label((string) $job['employment_type'])
                     . ' <span class="job-card__dot" aria-hidden="true">&middot;</span> '
                     . hirepeak_experience_level_label((string) $job['experience_level']);
-                $companyLine = (string) $job['company_name']
+                $companyLine = hirepeak_esc((string) $job['company_name'])
                     . ' <span class="job-card__dot" aria-hidden="true">&middot;</span> '
-                    . (string) $job['location']
+                    . hirepeak_esc((string) $job['location'])
                     . ' <span class="job-card__dot" aria-hidden="true">&middot;</span> '
-                    . hirepeak_work_mode_label((string) $job['work_mode']);
+                    . hirepeak_esc(hirepeak_work_mode_label((string) $job['work_mode']));
                 $posted = hirepeak_relative_time((string) $job['created_at']);
                 ?>
                 <article class="job-card job-card--row" data-keywords="<?php echo hirepeak_esc(hirepeak_job_keywords($job)); ?>" data-job-id="<?php echo (int) $job['id']; ?>">

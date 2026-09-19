@@ -130,7 +130,7 @@ $pageScripts = ['/assets/js/main.js'];
 
   <div class="scrim" data-scrim hidden></div>
 
-  <main id="main" class="dash-main">
+  <main id="main" class="dash-main applications-page">
     <div class="container">
 
       <header class="dash-head">
@@ -222,7 +222,7 @@ $pageScripts = ['/assets/js/main.js'];
             <a class="btn btn--primary" href="<?php echo hirepeak_url('applicant/applications.php' . ($sort === 'oldest' ? '?sort=oldest' : '')); ?>">View all applications</a>
           </section>
         <?php else: ?>
-          <ul class="app-list">
+          <ul class="app-list app-list--applications">
             <?php foreach ($applications as $app): ?>
               <?php
               $jobId = (int) $app['job_id'];

@@ -207,7 +207,7 @@ try {
 
   <div class="scrim" data-scrim hidden></div>
 
-  <main id="main" class="dash-main">
+  <main id="main" class="dash-main applicant-dashboard">
     <div class="container">
 
       <?php if ($loadError): ?>
@@ -254,11 +254,15 @@ try {
         </section>
 
         <div class="dash-grid">
-          <section class="dash-panel" aria-labelledby="recent-title">
+          <section class="dash-panel dash-panel--recent" aria-labelledby="recent-title">
             <div class="panel-head">
-              <h2 class="panel-head__title" id="recent-title">Recent Applications</h2>
+              <div class="panel-head__title-group">
+                <h2 class="panel-head__title" id="recent-title">Recent Applications</h2>
+                <?php if ($recentApplications !== []): ?>
+                  <span class="panel-head__count"><?php echo (int) count($recentApplications); ?></span>
+                <?php endif; ?>
+              </div>
               <?php if ($recentApplications !== []): ?>
-                <span class="panel-head__count"><?php echo (int) count($recentApplications); ?></span>
                 <a class="panel-head__link" href="<?php echo hirepeak_url('applicant/applications.php'); ?>">View all</a>
               <?php endif; ?>
             </div>
@@ -305,7 +309,7 @@ try {
             <?php endif; ?>
           </section>
 
-          <aside class="dash-panel" aria-labelledby="profile-title">
+          <aside class="dash-panel dash-panel--profile" aria-labelledby="profile-title">
             <div class="panel-head">
               <h2 class="panel-head__title" id="profile-title">Complete your profile</h2>
               <a class="panel-head__link" href="<?php echo hirepeak_url('applicant/profile.php'); ?>">Edit profile</a>
@@ -347,13 +351,15 @@ try {
         </div>
 
         <section class="dash-panel dash-panel--full" aria-labelledby="saved-title">
-<div class="panel-head">
+          <div class="panel-head">
+            <div class="panel-head__title-group">
               <h2 class="panel-head__title" id="saved-title">Saved Jobs</h2>
               <span class="panel-head__count"><?php echo (int) count($savedJobs); ?></span>
-              <?php if ($savedJobs !== []): ?>
-                <a class="panel-head__link" href="<?php echo hirepeak_url('applicant/saved-jobs.php'); ?>">View all</a>
-              <?php endif; ?>
             </div>
+            <?php if ($savedJobs !== []): ?>
+              <a class="panel-head__link" href="<?php echo hirepeak_url('applicant/saved-jobs.php'); ?>">View all</a>
+            <?php endif; ?>
+          </div>
 
           <?php if ($savedJobs === []): ?>
             <div class="empty-state">

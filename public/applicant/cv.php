@@ -30,7 +30,7 @@ try {
 
     hirepeak_send_cv_download($absolute, 'AuraJob-My-CV.pdf');
 } catch (\Throwable $e) {
-    error_log('[aurajob] applicant CV download failed: ' . $e->getMessage());
+    error_log('[AuraJob] applicant CV download failed: ' . $e->getMessage());
     http_response_code(404);
     exit;
 }

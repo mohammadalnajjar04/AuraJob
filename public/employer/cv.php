@@ -47,7 +47,7 @@ try {
     $name = trim((string) ($row['applicant_name'] ?? 'Applicant'));
     hirepeak_send_cv_download($absolute, ($name !== '' ? $name : 'Applicant') . '-CV.pdf');
 } catch (\Throwable $e) {
-    error_log('[aurajob] employer CV download failed: ' . $e->getMessage());
+    error_log('[AuraJob] employer CV download failed: ' . $e->getMessage());
     http_response_code(404);
     exit;
 }

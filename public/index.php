@@ -56,7 +56,7 @@ try {
         $savedSet = array_fill_keys(hirepeak_saved_job_ids($db, (int) $viewer['id']), true);
     }
 } catch (\Throwable $e) {
-    error_log('[aurajob] home data load failed: ' . $e->getMessage());
+    error_log('[AuraJob] home data load failed: ' . $e->getMessage());
     $homeDbError = true;
 }
 ?>

@@ -44,7 +44,7 @@ function hirepeak_start_session(): void
         'samesite' => 'Lax',
     ]);
 
-    session_name('hirepeak_session');
+    session_name('aurajob_session');
     session_start();
 }
 

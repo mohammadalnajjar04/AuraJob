@@ -40,7 +40,7 @@ For production, create a dedicated application user with only the permissions Au
 
 ```sql
 CREATE USER 'hirepeak_app'@'localhost' IDENTIFIED BY 'use-a-strong-unique-password';
-GRANT SELECT, INSERT, UPDATE, DELETE ON hirepeak_db.* TO 'hirepeak_app'@'localhost';
+GRANT SELECT, INSERT, UPDATE, DELETE ON aurajob_db.* TO 'hirepeak_app'@'localhost';
 FLUSH PRIVILEGES;
 ```
 
@@ -53,7 +53,7 @@ Copy `.env.example` to `.env` on the server and set real values:
 ```text
 DB_HOST=127.0.0.1
 DB_PORT=3306
-DB_NAME=hirepeak_db
+DB_NAME=aurajob_db
 DB_USER=hirepeak_app
 DB_PASS=<production-database-password>
 APP_ENCRYPTION_KEY=<64-hex-character-key>

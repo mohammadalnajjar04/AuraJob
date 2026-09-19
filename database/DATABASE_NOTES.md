@@ -13,7 +13,7 @@ The database is organized so that:
 - Each company owns its jobs, and each applicant's activity (applications, saved jobs) is tracked cleanly.
 - Rules like "an applicant cannot apply twice to the same job" or "an applicant cannot save the same job twice" are enforced **by the database itself**, not just by the application code.
 
-The database name is `hirepeak_db`.
+The database name is `aurajob_db`.
 
 ---
 

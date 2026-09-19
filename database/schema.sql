@@ -32,13 +32,13 @@
 -- DROP TABLE IF EXISTS companies;
 -- DROP TABLE IF EXISTS applicant_profiles;
 -- DROP TABLE IF EXISTS users;
--- DROP DATABASE IF EXISTS hirepeak_db;
+-- DROP DATABASE IF EXISTS aurajob_db;
 
-CREATE DATABASE IF NOT EXISTS hirepeak_db
+CREATE DATABASE IF NOT EXISTS aurajob_db
     CHARACTER SET utf8mb4
     COLLATE utf8mb4_0900_ai_ci;
 
-USE hirepeak_db;
+USE aurajob_db;
 
 -- ----------------------------------------------------------------------------
 -- 1. users

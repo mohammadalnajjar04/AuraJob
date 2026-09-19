@@ -205,7 +205,7 @@ Alternatively, import the two source files in order:
 
 ```bash
 mysql -u root -p < database/schema.sql
-mysql -u root -p hirepeak_db < database/seed.sql
+mysql -u root -p aurajob_db < database/seed.sql
 ```
 
 ### 3. Create an application database user (recommended)
@@ -214,7 +214,7 @@ Run as a MySQL administrator and choose your own strong password:
 
 ```sql
 CREATE USER IF NOT EXISTS 'hirepeak_app'@'localhost' IDENTIFIED BY 'replace-with-a-strong-password';
-GRANT SELECT, INSERT, UPDATE, DELETE ON hirepeak_db.* TO 'hirepeak_app'@'localhost';
+GRANT SELECT, INSERT, UPDATE, DELETE ON aurajob_db.* TO 'hirepeak_app'@'localhost';
 FLUSH PRIVILEGES;
 ```
 

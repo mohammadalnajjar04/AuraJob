@@ -12,11 +12,11 @@
 --   These hashes are DEV-ONLY and fictional. Replace all accounts before any
 --   real/production use. NEVER store plaintext passwords.
 --
--- Run AFTER schema.sql (which creates hirepeak_db and all tables).
+-- Run AFTER schema.sql (which creates aurajob_db and all tables).
 -- All IDs and foreign keys below are consistent with the insert order.
 -- ============================================================================
 
-USE hirepeak_db;
+USE aurajob_db;
 
 -- ----------------------------------------------------------------------------
 -- Categories

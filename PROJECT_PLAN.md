@@ -404,7 +404,7 @@ Build and test the system in this order:
 
 # Database Architecture
 
-MySQL (InnoDB, utf8mb4). Database name: `hirepeak_db`.
+MySQL (InnoDB, utf8mb4). Database name: `aurajob_db`.
 
 **Final table list (8):**
 `users`, `applicant_profiles`, `companies`, `categories`, `jobs`, `applications`, `saved_jobs`, `notifications`.

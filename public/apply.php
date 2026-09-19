@@ -139,7 +139,7 @@ try {
     }
 
     $stmt = $db->prepare(
-        'SELECT professional_title, bio, phone, location, experience_years, skills
+        'SELECT professional_title, bio, phone, location, experience_years, skills, cv_path
          FROM applicant_profiles
          WHERE user_id = ?'
     );
@@ -482,6 +482,17 @@ $pageScripts = ['/assets/js/main.js'];
               Your profile is <strong><?php echo (int) $completeness['percent']; ?>%</strong> complete.
               <a href="<?php echo hirepeak_url('applicant/profile.php'); ?>">Update Profile</a>
             </p>
+
+            <div class="apply-cv-status <?php echo !empty($profile['cv_path']) ? 'apply-cv-status--ready' : ''; ?>">
+              <span class="apply-cv-status__icon" aria-hidden="true"><?php echo !empty($profile['cv_path']) ? '✓' : '!'; ?></span>
+              <span>
+                <?php if (!empty($profile['cv_path'])): ?>
+                  Your CV is attached to your applicant profile and will be available to this employer after you apply.
+                <?php else: ?>
+                  No CV uploaded yet. <a href="<?php echo hirepeak_url('applicant/profile.php'); ?>">Add your CV</a> if you want employers to receive it with your application.
+                <?php endif; ?>
+              </span>
+            </div>
           </section>
 
         </div>

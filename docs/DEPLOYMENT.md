@@ -171,3 +171,22 @@ validated as PNG, JPEG, or WebP images, limited to 2 MB, renamed to random
 server-generated filenames, and served through `public/company-logo.php`.
 
 Do not point the web server directly at `storage/`.
+
+
+## Applicant CV Uploads
+
+Applicant CV files are stored outside the public web root under:
+
+```text
+storage/uploads/cvs/
+```
+
+The directory must be writable by the PHP/web-server process. CV uploads are
+validated as PDF files, limited to 5 MB, renamed to random server-generated
+filenames, and served only through authenticated endpoints.
+
+Applicants can download only their own CV. Employers can download a CV only
+when it belongs to an applicant who submitted an application to one of that
+employer's jobs.
+
+Do not expose `storage/` directly through the web server.

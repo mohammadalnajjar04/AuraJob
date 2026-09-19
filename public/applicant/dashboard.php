@@ -55,7 +55,7 @@ try {
     ];
 
     $stmt = $db->prepare(
-        'SELECT id, professional_title, bio, phone, location, experience_years, skills
+        'SELECT id, professional_title, bio, phone, location, experience_years, skills, cv_path
          FROM applicant_profiles
          WHERE user_id = ?'
     );

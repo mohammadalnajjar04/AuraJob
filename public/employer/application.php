@@ -268,6 +268,15 @@ $pageScripts = ['/assets/js/main.js'];
               <?php endif; ?>
             </dl>
 
+            <?php if (trim((string) ($application['cv_path'] ?? '')) !== ''): ?>
+              <div class="employer-cv-action">
+                <a class="btn btn--outline btn--full" href="<?php echo hirepeak_url('employer/cv.php?id=' . (int) $appId); ?>">
+                  Download applicant CV
+                </a>
+                <p class="field__hint">Only you can access this CV because the applicant applied to one of your jobs.</p>
+              </div>
+            <?php endif; ?>
+
             <?php if (trim((string) ($application['bio'] ?? '')) !== ''): ?>
               <div class="jd-prose">
                 <h2>About the applicant</h2>

@@ -73,6 +73,7 @@ function hirepeak_profile_completeness_fields(): array
         'location'           => 'Add your location',
         'experience_years'   => 'Add your years of experience',
         'skills'             => 'Add your skills',
+        'cv_path'            => 'Upload your CV',
     ];
 }
 

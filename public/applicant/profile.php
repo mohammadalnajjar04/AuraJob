@@ -6,6 +6,7 @@ require dirname(__DIR__, 2) . '/app/Core/auth.php';
 require dirname(__DIR__, 2) . '/app/Core/db.php';
 require dirname(__DIR__, 2) . '/app/Support/html.php';
 require dirname(__DIR__, 2) . '/app/Services/crypto.php';
+require dirname(__DIR__, 2) . '/app/Services/cv.php';
 
 $user = hirepeak_require_role('applicant');
 $uid = (int) $user['id'];
@@ -36,7 +37,7 @@ try {
     }
 
     $stmt = $db->prepare(
-        'SELECT id, professional_title, bio, phone, location, experience_years, skills
+        'SELECT id, professional_title, bio, phone, location, experience_years, skills, cv_path
          FROM applicant_profiles
          WHERE user_id = ?'
     );
@@ -53,6 +54,7 @@ try {
         'location'           => $profile['location'] ?? '',
         'experience_years'   => $profile['experience_years'] ?? '',
         'skills'             => $profile['skills'] ?? '',
+        'cv_path'            => $profile['cv_path'] ?? null,
     ];
 
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -102,6 +104,16 @@ try {
                 $errors['skills'] = 'Skills must be 4000 characters or fewer.';
             }
 
+            $cvUpload = $_FILES['cv_file'] ?? null;
+            $cvUploadCheck = ['ok' => false, 'error' => ''];
+
+            if (is_array($cvUpload)) {
+                $cvUploadCheck = hirepeak_validate_cv_upload($cvUpload);
+                if ($cvUploadCheck['error'] !== '') {
+                    $errors['cv_file'] = $cvUploadCheck['error'];
+                }
+            }
+
             if (!$errors) {
                 $professionalTitle = $old['professional_title'] !== '' ? $old['professional_title'] : null;
                 $bio = $old['bio'] !== '' ? $old['bio'] : null;
@@ -110,18 +122,32 @@ try {
                 $experienceYears = $old['experience_years'] !== '' ? (int) $old['experience_years'] : null;
                 $skills = $old['skills'] !== '' ? $old['skills'] : null;
 
+                $previousCvPath = $profile !== null ? (string) ($profile['cv_path'] ?? '') : '';
+                $cvPath = $previousCvPath !== '' ? $previousCvPath : null;
+                $storedNewCv = null;
+                $removeCv = isset($_POST['remove_cv']) && $_POST['remove_cv'] === '1';
+
+                if (is_array($cvUpload) && ($cvUploadCheck['ok'] ?? false) === true) {
+                    $storedNewCv = hirepeak_store_cv($cvUpload);
+                    $cvPath = $storedNewCv;
+                } elseif ($removeCv) {
+                    $cvPath = null;
+                }
+
                 $created = false;
+
+                try {
 
                 if ($profile === null) {
                     try {
                         $stmt = $db->prepare(
                             'INSERT INTO applicant_profiles
-                               (user_id, professional_title, bio, phone, location, experience_years, skills)
-                             VALUES (?, ?, ?, ?, ?, ?, ?)'
+                               (user_id, professional_title, bio, phone, location, experience_years, skills, cv_path)
+                             VALUES (?, ?, ?, ?, ?, ?, ?, ?)'
                         );
                         $stmt->bind_param(
-                            'issssis',
-                            $uid, $professionalTitle, $bio, $phone, $location, $experienceYears, $skills
+                            'issssiss',
+                            $uid, $professionalTitle, $bio, $phone, $location, $experienceYears, $skills, $cvPath
                         );
                         $stmt->execute();
                         $stmt->close();
@@ -138,15 +164,26 @@ try {
                     $stmt = $db->prepare(
                         'UPDATE applicant_profiles
                          SET professional_title = ?, bio = ?, phone = ?, location = ?,
-                             experience_years = ?, skills = ?
+                             experience_years = ?, skills = ?, cv_path = ?
                          WHERE user_id = ?'
                     );
                     $stmt->bind_param(
-                        'ssssssi',
-                        $professionalTitle, $bio, $phone, $location, $experienceYears, $skills, $uid
+                        'ssssissi',
+                        $professionalTitle, $bio, $phone, $location, $experienceYears, $skills, $cvPath, $uid
                     );
                     $stmt->execute();
                     $stmt->close();
+                }
+
+                if ($previousCvPath !== '' && $previousCvPath !== (string) $cvPath) {
+                    hirepeak_delete_cv($previousCvPath);
+                }
+
+                } catch (\Throwable $saveError) {
+                    if ($storedNewCv !== null) {
+                        hirepeak_delete_cv($storedNewCv);
+                    }
+                    throw $saveError;
                 }
 
                 $_SESSION['profile_flash'] = 'Your profile has been updated.';
@@ -155,6 +192,7 @@ try {
             }
 
             $profile = $old; // re-render with the submitted values on validation failure
+            $profile['cv_path'] = $defaults['cv_path'] ?? null;
         }
     } else {
         $old = $defaults;
@@ -216,7 +254,7 @@ $pageScripts = ['/assets/js/main.js'];
         <div class="profile-layout profile-layout--account">
 
           <div class="profile-main-col">
-            <form class="profile-form" id="profile-form" action="<?php echo hirepeak_url('applicant/profile.php'); ?>" method="post">
+            <form class="profile-form" id="profile-form" action="<?php echo hirepeak_url('applicant/profile.php'); ?>" method="post" enctype="multipart/form-data">
               <input type="hidden" name="csrf_token" value="<?php echo hirepeak_esc(hirepeak_csrf_token()); ?>">
 
               <section class="profile-section profile-section--grid" aria-labelledby="profile-section-about">
@@ -293,6 +331,39 @@ $pageScripts = ['/assets/js/main.js'];
                   <p class="field__static-value" id="profile-email"><?php echo hirepeak_esc((string) ($user['email'] ?? '')); ?></p>
                   <p class="field__hint">Your login email can't be changed here.</p>
                 </div>
+              </section>
+
+              <section class="profile-section cv-section" aria-labelledby="profile-section-cv">
+                <div class="profile-section__head">
+                  <div>
+                    <h2 class="profile-section__title" id="profile-section-cv">Resume / CV</h2>
+                    <p class="profile-section__text">Upload one PDF CV. Employers can download it only when reviewing an application you submitted.</p>
+                  </div>
+                  <?php if (!empty($profile['cv_path'])): ?>
+                    <a class="btn btn--ghost btn--small" href="<?php echo hirepeak_url('applicant/cv.php'); ?>">Download current CV</a>
+                  <?php endif; ?>
+                </div>
+
+                <div class="field">
+                  <label class="field__label" for="profile-cv_file">CV file</label>
+                  <input
+                    class="field__input field__input--file"
+                    id="profile-cv_file"
+                    name="cv_file"
+                    type="file"
+                    accept="application/pdf,.pdf"
+                    <?php echo isset($errors['cv_file']) ? ' aria-invalid="true" aria-describedby="profile-cv_file-hint profile-cv_file-error"' : ' aria-describedby="profile-cv_file-hint"'; ?>
+                  >
+                  <p class="field__hint" id="profile-cv_file-hint">PDF only, maximum 5 MB. Uploading a new CV replaces the current one.</p>
+                  <?php echo hirepeak_error_slot($errors, 'cv_file', 'profile'); ?>
+                </div>
+
+                <?php if (!empty($profile['cv_path'])): ?>
+                  <label class="check-row cv-section__remove">
+                    <input type="checkbox" name="remove_cv" value="1">
+                    <span>Remove current CV</span>
+                  </label>
+                <?php endif; ?>
               </section>
 
               <div class="profile-form__actions">

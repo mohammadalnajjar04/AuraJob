@@ -2,167 +2,198 @@
 declare(strict_types=1);
 
 /**
- * Shared in-app notification helpers.
+ * HirePeak in-app notifications service.
  *
- * Everything here is a pure function on a passed-in mysqli connection; loading
- * this file does nothing by itself. All writes are prepared statements, all
- * reads/writes are scoped by the authenticated user id supplied by the caller
- * (never taken from request input), and the type column is restricted to the
- * real ENUM values from database/schema.sql:
- *
- *   notifications.type ENUM('application_status','application_new','system','job_update')
- *
- * Message wording lives here in exactly one place so the apply flow, the
- * status-update flow, and the notifications page never drift apart.
+ * This file intentionally demonstrates the project's PHP OOP usage while
+ * preserving the public helper functions already used across the application.
+ * Callers can continue using the hirepeak_notification_* helpers; those helpers
+ * now delegate the database work to HirePeakNotificationService.
  */
 
-/**
- * The real schema ENUM values for notifications.type. Anything outside this
- * list is rejected before it can reach a query.
- *
- * @return list<string>
- */
-function hirepeak_notification_types(): array
+interface HirePeakNotificationServiceInterface
 {
-    return ['application_status', 'application_new', 'system', 'job_update'];
+    public function create(int $userId, string $type, string $message): bool;
+
+    public function unreadCount(int $userId): int;
+
+    /** @return list<array<string, mixed>> */
+    public function recent(int $userId, int $limit = 50): array;
+
+    public function markOneRead(int $userId, int $notificationId): bool;
+
+    public function markAllRead(int $userId): bool;
 }
 
 /**
- * Inserts one notification for $userId. Non-fatal by design: a failure to
- * record an update is logged and reported to the caller (false) so the apply /
- * status-update flow can still complete cleanly.
+ * Database-backed notification service.
+ *
+ * OOP concepts used here:
+ * - interface implementation
+ * - constructor dependency injection
+ * - private typed property
+ * - class constant encapsulation
+ * - instance methods with typed parameters/returns
+ */
+final class HirePeakNotificationService implements HirePeakNotificationServiceInterface
+{
+    /** @var list<string> */
+    private const TYPES = ['application_status', 'application_new', 'system', 'job_update'];
+
+    public function __construct(private \mysqli $db)
+    {
+    }
+
+    /** @return list<string> */
+    public static function types(): array
+    {
+        return self::TYPES;
+    }
+
+    public function create(int $userId, string $type, string $message): bool
+    {
+        if ($userId <= 0) {
+            return false;
+        }
+
+        $type = in_array($type, self::TYPES, true) ? $type : 'system';
+        $message = trim($message);
+
+        if ($message === '') {
+            return false;
+        }
+
+        try {
+            $stmt = $this->db->prepare(
+                'INSERT INTO notifications (user_id, type, message, is_read) VALUES (?, ?, ?, 0)'
+            );
+            $stmt->bind_param('iss', $userId, $type, $message);
+            $stmt->execute();
+            $affected = (int) $this->db->affected_rows;
+            $stmt->close();
+            return $affected === 1;
+        } catch (\Throwable $e) {
+            error_log('[hirepeak] notification create failed: ' . $e->getMessage());
+            return false;
+        }
+    }
+
+    public function unreadCount(int $userId): int
+    {
+        try {
+            $stmt = $this->db->prepare(
+                'SELECT COUNT(*) AS c FROM notifications WHERE user_id = ? AND is_read = 0'
+            );
+            $stmt->bind_param('i', $userId);
+            $stmt->execute();
+            $count = (int) $stmt->get_result()->fetch_assoc()['c'];
+            $stmt->close();
+            return $count;
+        } catch (\Throwable $e) {
+            error_log('[hirepeak] notification count failed: ' . $e->getMessage());
+            return 0;
+        }
+    }
+
+    /** @return list<array<string, mixed>> */
+    public function recent(int $userId, int $limit = 50): array
+    {
+        $limit = $limit > 0 ? $limit : 50;
+
+        try {
+            $stmt = $this->db->prepare(
+                'SELECT id, user_id, type, message, is_read, created_at
+                 FROM notifications
+                 WHERE user_id = ?
+                 ORDER BY created_at DESC, id DESC
+                 LIMIT ?'
+            );
+            $stmt->bind_param('ii', $userId, $limit);
+            $stmt->execute();
+            $rows = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+            $stmt->close();
+
+            $list = [];
+            foreach ($rows as $row) {
+                $row['is_new'] = !(bool) ((int) ($row['is_read'] ?? 0));
+                $list[] = $row;
+            }
+            return $list;
+        } catch (\Throwable $e) {
+            error_log('[hirepeak] notification list failed: ' . $e->getMessage());
+            return [];
+        }
+    }
+
+    public function markOneRead(int $userId, int $notificationId): bool
+    {
+        try {
+            $stmt = $this->db->prepare(
+                'UPDATE notifications SET is_read = 1 WHERE id = ? AND user_id = ?'
+            );
+            $stmt->bind_param('ii', $notificationId, $userId);
+            $stmt->execute();
+            $stmt->close();
+            return true;
+        } catch (\Throwable $e) {
+            error_log('[hirepeak] notification mark-one failed: ' . $e->getMessage());
+            return false;
+        }
+    }
+
+    public function markAllRead(int $userId): bool
+    {
+        try {
+            $stmt = $this->db->prepare(
+                'UPDATE notifications SET is_read = 1 WHERE user_id = ? AND is_read = 0'
+            );
+            $stmt->bind_param('i', $userId);
+            $stmt->execute();
+            $stmt->close();
+            return true;
+        } catch (\Throwable $e) {
+            error_log('[hirepeak] notification mark-all failed: ' . $e->getMessage());
+            return false;
+        }
+    }
+}
+
+/** @return list<string> */
+function hirepeak_notification_types(): array
+{
+    return HirePeakNotificationService::types();
+}
+
+/**
+ * Procedural compatibility wrapper used by the existing application flows.
  */
 function hirepeak_notification_create(\mysqli $db, int $userId, string $type, string $message): bool
 {
-    if ($userId <= 0) {
-        return false;
-    }
-
-    $types = hirepeak_notification_types();
-    $type = in_array($type, $types, true) ? $type : 'system';
-    $message = trim($message);
-
-    if ($message === '') {
-        return false;
-    }
-
-    try {
-        $stmt = $db->prepare('INSERT INTO notifications (user_id, type, message, is_read) VALUES (?, ?, ?, 0)');
-        $stmt->bind_param('iss', $userId, $type, $message);
-        $stmt->execute();
-        $affected = (int) $db->affected_rows;
-        $stmt->close();
-        return $affected === 1;
-    } catch (\Throwable $e) {
-        error_log('[hirepeak] notification create failed: ' . $e->getMessage());
-        return false;
-    }
+    return (new HirePeakNotificationService($db))->create($userId, $type, $message);
 }
 
-/**
- * Number of unread notifications for a user. Used by the header badge and the
- * notifications page. Never trusts a session-less caller: $userId always comes
- * from the authenticated session.
- */
 function hirepeak_notification_unread_count(\mysqli $db, int $userId): int
 {
-    try {
-        $stmt = $db->prepare('SELECT COUNT(*) AS c FROM notifications WHERE user_id = ? AND is_read = 0');
-        $stmt->bind_param('i', $userId);
-        $stmt->execute();
-        $count = (int) $stmt->get_result()->fetch_assoc()['c'];
-        $stmt->close();
-        return $count;
-    } catch (\Throwable $e) {
-        error_log('[hirepeak] notification count failed: ' . $e->getMessage());
-        return 0;
-    }
+    return (new HirePeakNotificationService($db))->unreadCount($userId);
 }
 
-/**
- * Most recent notifications for a user, newest first. Each row carries the
- * stored columns plus a computed bool 'is_new' the page can use for visual
- * distinction (avoiding boolean casts per row in markup).
- *
- * @return list<array<string, mixed>>
- */
+/** @return list<array<string, mixed>> */
 function hirepeak_notification_recent(\mysqli $db, int $userId, int $limit = 50): array
 {
-    $limit = $limit > 0 ? $limit : 50;
-
-    try {
-        $stmt = $db->prepare(
-            'SELECT id, user_id, type, message, is_read, created_at
-             FROM notifications
-             WHERE user_id = ?
-             ORDER BY created_at DESC, id DESC
-             LIMIT ?'
-        );
-        $stmt->bind_param('ii', $userId, $limit);
-        $stmt->execute();
-        $rows = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
-        $stmt->close();
-
-        $list = [];
-        foreach ($rows as $row) {
-            $row['is_new'] = !(bool) ((int) ($row['is_read'] ?? 0));
-            $list[] = $row;
-        }
-        return $list;
-    } catch (\Throwable $e) {
-        error_log('[hirepeak] notification list failed: ' . $e->getMessage());
-        return [];
-    }
+    return (new HirePeakNotificationService($db))->recent($userId, $limit);
 }
 
-/**
- * Marks a single notification read, but only when it belongs to $userId.
- * Returns true when an unread row owned by the caller was actually updated
- * (or was already read), false when the row is missing or owned by someone
- * else — the ownership scope is in the SQL, never in the caller's logic.
- */
 function hirepeak_notification_mark_one_read(\mysqli $db, int $userId, int $notificationId): bool
 {
-    try {
-        $stmt = $db->prepare(
-            'UPDATE notifications SET is_read = 1 WHERE id = ? AND user_id = ?'
-        );
-        $stmt->bind_param('ii', $notificationId, $userId);
-        $stmt->execute();
-        $stmt->close();
-        return true;
-    } catch (\Throwable $e) {
-        error_log('[hirepeak] notification mark-one failed: ' . $e->getMessage());
-        return false;
-    }
+    return (new HirePeakNotificationService($db))->markOneRead($userId, $notificationId);
 }
 
-/**
- * Marks every notification for $userId as read. Scoped entirely by the session
- * user id so one user can never touch another user's rows.
- */
 function hirepeak_notification_mark_all_read(\mysqli $db, int $userId): bool
 {
-    try {
-        $stmt = $db->prepare(
-            'UPDATE notifications SET is_read = 1 WHERE user_id = ? AND is_read = 0'
-        );
-        $stmt->bind_param('i', $userId);
-        $stmt->execute();
-        $stmt->close();
-        return true;
-    } catch (\Throwable $e) {
-        error_log('[hirepeak] notification mark-all failed: ' . $e->getMessage());
-        return false;
-    }
+    return (new HirePeakNotificationService($db))->markAllRead($userId);
 }
 
 /**
- * User-facing "what happened to your application" sentence fragment for a
- * status transition. The full message is "Your application for {job title} "
- * followed by this fragment. Only the reachable schema transitions that an
- * employer can move TO are expected here (see applies-form.php); 'applied' is
- * never a target so it has no entry.
+ * User-facing sentence fragment for an application status transition.
  */
 function hirepeak_notification_application_status_message(string $status): string
 {

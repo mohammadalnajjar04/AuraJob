@@ -1,4 +1,4 @@
-# HirePeak
+# AuraJob
 
 ## Project Type
 Job Board & Recruitment Management System
@@ -55,7 +55,7 @@ Create a full-stack recruitment platform that connects job seekers with employer
 
 ## Current Implementation Notes
 
-The current HirePeak build now includes the mandatory capstone requirements and the completed bonus functionality used by the application:
+The current AuraJob build now includes the mandatory capstone requirements and the completed bonus functionality used by the application:
 
 - Job CRUD includes create, read, update, close, and permanent delete for employer-owned jobs.
 - Applicants can cancel eligible in-progress applications.
@@ -72,11 +72,11 @@ The current HirePeak build now includes the mandatory capstone requirements and 
 
 ### 1. Home
 Purpose:
-- Introduce HirePeak
+- Introduce AuraJob
 - Show a job search area
 - Show latest jobs
 - Show popular job categories
-- Explain how HirePeak works
+- Explain how AuraJob works
 - Provide calls to action for applicants and employers
 
 ### 2. Jobs

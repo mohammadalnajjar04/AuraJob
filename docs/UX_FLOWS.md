@@ -1,4 +1,4 @@
-# HirePeak — UX Flows
+# AuraJob — UX Flows
 
 End-to-end journeys, drawn visually, mapping to screens in `WIREFRAMES.md` and components in `COMPONENT_INVENTORY.md`.
 

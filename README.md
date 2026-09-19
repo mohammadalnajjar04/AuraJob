@@ -1,6 +1,8 @@
-# HirePeak
+# AuraJob
 
-**HirePeak** is a full-stack **Job Board & Recruitment Management System** built with PHP, MySQL, HTML, CSS, and vanilla JavaScript. It supports two roles—Applicants and Employers—and covers the complete recruitment flow from job discovery and applications to employer review, status tracking, saved jobs, and in-app notifications.
+<p align="center"><img src="public/assets/images/aurajob-logo.png" alt="AuraJob logo" width="260"></p>
+
+**AuraJob** is a full-stack **Job Board & Recruitment Management System** built with PHP, MySQL, HTML, CSS, and vanilla JavaScript. It supports two roles—Applicants and Employers—and covers the complete recruitment flow from job discovery and applications to employer review, status tracking, saved jobs, and in-app notifications.
 
 ## Key Features
 
@@ -41,7 +43,7 @@
 ## Project Structure
 
 ```text
-HirePeak/
+AuraJob/
 ├── app/
 │   ├── Core/          # config, database, authentication/session helpers
 │   ├── Services/      # encryption and notification service
@@ -70,7 +72,7 @@ The application is intentionally served from `public/` so internal PHP code, `.e
 
 ## Database
 
-HirePeak uses eight related tables:
+AuraJob uses eight related tables:
 
 - `users`
 - `applicant_profiles`
@@ -94,7 +96,7 @@ See `database/ERD.md` and `database/DATABASE_NOTES.md` for the full design.
 
 ## Authentication & Authorization
 
-Authentication is session-based. On successful login, HirePeak regenerates the session ID and stores only the authenticated user's identity fields in the session.
+Authentication is session-based. On successful login, AuraJob regenerates the session ID and stores only the authenticated user's identity fields in the session.
 
 The optional **Remember me** checkbox reissues the same hardened PHP session cookie with a 30-day expiry. The cookie remains `HttpOnly`, uses `SameSite=Lax`, and uses the `Secure` flag when HTTPS is active. Passwords or password hashes are never stored in client cookies.
 
@@ -118,7 +120,7 @@ The encryption key is loaded from `.env` as `APP_ENCRYPTION_KEY` and is never co
 
 ## AJAX
 
-HirePeak includes real asynchronous browser/server/database interaction:
+AuraJob includes real asynchronous browser/server/database interaction:
 
 - **Job search/filtering:** `public/assets/js/jobs.js` sends GET requests to `jobs.php` with `fetch()`, replaces the server-rendered jobs content, and updates browser history. Normal GET navigation remains available as a no-JavaScript fallback.
 - **Saved Jobs:** `public/assets/js/main.js` sends save/unsave requests to `save-job.php`, which updates MySQL and returns JSON used to update the page state.
@@ -161,7 +163,7 @@ Client-side validation improves UX but is never trusted as the security boundary
 
 ```bash
 git clone <your-repository-url>
-cd HirePeak
+cd AuraJob
 ```
 
 ### 2. Create the database
@@ -219,7 +221,7 @@ APP_ENCRYPTION_KEY=<64-hex-character-key>
 
 Never commit `.env`.
 
-### 5. Run HirePeak
+### 5. Run AuraJob
 
 The document root must be `public/`.
 
@@ -288,7 +290,7 @@ Accepted and Rejected are terminal states.
 
 ## Responsive UI
 
-HirePeak uses a shared design system with Flexbox/Grid and responsive breakpoints for desktop, tablet, and mobile layouts. The app includes responsive navigation, filter drawer behavior, dashboards, forms, cards, application views, and notifications.
+AuraJob uses a shared design system with Flexbox/Grid and responsive breakpoints for desktop, tablet, and mobile layouts. The app includes responsive navigation, filter drawer behavior, dashboards, forms, cards, application views, and notifications.
 
 ## Documentation
 

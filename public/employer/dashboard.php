@@ -131,10 +131,10 @@ try {
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Employer Dashboard — HirePeak</title>
-  <meta name="description" content="Track your job postings and incoming applications on HirePeak.">
+  <title>Employer Dashboard — AuraJob</title>
+  <meta name="description" content="Track your job postings and incoming applications on AuraJob.">
   <meta name="theme-color" content="#ffffff">
-  <link rel="icon" href="/assets/images/hirepeak-mark.svg" type="image/svg+xml">
+  <link rel="icon" href="/assets/images/aurajob-mark.png" type="image/png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -211,7 +211,7 @@ try {
                   </svg>
                 </div>
                 <h3 class="empty-state__title">No jobs posted yet.</h3>
-                <p class="empty-state__text">Here's how to start hiring on HirePeak:</p>
+                <p class="empty-state__text">Here's how to start hiring on AuraJob:</p>
                 <ol class="empty-steps">
                   <li>
                     <?php if ($company === null): ?>

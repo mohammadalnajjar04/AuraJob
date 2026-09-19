@@ -182,7 +182,7 @@ try {
 
     $recNote = $interests !== [] || $profileLocation !== ''
         ? 'Ranked by jobs like the ones you\'ve applied to or saved.'
-        : 'The newest active jobs on HirePeak.';
+        : 'The newest active jobs on AuraJob.';
 } catch (Throwable $e) {
     error_log('[hirepeak] applicant dashboard load failed: ' . $e->getMessage());
     $loadError = true;
@@ -193,10 +193,10 @@ try {
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Applicant Dashboard — HirePeak</title>
-  <meta name="description" content="Track your applications, saved jobs, and profile progress on HirePeak.">
+  <title>Applicant Dashboard — AuraJob</title>
+  <meta name="description" content="Track your applications, saved jobs, and profile progress on AuraJob.">
   <meta name="theme-color" content="#ffffff">
-  <link rel="icon" href="/assets/images/hirepeak-mark.svg" type="image/svg+xml">
+  <link rel="icon" href="/assets/images/aurajob-mark.png" type="image/png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">

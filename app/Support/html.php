@@ -2,7 +2,7 @@
 declare(strict_types=1);
 
 /**
- * HirePeak shared output helpers.
+ * AuraJob shared output helpers.
  */
 
 require_once __DIR__ . '/../Core/auth.php';
@@ -226,7 +226,7 @@ function hirepeak_apply_cta(int $jobId): array
     if (($user['role'] ?? '') === 'employer') {
         return [
             'cta' => '<button class="btn btn--primary" type="button" disabled>Apply Now</button>',
-            'note' => 'Employer accounts post jobs on HirePeak and can\'t apply for roles.',
+            'note' => 'Employer accounts post jobs on AuraJob and can\'t apply for roles.',
         ];
     }
 
@@ -463,10 +463,10 @@ function hirepeak_job_not_found(): void
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Job not found — HirePeak</title>
+  <title>Job not found — AuraJob</title>
   <meta name="description" content="We couldn't find this job.">
   <meta name="theme-color" content="#ffffff">
-  <link rel="icon" href="/assets/images/hirepeak-mark.svg" type="image/svg+xml">
+  <link rel="icon" href="/assets/images/aurajob-mark.png" type="image/png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">

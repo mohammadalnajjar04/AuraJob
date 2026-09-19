@@ -1,10 +1,10 @@
-# HirePeak — Database Notes
+# AuraJob — Database Notes
 
-This document explains the HirePeak database in plain, professional language. It is meant to be read alongside `ERD.md` (the full design reference), `schema.sql` (the maintainable schema source), and `database.sql` (the combined schema + seed import used for convenient submission/demo setup).
+This document explains the AuraJob database in plain, professional language. It is meant to be read alongside `ERD.md` (the full design reference), `schema.sql` (the maintainable schema source), and `database.sql` (the combined schema + seed import used for convenient submission/demo setup).
 
 ## Database Overview
 
-HirePeak is a job board and recruitment management platform with two main roles: **Applicant** (job seekers) and **Employer** (companies posting jobs). The database is a normalized MySQL relational database using the **InnoDB** engine and the **utf8mb4** character set, which fully supports all Unicode text (including emoji and non-Latin scripts).
+AuraJob is a job board and recruitment management platform with two main roles: **Applicant** (job seekers) and **Employer** (companies posting jobs). The database is a normalized MySQL relational database using the **InnoDB** engine and the **utf8mb4** character set, which fully supports all Unicode text (including emoji and non-Latin scripts).
 
 The database is organized so that:
 

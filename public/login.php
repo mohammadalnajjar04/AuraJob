@@ -91,10 +91,10 @@ $pageScripts = ['/assets/js/main.js', '/assets/js/auth.js'];
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Sign In — HirePeak</title>
-  <meta name="description" content="Sign in to your HirePeak account to manage your applications and continue your job search.">
+  <title>Sign In — AuraJob</title>
+  <meta name="description" content="Sign in to your AuraJob account to manage your applications and continue your job search.">
   <meta name="theme-color" content="#ffffff">
-  <link rel="icon" href="/assets/images/hirepeak-mark.svg" type="image/svg+xml">
+  <link rel="icon" href="/assets/images/aurajob-mark.png" type="image/png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -110,7 +110,7 @@ $pageScripts = ['/assets/js/main.js', '/assets/js/auth.js'];
       <div class="auth-card auth-card--login">
         <p class="auth-kicker">Secure access</p>
         <h1 class="auth-title">Welcome back</h1>
-        <p class="auth-sub">Sign in to continue to HirePeak.</p>
+        <p class="auth-sub">Sign in to continue to AuraJob.</p>
 
         <?php if ($registerFlash !== ''): ?>
         <div class="auth-success auth-flash" role="status">
@@ -178,10 +178,10 @@ $pageScripts = ['/assets/js/main.js', '/assets/js/auth.js'];
           </button>
         </form>
 
-        <p class="auth-switch">New to HirePeak? <a href="<?php echo hirepeak_url('register.php'); ?>">Create an account</a></p>
+        <p class="auth-switch">New to AuraJob? <a href="<?php echo hirepeak_url('register.php'); ?>">Create an account</a></p>
       </div>
 
-      <p class="auth-foot">HirePeak &middot; Job Board &amp; Recruitment Management System</p>
+      <p class="auth-foot">AuraJob &middot; Job Board &amp; Recruitment Management System</p>
     </div>
   </main>
 

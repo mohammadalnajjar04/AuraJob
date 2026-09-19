@@ -2,7 +2,7 @@
 declare(strict_types=1);
 
 /**
- * HirePeak application-layer encryption helpers.
+ * AuraJob application-layer encryption helpers.
  *
  * The design docs (database/ERD.md) target applicant_profiles.phone for
  * reversible encryption using PHP/OpenSSL AES-256-GCM: it is personally

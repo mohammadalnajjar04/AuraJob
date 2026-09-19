@@ -1,11 +1,11 @@
 -- ============================================================================
--- HirePeak — Combined Database Import
+-- AuraJob — Combined Database Import
 -- Generated from database/schema.sql + database/seed.sql
 -- Import this file into a fresh MySQL 8+ instance for local/demo setup.
 -- ============================================================================
 
 -- ============================================================================
--- HirePeak — Database Schema
+-- AuraJob — Database Schema
 -- Job Board & Recruitment Management System
 -- Engine: MySQL 8 / InnoDB
 -- Charset/Collation: utf8mb4 / utf8mb4_0900_ai_ci (utf8mb4_general_ci suitable too)
@@ -229,7 +229,7 @@ CREATE TABLE notifications (
 
 
 -- ============================================================================
--- HirePeak — Development Seed Data
+-- AuraJob — Development Seed Data
 -- Job Board & Recruitment Management System
 -- Fictional data ONLY for local development.
 --

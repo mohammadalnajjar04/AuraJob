@@ -1,4 +1,4 @@
-# HirePeak — Component Inventory
+# AuraJob — Component Inventory
 
 Master list of reusable UI components. For each: **purpose, variants, states, where used.**
 

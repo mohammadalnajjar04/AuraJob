@@ -1,4 +1,4 @@
-# HirePeak — UI/UX Design System
+# AuraJob — UI/UX Design System
 
 **Version:** 1.0 (design planning)
 **Status:** Approved design reference for implementation
@@ -8,7 +8,7 @@
 
 ## 1. Design Philosophy
 
-HirePeak is a **premium recruitment SaaS**. Every screen should feel like part of a single, calm, trustworthy product.
+AuraJob is a **premium recruitment SaaS**. Every screen should feel like part of a single, calm, trustworthy product.
 
 Five principles, in priority order:
 
@@ -31,7 +31,7 @@ Five principles, in priority order:
 
 | Attribute | Decision |
 |---|---|
-| Product name | HirePeak |
+| Product name | AuraJob |
 | Description | A modern recruitment platform connecting talented candidates with employers while providing a clear application tracking and hiring workflow. |
 | Core brand idea | "Helping talent and employers reach their peak." |
 | Main tagline | "Find the right opportunity. Reach your peak." |
@@ -278,7 +278,7 @@ Shadows communicate elevation, not decoration. Few, calibrated, low-opacity.
 ### 11.1 Public / Visitor
 
 ```
-[◆ HirePeak]   Home · Find Jobs · For Employers      [Sign In] [Create Account →]
+[◆ AuraJob]   Home · Find Jobs · For Employers      [Sign In] [Create Account →]
 ```
 
 - "Create Account" is the primary CTA (brand button). "Sign In" is ghost.
@@ -288,7 +288,7 @@ Shadows communicate elevation, not decoration. Few, calibrated, low-opacity.
 ### 11.2 Applicant
 
 ```
-[◆ HirePeak]   Find Jobs · My Applications · Saved Jobs
+[◆ AuraJob]   Find Jobs · My Applications · Saved Jobs
 [🔔 Notifications]  [avatar + name ▾]  (Profile / Account / Logout)
 ```
 
@@ -300,7 +300,7 @@ Shadows communicate elevation, not decoration. Few, calibrated, low-opacity.
 ### 11.3 Employer
 
 ```
-[◆ HirePeak]  Dashboard · Jobs · Applicants · Company      [Post a Job →] [🔔] [avatar ▾]
+[◆ AuraJob]  Dashboard · Jobs · Applicants · Company      [Post a Job →] [🔔] [avatar ▾]
 ```
 
 - "Post a Job" is the **always-visible primary CTA** (brand button, right side) — the single most important recruiter action.
@@ -647,7 +647,7 @@ Critical self-review performed before finalizing this design. Each question answ
 
 | # | Audit question | Verdict | Resolution (where required) |
 |---|---|---|---|
-| A | Can a first-time visitor understand HirePeak in 5 seconds? | ✅ | Hero = one viewport: headline (what), one-line sub-copy (who), two buttons + working search (next). Pass criteria are stated in `UX_FLOWS.md` Flow 1. |
+| A | Can a first-time visitor understand AuraJob in 5 seconds? | ✅ | Hero = one viewport: headline (what), one-line sub-copy (who), two buttons + working search (next). Pass criteria are stated in `UX_FLOWS.md` Flow 1. |
 | B | Can a user find jobs immediately? | ✅ | Hero search (keyword + location + Search Jobs) sits above the fold; popular-search chips; Jobs page filters ready. |
 | C | Can an applicant understand their application status immediately? | ✅ | One `StatusBadge` reused everywhere; tracking stepper shows current step with brand emphasis and dates; text label never color-only. |
 | D | Can an employer see what needs attention immediately? | ✅ | "Applications need review" banner + KPIs (Active Jobs/Apps/Interviews/Hired) + Recent Applications + Pipeline on one screen. Found as a gap → added the attention banner (wireframe 10). |

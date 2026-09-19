@@ -1,8 +1,8 @@
-# HirePeak — Database Architecture (ERD)
+# AuraJob — Database Architecture (ERD)
 
 ## Database Overview
 
-HirePeak uses a normalized relational MySQL database (InnoDB, utf8mb4) to power a job board and recruitment management system. The schema is organized around two primary roles — **Applicant** and **Employer** — and supports job publishing, job searching, job applications, application tracking, saved jobs, and notifications.
+AuraJob uses a normalized relational MySQL database (InnoDB, utf8mb4) to power a job board and recruitment management system. The schema is organized around two primary roles — **Applicant** and **Employer** — and supports job publishing, job searching, job applications, application tracking, saved jobs, and notifications.
 
 The design emphasizes:
 

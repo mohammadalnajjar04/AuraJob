@@ -1,5 +1,5 @@
 -- ============================================================================
--- HirePeak — Development Seed Data
+-- AuraJob — Development Seed Data
 -- Job Board & Recruitment Management System
 -- Fictional data ONLY for local development.
 --

@@ -115,10 +115,10 @@ $pageScripts = ['/assets/js/main.js'];
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title><?php echo $application !== null && trim((string) $application['job_title']) !== '' ? hirepeak_esc((string) $application['applicant_name']) . ' — Application | HirePeak' : 'Application | HirePeak'; ?></title>
-  <meta name="description" content="Review this candidate's full application on HirePeak.">
+  <title><?php echo $application !== null && trim((string) $application['job_title']) !== '' ? hirepeak_esc((string) $application['applicant_name']) . ' — Application | AuraJob' : 'Application | AuraJob'; ?></title>
+  <meta name="description" content="Review this candidate's full application on AuraJob.">
   <meta name="theme-color" content="#ffffff">
-  <link rel="icon" href="/assets/images/hirepeak-mark.svg" type="image/svg+xml">
+  <link rel="icon" href="/assets/images/aurajob-mark.png" type="image/png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">

@@ -2,7 +2,7 @@
 declare(strict_types=1);
 
 /**
- * HirePeak database connection.
+ * AuraJob database connection.
  *
  * Provides a shared mysqli connection (utf8mb4). Throws exceptions on any
  * connection or query failure; callers decide how to surface them. Detailed

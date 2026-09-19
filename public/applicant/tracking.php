@@ -198,10 +198,10 @@ function hirepeak_tracking_not_found(): void
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Application not found — HirePeak</title>
+  <title>Application not found — AuraJob</title>
   <meta name="description" content="We couldn't find this application.">
   <meta name="theme-color" content="#ffffff">
-  <link rel="icon" href="/assets/images/hirepeak-mark.svg" type="image/svg+xml">
+  <link rel="icon" href="/assets/images/aurajob-mark.png" type="image/png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -284,10 +284,10 @@ $showSalary = $salary !== 'Salary not disclosed';
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Application Tracking — HirePeak</title>
-  <meta name="description" content="Track the progress of your <?php echo hirepeak_esc($jobTitle); ?> application with HirePeak.">
+  <title>Application Tracking — AuraJob</title>
+  <meta name="description" content="Track the progress of your <?php echo hirepeak_esc($jobTitle); ?> application with AuraJob.">
   <meta name="theme-color" content="#ffffff">
-  <link rel="icon" href="/assets/images/hirepeak-mark.svg" type="image/svg+xml">
+  <link rel="icon" href="/assets/images/aurajob-mark.png" type="image/png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">

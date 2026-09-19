@@ -2,7 +2,7 @@
 declare(strict_types=1);
 
 /**
- * HirePeak authentication & session helpers.
+ * AuraJob authentication & session helpers.
  *
  * Provides a single, simple place for starting the secure session, reading the
  * current authenticated user, logging in/out, and CSRF tokens. Session data

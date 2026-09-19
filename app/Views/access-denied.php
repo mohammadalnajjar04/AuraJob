@@ -2,7 +2,7 @@
 declare(strict_types=1);
 
 /**
- * HirePeak access-denied page (HTTP 403).
+ * AuraJob access-denied page (HTTP 403).
  *
  * Shown to authenticated users who attempt a page for a role they don't hold.
  * Included by hirepeak_require_role(); safe to render directly (it also sets
@@ -27,10 +27,10 @@ $pageScripts = ['/assets/js/main.js'];
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Access denied — HirePeak</title>
+  <title>Access denied — AuraJob</title>
   <meta name="description" content="You don't have access to this page.">
   <meta name="theme-color" content="#ffffff">
-  <link rel="icon" href="/assets/images/hirepeak-mark.svg" type="image/svg+xml">
+  <link rel="icon" href="/assets/images/aurajob-mark.png" type="image/png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -48,7 +48,7 @@ $pageScripts = ['/assets/js/main.js'];
         <p class="denied-text">You don't have access to this page.</p>
         <div class="denied-actions">
           <a class="btn btn--primary" href="<?php echo htmlspecialchars($deniedDest, ENT_QUOTES, 'UTF-8'); ?>">Back to dashboard</a>
-          <a class="btn btn--ghost" href="<?php echo hirepeak_url('index.php'); ?>">Back to HirePeak</a>
+          <a class="btn btn--ghost" href="<?php echo hirepeak_url('index.php'); ?>">Back to AuraJob</a>
         </div>
       </div>
     </div>

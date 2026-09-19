@@ -86,8 +86,8 @@ if ($notFound) {
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title><?php echo $notFound ? 'Application not found' : 'Cancel Application'; ?> — HirePeak</title>
-  <meta name="description" content="Cancel a HirePeak job application.">
+  <title><?php echo $notFound ? 'Application not found' : 'Cancel Application'; ?> — AuraJob</title>
+  <meta name="description" content="Cancel an AuraJob job application.">
   <meta name="theme-color" content="#ffffff">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>

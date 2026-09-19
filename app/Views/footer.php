@@ -2,7 +2,7 @@
 declare(strict_types=1);
 
 /**
- * HirePeak shared site footer + page scripts.
+ * AuraJob shared site footer + page scripts.
  *
  * Pages may set $pageScripts (array of script src paths) before including so
  * each page ends with exactly the scripts it needs.
@@ -16,11 +16,11 @@ $pageScripts = $pageScripts ?? [];
   <div class="container">
     <div class="footer-grid">
       <div class="footer-brand">
-        <a class="brand" href="<?php echo hirepeak_url('index.php'); ?>" aria-label="HirePeak home">
-          <img class="brand__mark" src="<?php echo hirepeak_url('assets/images/hirepeak-mark.svg'); ?>" width="32" height="32" alt="" aria-hidden="true">
-          <span class="brand__name"><span class="brand__name-hire">Hire</span><span class="brand__name-peak">Peak</span></span>
+        <a class="brand" href="<?php echo hirepeak_url('index.php'); ?>" aria-label="AuraJob home">
+          <img class="brand__mark" src="<?php echo hirepeak_url('assets/images/aurajob-mark.png'); ?>" width="32" height="32" alt="" aria-hidden="true">
+          <span class="brand__name"><span class="brand__name-aura">Aura</span><span class="brand__name-job">Job</span></span>
         </a>
-        <p class="footer-brand__text">Helping talent and employers reach their peak.</p>
+        <p class="footer-brand__text">Helping talent and employers find the right fit.</p>
       </div>
 
       <div class="footer-links">
@@ -29,7 +29,7 @@ $pageScripts = $pageScripts ?? [];
           <ul>
             <li><a href="<?php echo hirepeak_url('jobs.php'); ?>">Find Jobs</a></li>
             <li><a href="<?php echo hirepeak_url('jobs.php'); ?>">Browse Categories</a></li>
-            <li><a href="<?php echo hirepeak_url('index.php#why-hirepeak'); ?>">How It Works</a></li>
+            <li><a href="<?php echo hirepeak_url('index.php#why-aurajob'); ?>">How It Works</a></li>
             <li><a href="<?php echo hirepeak_url('register.php'); ?>">Create Account</a></li>
           </ul>
         </div>
@@ -44,10 +44,10 @@ $pageScripts = $pageScripts ?? [];
         </div>
 
         <div class="footer-col">
-          <h3 class="footer-col__title">HirePeak</h3>
+          <h3 class="footer-col__title">AuraJob</h3>
           <ul>
             <li><a href="<?php echo hirepeak_url('index.php'); ?>">Home</a></li>
-            <li><a href="<?php echo hirepeak_url('index.php#why-hirepeak'); ?>">How It Works</a></li>
+            <li><a href="<?php echo hirepeak_url('index.php#why-aurajob'); ?>">How It Works</a></li>
             <li><a href="<?php echo hirepeak_url('index.php#for-employers'); ?>">For Employers</a></li>
           </ul>
         </div>
@@ -60,7 +60,7 @@ $pageScripts = $pageScripts ?? [];
         <span class="footer-bottom__separator" aria-hidden="true">&bull;</span>
         <p>Developed in collaboration with <a href="https://unicoders.co/" target="_blank" rel="noopener noreferrer">UniCoders</a>.</p>
       </div>
-      <p class="footer-bottom__legal">HirePeak &mdash; Job Board &amp; Recruitment Management System</p>
+      <p class="footer-bottom__legal">AuraJob &mdash; Job Board &amp; Recruitment Management System</p>
     </div>
   </div>
 </footer>

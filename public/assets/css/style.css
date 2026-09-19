@@ -6988,7 +6988,7 @@ textarea {
 }
 
 /* --------------------------------------------------------------------------
-   Stage 19: refreshed HirePeak brand + visual storytelling
+   Stage 21: AuraJob brand refresh + visual storytelling
    -------------------------------------------------------------------------- */
 .brand__mark {
   width: 32px;
@@ -7011,11 +7011,11 @@ textarea {
   letter-spacing: -0.035em;
 }
 
-.brand__name-hire {
+.brand__name-aura {
   color: var(--color-text-primary);
 }
 
-.brand__name-peak {
+.brand__name-job {
   color: var(--color-brand);
 }
 

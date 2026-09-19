@@ -1,6 +1,6 @@
-# HirePeak Deployment Guide
+# AuraJob Deployment Guide
 
-This guide covers a production-oriented deployment of HirePeak. The application is plain PHP with MySQL and does not require a framework or JavaScript build step.
+This guide covers a production-oriented deployment of AuraJob. The application is plain PHP with MySQL and does not require a framework or JavaScript build step.
 
 ## 1. Server Requirements
 
@@ -36,7 +36,7 @@ Import the combined submission file into a fresh database server:
 mysql -u root -p < database/database.sql
 ```
 
-For production, create a dedicated application user with only the permissions HirePeak needs:
+For production, create a dedicated application user with only the permissions AuraJob needs:
 
 ```sql
 CREATE USER 'hirepeak_app'@'localhost' IDENTIFIED BY 'use-a-strong-unique-password';
@@ -87,7 +87,7 @@ Application source code should normally be read-only to the web-server process.
 
 ## 7. HTTPS and Domain
 
-Serve HirePeak over HTTPS in production. Point the domain's virtual host/server block to `public/`.
+Serve AuraJob over HTTPS in production. Point the domain's virtual host/server block to `public/`.
 
 No framework router is required: the application uses physical PHP routes such as:
 

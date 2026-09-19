@@ -189,10 +189,10 @@ $pageScripts = ['/assets/js/main.js'];
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Company Profile — HirePeak</title>
-  <meta name="description" content="Keep your HirePeak company profile accurate so candidates know who they're applying to.">
+  <title>Company Profile — AuraJob</title>
+  <meta name="description" content="Keep your AuraJob company profile accurate so candidates know who they're applying to.">
   <meta name="theme-color" content="#ffffff">
-  <link rel="icon" href="/assets/images/hirepeak-mark.svg" type="image/svg+xml">
+  <link rel="icon" href="/assets/images/aurajob-mark.png" type="image/png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -373,7 +373,7 @@ $pageScripts = ['/assets/js/main.js'];
               <h2 class="profile-card__title" id="profile-quicklinks-title">Quick links</h2>
               <ul class="profile-quicklinks">
                 <li><a href="<?php echo hirepeak_url('employer/dashboard.php'); ?>">Dashboard</a></li>
-                <li><a href="<?php echo hirepeak_url('index.php'); ?>">HirePeak home</a></li>
+                <li><a href="<?php echo hirepeak_url('index.php'); ?>">AuraJob home</a></li>
               </ul>
             </section>
           </aside>

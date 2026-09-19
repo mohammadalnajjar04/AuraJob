@@ -2,15 +2,15 @@
 declare(strict_types=1);
 
 /**
- * HirePeak in-app notifications service.
+ * AuraJob in-app notifications service.
  *
  * This file intentionally demonstrates the project's PHP OOP usage while
  * preserving the public helper functions already used across the application.
  * Callers can continue using the hirepeak_notification_* helpers; those helpers
- * now delegate the database work to HirePeakNotificationService.
+ * now delegate the database work to AuraJobNotificationService.
  */
 
-interface HirePeakNotificationServiceInterface
+interface AuraJobNotificationServiceInterface
 {
     public function create(int $userId, string $type, string $message): bool;
 
@@ -34,7 +34,7 @@ interface HirePeakNotificationServiceInterface
  * - class constant encapsulation
  * - instance methods with typed parameters/returns
  */
-final class HirePeakNotificationService implements HirePeakNotificationServiceInterface
+final class AuraJobNotificationService implements AuraJobNotificationServiceInterface
 {
     /** @var list<string> */
     private const TYPES = ['application_status', 'application_new', 'system', 'job_update'];
@@ -160,7 +160,7 @@ final class HirePeakNotificationService implements HirePeakNotificationServiceIn
 /** @return list<string> */
 function hirepeak_notification_types(): array
 {
-    return HirePeakNotificationService::types();
+    return AuraJobNotificationService::types();
 }
 
 /**
@@ -168,28 +168,28 @@ function hirepeak_notification_types(): array
  */
 function hirepeak_notification_create(\mysqli $db, int $userId, string $type, string $message): bool
 {
-    return (new HirePeakNotificationService($db))->create($userId, $type, $message);
+    return (new AuraJobNotificationService($db))->create($userId, $type, $message);
 }
 
 function hirepeak_notification_unread_count(\mysqli $db, int $userId): int
 {
-    return (new HirePeakNotificationService($db))->unreadCount($userId);
+    return (new AuraJobNotificationService($db))->unreadCount($userId);
 }
 
 /** @return list<array<string, mixed>> */
 function hirepeak_notification_recent(\mysqli $db, int $userId, int $limit = 50): array
 {
-    return (new HirePeakNotificationService($db))->recent($userId, $limit);
+    return (new AuraJobNotificationService($db))->recent($userId, $limit);
 }
 
 function hirepeak_notification_mark_one_read(\mysqli $db, int $userId, int $notificationId): bool
 {
-    return (new HirePeakNotificationService($db))->markOneRead($userId, $notificationId);
+    return (new AuraJobNotificationService($db))->markOneRead($userId, $notificationId);
 }
 
 function hirepeak_notification_mark_all_read(\mysqli $db, int $userId): bool
 {
-    return (new HirePeakNotificationService($db))->markAllRead($userId);
+    return (new AuraJobNotificationService($db))->markAllRead($userId);
 }
 
 /**

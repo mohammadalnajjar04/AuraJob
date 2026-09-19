@@ -1,10 +1,10 @@
-# HirePeak — Wireframes (Text/ASCII)
+# AuraJob — Wireframes (Text/ASCII)
 
 Layout reference for implementation. Companion to `UI_UX_DESIGN_SYSTEM.md`.
 
 Conventions used below:
 
-- `[◆ HirePeak]` — logo lockup (mark + wordmark).
+- `[◆ AuraJob]` — logo lockup (mark + wordmark).
 - `[ btn ]` — button (bold outline = primary/brand).
 - `[▾]` — dropdown / menu.
 - `[🔔]` — notifications with unread dot.
@@ -23,7 +23,7 @@ Desktop (1200px container):
 
 ```
 ┌──────────────────────────────────────────────────────────────────────────┐
-│ [◆ HirePeak]  Home · Find Jobs · For Employers        [Sign In] [Create Account]│  ← nav 64px
+│ [◆ AuraJob]  Home · Find Jobs · For Employers        [Sign In] [Create Account]│  ← nav 64px
 ├──────────────────────────────────────────────────────────────────────────┤
 │                                                                          │
 │        Find the right opportunity.                                       │
@@ -51,7 +51,7 @@ Desktop (1200px container):
 │  [ 💻 IT ] [ 💰 Finance ] [ 🩺 Healthcare ] [ 📣 Marketing ]  ...        │
 │                                                                          │
 ├──────────────────────────────────────────────────────────────────────────┤
-│  Why HirePeak                   │  How It Works                         │
+│  Why AuraJob                   │  How It Works                         │
 │  - Clear tracking               │  1 Create account →2 Apply →3 Track    │
 │  - One place for everything     │  (two-column band, no card wall)       │
 ├──────────────────────────────────────────────────────────────────────────┤
@@ -60,8 +60,8 @@ Desktop (1200px container):
 ├──────────────────────────────────────────────────────────────────────────┤
 │  [ Final CTA band:  "Ready to reach your peak?"     [Create Account] ]   │
 ├──────────────────────────────────────────────────────────────────────────┤
-│  Footer:  HirePeak         Job Seekers | Employers | About | Support     │
-│          © 2026 HirePeak                                                  │
+│  Footer:  AuraJob         Job Seekers | Employers | About | Support     │
+│          © 2026 AuraJob                                                  │
 └──────────────────────────────────────────────────────────────────────────┘
 ```
 
@@ -75,7 +75,7 @@ Desktop:
 
 ```
 ┌──────────────────────────────────────────────────────────────────────────┐
-│ [◆ HirePeak]  Find Jobs · My Applications · Saved Jobs    [🔔] [ (AM) ▾ ]│
+│ [◆ AuraJob]  Find Jobs · My Applications · Saved Jobs    [🔔] [ (AM) ▾ ]│
 ├──────────────────────────────────────────────────────────────────────────┤
 │  ┌───────────────┐ ┌──────────────────────────────────────────────────┐  │
 │  │ FILTERS (280px)│ │ 1,240 jobs                                      │  │
@@ -118,7 +118,7 @@ Desktop:
 
 ```
 ┌──────────────────────────────────────────────────────────────────────────┐
-│ [◆ HirePeak]  Find Jobs · My Applications · Saved Jobs    [🔔] [ (AM) ▾] │
+│ [◆ AuraJob]  Find Jobs · My Applications · Saved Jobs    [🔔] [ (AM) ▾] │
 ├──────────────────────────────────────────────────────────────────────────┤
 │  ← Back to results                                                      │
 │  ┌──────────────────────────────────────────┐  ┌───────────────────────┐ │
@@ -157,10 +157,10 @@ Centered auth shell (440px):
 
 ```
 ┌─────────────────────────────────────────┐
-│              [◆ HirePeak]               │
+│              [◆ AuraJob]               │
 │                                         │
 │  Welcome back                          │
-│  Sign in to continue to HirePeak.      │
+│  Sign in to continue to AuraJob.      │
 │                                         │
 │  Email                                  │
 │  ┌───────────────────────────────────┐ │
@@ -174,9 +174,9 @@ Centered auth shell (440px):
 │                                         │
 │  [           Sign In         ]         │  ← primary, loading state
 │                                         │
-│  New to HirePeak?  [ Create account ]  │
+│  New to AuraJob?  [ Create account ]  │
 ├─────────────────────────────────────────┤
-│  © 2026 HirePeak · Terms · Privacy      │
+│  © 2026 AuraJob · Terms · Privacy      │
 └─────────────────────────────────────────┘
 ```
 
@@ -188,10 +188,10 @@ Behavior: persistent labels; inline validation (`role="alert"` on error); loadin
 
 ```
 ┌─────────────────────────────────────────┐
-│              [◆ HirePeak]               │
+│              [◆ AuraJob]               │
 │                                         │
 │  Create your account                   │
-│  Choose how you'll use HirePeak.       │
+│  Choose how you'll use AuraJob.       │
 │                                         │
 │  ┌─────────────────────┐ ┌─────────────┐ │
 │  │ (•)  I'm an applicant│ │ ( ) Employer│ │  ← radio cards
@@ -226,7 +226,7 @@ Desktop (dashboard shell, sidebar 240px):
 
 ```
 ┌──────────────────────────────────────────────────────────────────────────┐
-│ [◆ HirePeak]  Find Jobs · My Apps · Saved     [🔔] [ (JA) ▾ ]           │
+│ [◆ AuraJob]  Find Jobs · My Apps · Saved     [🔔] [ (JA) ▾ ]           │
 ├──────────────┬───────────────────────────────────────────────────────────┤
 │ ▸ Overview   │   Good morning, John.                                    │
 │  Applications│   Here's what's happening with your applications.         │
@@ -288,7 +288,7 @@ Desktop:
 
 ```
 ┌──────────────────────────────────────────────────────────────────────────┐
-│ [◆ HirePeak]  My Applications > Backend Developer — Application        │
+│ [◆ AuraJob]  My Applications > Backend Developer — Application        │
 │                                                                          │
 │  Senior Backend Developer                         Status: ◇ Interview   │
 │  TechCorp Solutions · Applied 12 Jul 2026                               │
@@ -355,7 +355,7 @@ Sections are separate cards, not one giant form. "Save" persists whole form with
 
 ```
 ┌──────────────────────────────────────────────────────────────────────────┐
-│ [◆ HirePeak]  Dashboard · Jobs · Applicants · Company   [Post a Job →]  │
+│ [◆ AuraJob]  Dashboard · Jobs · Applicants · Company   [Post a Job →]  │
 ├──────────┬───────────────────────────────────────────────────────────────┤
 │ ▸ Overvw │   Good morning, Alice.                                       │
 │  Jobs    │   You have 3 pending applications needing review.            │
@@ -409,7 +409,7 @@ Delete only inside the `[⋯]` menu, styled danger, with confirmation modal. Sta
 
 ```
 ┌──────────────────────────────────────────────────────────────────────────┐
-│ [◆ HirePeak]  Jobs > Create Job                       [Save draft]  on   │
+│ [◆ AuraJob]  Jobs > Create Job                       [Save draft]  on   │
 │                                                                          │
 │  ┌────────────────────┐  ┌────────────────────────────────────────────┐  │
 │  │ 1 Basic info      ✓  │  Basic Information                          │  │
@@ -458,7 +458,7 @@ Mobile: candidate cards (avatar, name, title, applied, status badge, Review butt
 
 ```
 ┌──────────────────────────────────────────────────────────────────────────┐
-│ [◆ HirePeak]  Applicants > Senior PHP Developer > John Applicant        │
+│ [◆ AuraJob]  Applicants > Senior PHP Developer > John Applicant        │
 │                                                                          │
 │  Candidate                        Status                                  │
 │  (JA) John Applicant              ◇ Under Review                         │

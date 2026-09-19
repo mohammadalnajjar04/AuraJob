@@ -126,10 +126,10 @@ $pageScripts = ['/assets/js/main.js', '/assets/js/auth.js'];
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Create Account — HirePeak</title>
-  <meta name="description" content="Create your HirePeak account. Choose how you'll use HirePeak and get started.">
+  <title>Create Account — AuraJob</title>
+  <meta name="description" content="Create your AuraJob account. Choose how you'll use AuraJob and get started.">
   <meta name="theme-color" content="#ffffff">
-  <link rel="icon" href="/assets/images/hirepeak-mark.svg" type="image/svg+xml">
+  <link rel="icon" href="/assets/images/aurajob-mark.png" type="image/png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -143,9 +143,9 @@ $pageScripts = ['/assets/js/main.js', '/assets/js/auth.js'];
   <main id="main" class="auth-main">
     <div class="auth-shell">
       <div class="auth-card auth-card--register">
-        <p class="auth-kicker">Join HirePeak</p>
-        <h1 class="auth-title">Create your HirePeak account</h1>
-        <p class="auth-sub">Choose how you'll use HirePeak and get started.</p>
+        <p class="auth-kicker">Join AuraJob</p>
+        <h1 class="auth-title">Create your AuraJob account</h1>
+        <p class="auth-sub">Choose how you'll use AuraJob and get started.</p>
 
         <form class="auth-form" id="register-form" action="<?php echo hirepeak_url('register.php'); ?>" method="post" data-auth-form>
           <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token'], ENT_QUOTES, 'UTF-8'); ?>">
@@ -229,7 +229,7 @@ $pageScripts = ['/assets/js/main.js', '/assets/js/auth.js'];
 
           <label class="auth-check">
             <input type="checkbox" id="reg-terms" name="terms" value="1" required<?php echo ($_POST['terms'] ?? '') === '1' ? ' checked' : ''; ?>>
-            <span>I confirm that the information provided is accurate and I want to create this HirePeak account.</span>
+            <span>I confirm that the information provided is accurate and I want to create this AuraJob account.</span>
           </label>
           <?php echo hirepeak_error_slot($errors, 'terms', 'reg'); ?>
 
@@ -259,7 +259,7 @@ $pageScripts = ['/assets/js/main.js', '/assets/js/auth.js'];
         <p class="auth-switch">Already have an account? <a href="<?php echo hirepeak_url('login.php'); ?>">Sign In</a></p>
       </div>
 
-      <p class="auth-foot">HirePeak &middot; Job Board &amp; Recruitment Management System</p>
+      <p class="auth-foot">AuraJob &middot; Job Board &amp; Recruitment Management System</p>
     </div>
   </main>
 

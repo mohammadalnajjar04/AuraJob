@@ -2,7 +2,7 @@
 declare(strict_types=1);
 
 /**
- * HirePeak configuration loader.
+ * AuraJob configuration loader.
  *
  * Reads KEY=VALUE pairs from the project root .env file (if present) into the
  * process environment so the rest of the application can read them via

@@ -14,10 +14,10 @@ $pageScripts = ['/assets/js/main.js'];
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>HirePeak — Find the right opportunity. Reach your peak.</title>
-  <meta name="description" content="HirePeak is a modern recruitment platform connecting talented candidates with employers, with clear application tracking and a straightforward hiring workflow.">
+  <title>AuraJob — Find the right opportunity. Build your next move.</title>
+  <meta name="description" content="AuraJob is a modern recruitment platform connecting talented candidates with employers, with clear application tracking and a straightforward hiring workflow.">
   <meta name="theme-color" content="#ffffff">
-  <link rel="icon" href="/assets/images/hirepeak-mark.svg" type="image/svg+xml">
+  <link rel="icon" href="/assets/images/aurajob-mark.png" type="image/png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -34,7 +34,7 @@ $pageScripts = ['/assets/js/main.js'];
         <div class="hero__inner">
         <h1 class="hero__title">
           <span class="hero__title-line">Find the right opportunity.</span>
-          <span class="hero__title-line">Reach your peak.</span>
+          <span class="hero__title-line">Build your next move.</span>
         </h1>
         <p class="hero__sub">Discover meaningful opportunities from growing teams — or find talented people ready to make an impact.</p>
 
@@ -300,10 +300,10 @@ $pageScripts = ['/assets/js/main.js'];
       </div>
     </section>
 
-    <section class="section" id="why-hirepeak" aria-label="Why HirePeak and how it works">
+    <section class="section" id="why-aurajob" aria-label="Why AuraJob and how it works">
       <div class="container why-grid">
         <div class="why-col">
-          <h2 class="why-col__title">Why HirePeak</h2>
+          <h2 class="why-col__title">Why AuraJob</h2>
           <ul class="feature-list">
             <li class="feature">
               <span class="feature__icon" aria-hidden="true">
@@ -430,7 +430,7 @@ $pageScripts = ['/assets/js/main.js'];
 
     <section class="cta" aria-labelledby="cta-title">
       <div class="container cta__inner">
-        <h2 class="cta__title" id="cta-title">Ready to reach your peak?</h2>
+        <h2 class="cta__title" id="cta-title">Ready for your next move?</h2>
         <p class="cta__text">Create your account for free and start exploring opportunities today.</p>
         <div class="cta__actions">
           <a class="btn btn--primary" href="<?php echo hirepeak_url('register.php'); ?>">Create Account</a>

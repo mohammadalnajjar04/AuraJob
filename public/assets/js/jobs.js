@@ -28,11 +28,102 @@
     return url;
   }
 
+  function jobsResults() {
+    return document.getElementById('jobs-results-region');
+  }
+
+  function liveStatus() {
+    return document.getElementById('jobs-live-status');
+  }
+
   function setLoading(loading) {
     const main = jobsMain();
-    if (!main) return;
-    if (loading) main.setAttribute('aria-busy', 'true');
-    else main.removeAttribute('aria-busy');
+    const results = jobsResults();
+
+    if (main) {
+      if (loading) main.setAttribute('aria-busy', 'true');
+      else main.removeAttribute('aria-busy');
+    }
+
+    if (results) {
+      results.setAttribute('aria-busy', loading ? 'true' : 'false');
+      results.classList.toggle('is-loading', loading);
+    }
+
+    const status = liveStatus();
+    if (status && loading) {
+      status.textContent = 'Loading job results…';
+    }
+  }
+
+  function captureFocusState() {
+    const active = document.activeElement;
+    if (!active || !active.closest || !active.closest('#main')) return null;
+
+    const state = {
+      id: active.id || '',
+      name: active.getAttribute ? (active.getAttribute('name') || '') : '',
+      value: active.getAttribute ? (active.getAttribute('value') || '') : '',
+      selectionStart: null,
+      selectionEnd: null
+    };
+
+    if (
+      typeof active.selectionStart === 'number'
+      && typeof active.selectionEnd === 'number'
+    ) {
+      state.selectionStart = active.selectionStart;
+      state.selectionEnd = active.selectionEnd;
+    }
+
+    return state;
+  }
+
+  function restoreFocusState(state) {
+    if (!state) return false;
+
+    let target = null;
+
+    if (state.id) {
+      target = document.getElementById(state.id);
+    }
+
+    if (!target && state.name) {
+      const candidates = document.querySelectorAll('[name="' + CSS.escape(state.name) + '"]');
+      for (const candidate of candidates) {
+        if (!state.value || candidate.value === state.value) {
+          target = candidate;
+          break;
+        }
+      }
+    }
+
+    if (!target || typeof target.focus !== 'function') return false;
+
+    target.focus({ preventScroll: true });
+
+    if (
+      state.selectionStart !== null
+      && state.selectionEnd !== null
+      && typeof target.setSelectionRange === 'function'
+    ) {
+      try {
+        target.setSelectionRange(state.selectionStart, state.selectionEnd);
+      } catch (error) {
+        // Some input types do not support selection ranges.
+      }
+    }
+
+    return true;
+  }
+
+  function announceResults() {
+    const status = liveStatus();
+    const count = document.getElementById('results-count');
+    if (!status || !count) return;
+
+    const message = count.textContent ? count.textContent.trim() : 'Job results updated';
+    status.textContent = message + ' loaded.';
   }
 
   function resetDrawerState() {
@@ -40,11 +131,12 @@
     document.body.classList.remove('no-scroll');
   }
 
-  function replaceMain(html, url, pushHistory) {
+  function replaceMain(html, url, pushHistory, requestOptions) {
     const parser = new DOMParser();
     const nextDocument = parser.parseFromString(html, 'text/html');
     const nextMain = nextDocument.getElementById('main');
     const currentMain = jobsMain();
+    const opts = requestOptions || {};
 
     if (!nextMain || !currentMain) {
       throw new Error('Jobs response did not contain #main.');
@@ -56,9 +148,24 @@
     if (pushHistory) {
       window.history.pushState({}, '', url.pathname + url.search + url.hash);
     }
+
+    const restored = restoreFocusState(opts.focusState || null);
+
+    if (!restored && opts.focusResults) {
+      const resultsHeading = document.getElementById('results-count');
+      if (resultsHeading) {
+        resultsHeading.focus({ preventScroll: true });
+        resultsHeading.scrollIntoView({
+          block: 'start',
+          behavior: reduceMotion.matches ? 'auto' : 'smooth'
+        });
+      }
+    }
+
+    announceResults();
   }
 
-  function loadJobs(url, pushHistory) {
+  function loadJobs(url, pushHistory, requestOptions) {
     if (!('fetch' in window) || !('DOMParser' in window) || !('URL' in window)) {
       window.location.assign(url.toString());
       return;
@@ -84,7 +191,7 @@
       if (!response.ok) throw new Error('Jobs request failed with status ' + response.status + '.');
       return response.text();
     }).then(function (html) {
-      replaceMain(html, url, pushHistory);
+      replaceMain(html, url, pushHistory, requestOptions);
     })['catch'](function (error) {
       if (error && error.name === 'AbortError') return;
       window.location.assign(url.toString());
@@ -98,7 +205,9 @@
 
   function submitJobsForm(form) {
     if (!form) return;
-    loadJobs(formUrl(form), true);
+    loadJobs(formUrl(form), true, {
+      focusState: captureFocusState()
+    });
   }
 
   function syncDrawerCopy() {
@@ -227,7 +336,9 @@
 
     event.preventDefault();
     if (drawerOpen) closeDrawer(false);
-    loadJobs(url, true);
+    loadJobs(url, true, {
+      focusResults: true
+    });
   });
 
   document.addEventListener('keydown', function (event) {
@@ -258,6 +369,6 @@
 
   window.addEventListener('popstate', function () {
     if (!window.location.pathname.endsWith('/jobs.php')) return;
-    loadJobs(new URL(window.location.href), false);
+    loadJobs(new URL(window.location.href), false, {});
   });
 })();

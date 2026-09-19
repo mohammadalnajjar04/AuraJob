@@ -421,7 +421,7 @@ $activeFilterCount = count($categorySel)
         <h1 class="jobs-hero__title">Find your next opportunity</h1>
         <p class="jobs-hero__sub">Explore roles that match your skills, goals, and preferred way of working.</p>
 
-        <form class="hero-search jobs-search" role="search" method="get" action="<?php echo hirepeak_url('jobs.php'); ?>" data-jobs-search>
+        <form class="hero-search jobs-search" role="search" method="get" action="<?php echo hirepeak_url('jobs.php'); ?>" data-jobs-search aria-controls="jobs-results-region">
           <label class="sr-only" for="jobs-keyword">Job title, skill, or company</label>
           <div class="hero-search__field">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -478,7 +478,7 @@ $activeFilterCount = count($categorySel)
             <a class="jobs-sidebar__clear" href="<?php echo hirepeak_esc($jobsUrl([])); ?>">Clear all</a>
           </div>
 
-          <form class="jobs-filters" method="get" action="<?php echo hirepeak_url('jobs.php'); ?>" data-jobs-filters>
+          <form class="jobs-filters" method="get" action="<?php echo hirepeak_url('jobs.php'); ?>" data-jobs-filters aria-controls="jobs-results-region">
             <input type="hidden" name="keyword" value="<?php echo hirepeak_esc($keyword); ?>">
             <input type="hidden" name="location" value="<?php echo hirepeak_esc($locationSearch); ?>">
             <input type="hidden" name="sort" value="<?php echo hirepeak_esc($sort); ?>">
@@ -498,15 +498,16 @@ $activeFilterCount = count($categorySel)
           </form>
         </aside>
 
-        <div class="jobs-results">
+        <div class="jobs-results" id="jobs-results-region" aria-busy="false">
+          <p class="sr-only" id="jobs-live-status" role="status" aria-live="polite" aria-atomic="true"></p>
           <div class="jobs-toolbar">
             <div class="jobs-toolbar__row">
-              <h2 class="jobs-count" id="results-count"><?php echo (int) $resultCount; ?> <?php echo hirepeak_esc($countLabel); ?></h2>
+              <h2 class="jobs-count" id="results-count" tabindex="-1"><?php echo (int) $resultCount; ?> <?php echo hirepeak_esc($countLabel); ?></h2>
               <div class="jobs-toolbar__controls">
                 <button class="btn btn--outline jobs-filter-trigger" type="button" aria-expanded="false" aria-controls="filter-drawer">
                   Filters <?php if ($activeFilterCount > 0): ?><span class="jobs-filter-trigger__badge"><?php echo (int) $activeFilterCount; ?></span><?php endif; ?>
                 </button>
-                <form class="jobs-sort" method="get" action="<?php echo hirepeak_url('jobs.php'); ?>" data-jobs-sort>
+                <form class="jobs-sort" method="get" action="<?php echo hirepeak_url('jobs.php'); ?>" data-jobs-sort aria-controls="jobs-results-region">
                   <input type="hidden" name="keyword" value="<?php echo hirepeak_esc($keyword); ?>">
                   <input type="hidden" name="location" value="<?php echo hirepeak_esc($locationSearch); ?>">
                   <?php foreach ($categorySel as $value): ?>

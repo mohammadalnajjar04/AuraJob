@@ -146,7 +146,7 @@ try {
   <main id="main" class="dash-main">
     <div class="container">
 
-      <header class="dash-head">
+      <header class="dash-head dash-head--job-editor">
         <div>
           <p class="dash-eyebrow">Employer account</p>
           <h1 class="dash-title">Edit Job</h1>

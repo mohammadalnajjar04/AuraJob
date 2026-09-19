@@ -233,10 +233,10 @@ function hirepeak_job_form_render(array $ctx): string
         $statusCopy = 'Drafts stay private on your My Jobs page. Publishing a job lists it in Find Jobs for candidates.';
     }
 
-    $html = '<form class="profile-form" action="' . hirepeak_esc($action) . '" method="post">'
+    $html = '<form class="profile-form job-form" action="' . hirepeak_esc($action) . '" method="post">'
         . '<input type="hidden" name="csrf_token" value="' . hirepeak_esc($csrf) . '">';
 
-    $html .= '<section class="profile-section" aria-labelledby="job-section-basic">'
+    $html .= '<section class="profile-section job-form__section job-form__section--basic" aria-labelledby="job-section-basic">'
         . '<h2 class="profile-section__title" id="job-section-basic">1. Basic information</h2>'
         . '<div class="field">'
         . '<label class="field__label" for="job-title">Job title</label>'
@@ -248,9 +248,9 @@ function hirepeak_job_form_render(array $ctx): string
         . $makeSelect($categoryOptions, 'Category', 'category_id', 'job-category_id', 'Select a category', $v['category_id'] ?? '', $error, $invalid)
         . '</section>';
 
-    $html .= '<section class="profile-section" aria-labelledby="job-section-role">'
+    $html .= '<section class="profile-section job-form__section job-form__section--role" aria-labelledby="job-section-role">'
         . '<h2 class="profile-section__title" id="job-section-role">2. Role details</h2>'
-        . '<div class="field">'
+        . '<div class="field job-form__field--wide">'
         . '<label class="field__label" for="job-location">Location</label>'
         . '<input class="field__input" id="job-location" name="location" type="text" maxlength="150"'
         . ' autocomplete="address-level2" required placeholder="e.g. Amman, Jordan"' . $invalid('location')
@@ -261,12 +261,12 @@ function hirepeak_job_form_render(array $ctx): string
         . $makeSelect($experiencedOptions, 'Experience level', 'experience_level', 'job-experience_level', 'Select an experience level', $v['experience_level'] ?? '', $error, $invalid)
         . '</section>';
 
-    $html .= '<section class="profile-section" aria-labelledby="job-section-arrangement">'
+    $html .= '<section class="profile-section job-form__section job-form__section--arrangement" aria-labelledby="job-section-arrangement">'
         . '<h2 class="profile-section__title" id="job-section-arrangement">3. Work arrangement</h2>'
         . $makeSelect($modeOptions, 'Work mode', 'work_mode', 'job-work_mode', 'Select a work mode', $v['work_mode'] ?? '', $error, $invalid)
         . '</section>';
 
-    $html .= '<section class="profile-section" aria-labelledby="job-section-comp">'
+    $html .= '<section class="profile-section job-form__section job-form__section--comp" aria-labelledby="job-section-comp">'
         . '<h2 class="profile-section__title" id="job-section-comp">4. Compensation</h2>'
         . '<p class="field__hint">Optional. Ranges are shown to candidates as JOD per month.</p>'
         . '<div class="field-grid">'
@@ -287,7 +287,7 @@ function hirepeak_job_form_render(array $ctx): string
         . '</div>'
         . '</section>';
 
-    $html .= '<section class="profile-section" aria-labelledby="job-section-description">'
+    $html .= '<section class="profile-section job-form__section job-form__section--description" aria-labelledby="job-section-description">'
         . '<h2 class="profile-section__title" id="job-section-description">5. Description</h2>'
         . '<div class="field">'
         . '<label class="field__label" for="job-description">Role description</label>'
@@ -307,7 +307,7 @@ function hirepeak_job_form_render(array $ctx): string
         . '</div>'
         . '</section>';
 
-    $html .= '<section class="profile-section" aria-labelledby="job-section-publish">'
+    $html .= '<section class="profile-section job-form__section job-form__section--publish" aria-labelledby="job-section-publish">'
         . '<h2 class="profile-section__title" id="job-section-publish">6. Publishing</h2>'
         . '<div class="field">'
         . '<label class="field__label" for="job-application_deadline">Application deadline</label>'
@@ -325,7 +325,7 @@ function hirepeak_job_form_render(array $ctx): string
         . '</div>'
         . '</section>';
 
-    $html .= '<div class="profile-form__actions">'
+    $html .= '<div class="profile-form__actions job-form__actions">'
         . '<a class="btn btn--ghost" href="' . hirepeak_url('employer/my-jobs.php') . '">Cancel</a>'
         . '<button class="btn btn--outline" type="submit" name="publish" value="draft">Save Draft</button>'
         . '<button class="btn btn--primary" type="submit" name="publish" value="active">Publish Job</button>'

@@ -102,7 +102,7 @@ try {
     $stmt->close();
 
     /*
-     * Recommended for you — normal product logic, not AI:
+     * Recommended jobs based on the current listing data:
      * 1. Any categories the applicant has already applied to or saved signal
      *    interest; jobs in those categories rank first.
      * 2. A job matching the applicant's profile location ranks above equal

@@ -65,21 +65,7 @@ try {
     $application = null;
 }
 
-if ($loadError) {
-    http_response_code(500);
-    $errorCode = '500';
-    $errorEyebrow = 'Temporary issue';
-    $errorTitle = 'We couldn\'t load this application.';
-    $errorText = 'AuraJob could not load your application tracking details right now. Please try again shortly.';
-    $errorPrimaryLabel = 'My Applications';
-    $errorPrimaryHref = hirepeak_url('applicant/applications.php');
-    $errorSecondaryLabel = 'Find Jobs';
-    $errorSecondaryHref = hirepeak_url('jobs.php');
-    require dirname(__DIR__, 2) . '/app/Views/error-page.php';
-    exit;
-}
-
-if ($application === null) {
+if (!$loadError && $application === null) {
     hirepeak_tracking_not_found();
 }
 

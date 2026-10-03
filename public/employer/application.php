@@ -136,7 +136,7 @@ $pageScripts = ['/assets/js/main.js'];
         <section class="dash-alert" role="alert" aria-labelledby="application-error-title">
           <h1 id="application-error-title">Something went wrong on our side.</h1>
           <p>We couldn't load this application right now. Please try again in a moment.</p>
-          <a class="btn btn--primary" href="<?php echo hirepeak_url('employer/my-jobs.php'); ?>">Back to My Jobs</a>
+          <a class="btn btn--primary" href="<?php echo hirepeak_url('employer/applicants.php?job_id=' . (int) $application['job_id']); ?>">Back to Applicants</a>
         </section>
 
       <?php else: ?>
@@ -235,7 +235,7 @@ $pageScripts = ['/assets/js/main.js'];
             <?php if (trim((string) ($application['cover_letter'] ?? '')) !== ''): ?>
               <div class="jd-prose">
                 <h2>Cover letter</h2>
-                <p class="apply-details__note"><?php echo nl2br(hirepeak_esc((string) $application['cover_letter'])); ?></p>
+                <p class="apply-details__note"><?php echo hirepeak_esc($application['cover_letter']); ?></p>
               </div>
             <?php endif; ?>
           </section>

@@ -27,12 +27,6 @@ interface AuraJobNotificationServiceInterface
 /**
  * Database-backed notification service.
  *
- * OOP concepts used here:
- * - interface implementation
- * - constructor dependency injection
- * - private typed property
- * - class constant encapsulation
- * - instance methods with typed parameters/returns
  */
 final class AuraJobNotificationService implements AuraJobNotificationServiceInterface
 {

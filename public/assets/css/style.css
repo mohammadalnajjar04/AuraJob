@@ -5618,7 +5618,7 @@ a.account-menu__item:hover {
 }
 
 /* ========================================================================== 
-   Stage 10 polish — Job Details + Application Tracking
+   polish — Job Details + Application Tracking
    ========================================================================== */
 
 .jd-main {
@@ -5857,7 +5857,7 @@ a.account-menu__item:hover {
 
 
 
-/* ==========================================================================\n   Stage 11 — Home + Find Jobs UI polish\n   Scoped to the public discovery pages so dashboard/detail styling is stable.\n   ========================================================================== */
+/* ==========================================================================\n   Home + Find Jobs UI polish\n   Scoped to the public discovery pages so dashboard/detail styling is stable.\n   ========================================================================== */
 
 .home-page .hero {
   position: relative;
@@ -6230,7 +6230,7 @@ a.account-menu__item:hover {
 }
 
 /* ==========================================================================
-   Stage 12 — Auth, notifications & profile polish
+   Auth, notifications & profile polish
    ========================================================================== */
 
 .auth-body {
@@ -6512,7 +6512,7 @@ a.account-menu__item:hover {
 
 
 /* ========================================================================== 
-   Stage 13 polish — Employer Applicants + Application Review
+   polish — Employer Applicants + Application Review
    ========================================================================== */
 
 .employer-applicants-page .dash-head,
@@ -6771,7 +6771,7 @@ a.account-menu__item:hover {
 }
 
 /* ========================================================================== 
-   Stage 14 polish — Global consistency + responsive finishing pass
+   polish — Global consistency + responsive finishing pass
    ========================================================================== */
 
 /* Defensive layout rules: long user/database content should never force a
@@ -6988,7 +6988,7 @@ textarea {
 }
 
 /* --------------------------------------------------------------------------
-   Stage 21: AuraJob brand refresh + visual storytelling
+   AuraJob brand refresh + visual storytelling
    -------------------------------------------------------------------------- */
 .brand__mark {
   width: 32px;
@@ -7290,7 +7290,7 @@ textarea {
 }
 
 /* --------------------------------------------------------------------------
-   Stage 20: hero layout collision fix
+   hero layout collision fix
    Keep the desktop search bar inside its grid column and stack the hero at
    medium laptop widths where two columns become too tight.
    -------------------------------------------------------------------------- */
@@ -7481,7 +7481,7 @@ textarea {
 
 
 /* ==========================================================================
-   Stage 30 — Company identity avatars
+   Company identity avatars
    ========================================================================== */
 
 /*
@@ -7565,7 +7565,7 @@ textarea {
 
 
 /* ==========================================================================
-   Stage 31 — Accessible AJAX jobs feedback
+   Accessible AJAX jobs feedback
    ========================================================================== */
 
 .jobs-results {
@@ -7626,7 +7626,7 @@ textarea {
 
 
 /* ==========================================================================
-   Stage 32 — Uploaded company logos
+   Uploaded company logos
    ========================================================================== */
 
 .company-avatar__image {
@@ -7698,7 +7698,7 @@ textarea {
 
 
 /* ==========================================================================
-   Stage 33 — Applicant CV upload
+   Applicant CV upload
    ========================================================================== */
 
 .profile-section__head {
@@ -7776,7 +7776,7 @@ textarea {
 
 
 /* ==========================================================================
-   Stage 34 — Job sharing
+   Job sharing
    ========================================================================== */
 
 .jd-share {
@@ -7793,23 +7793,4 @@ textarea {
   .jd-share {
     width: auto;
   }
-}
-
-
-/* ==========================================================================
-   Final apply-flow polish — optional cover letter
-   ========================================================================== */
-
-.apply-cover-letter {
-  margin-bottom: var(--space-4);
-}
-
-.apply-cover-letter .field__textarea {
-  min-height: 150px;
-}
-
-.field__optional {
-  color: var(--color-text-secondary);
-  font-size: var(--text-body-small);
-  font-weight: 500;
 }

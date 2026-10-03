@@ -25,9 +25,9 @@ $uid = (int) $user['id'];
  *   (redirected to its tracking page) instead of surfacing an SQL error.
  * - PRG: a successful INSERT sets a one-time flash and 303s to the tracking
  *   page so a refresh can never resubmit.
- * - The application stores an optional cover letter in applications.cover_letter.
- *   The applicant CV remains profile-scoped and is shared with the employer only
- *   after the applicant submits an application.
+ * - The applications table only carries applicant_id/job_id/status plus
+ *   timestamps; there is no cover letter or upload, so this page is a calm
+ *   confirmation of the job plus the applicant's real profile data.
  */
 
 $rawId = (string) ($_GET['id'] ?? '');
@@ -93,11 +93,8 @@ function hirepeak_apply_not_found(): void
     exit;
 }
 
-const HIREPEAK_COVER_LETTER_MAX = 5000;
-
 $state = 'review'; // 'error' | 'closed' | 'already' | 'review'
 $formError = '';
-$coverLetter = '';
 $job = null;
 $profile = null;
 $completeness = ['percent' => 0, 'filled' => 0, 'total' => 0, 'missing' => []];
@@ -170,21 +167,13 @@ try {
     }
 
     if ($_SERVER['REQUEST_METHOD'] === 'POST' && $state === 'review') {
-        $coverLetter = trim((string) ($_POST['cover_letter'] ?? ''));
-
         if (!hirepeak_csrf_verify((string) ($_POST['csrf_token'] ?? ''))) {
             $formError = 'Your session expired. Please try again.';
             hirepeak_csrf_token(true);
-        } elseif (hirepeak_utf8_length($coverLetter) > HIREPEAK_COVER_LETTER_MAX) {
-            $formError = 'Cover letter must be ' . HIREPEAK_COVER_LETTER_MAX . ' characters or fewer.';
         } else {
             try {
-                $coverLetterDb = $coverLetter !== '' ? $coverLetter : null;
-                $stmt = $db->prepare(
-                    'INSERT INTO applications (applicant_id, job_id, cover_letter)
-                     VALUES (?, ?, ?)'
-                );
-                $stmt->bind_param('iis', $uid, $jobId, $coverLetterDb);
+                $stmt = $db->prepare('INSERT INTO applications (applicant_id, job_id) VALUES (?, ?)');
+                $stmt->bind_param('ii', $uid, $jobId);
                 $stmt->execute();
                 $newId = (int) $db->insert_id;
                 $stmt->close();
@@ -515,24 +504,8 @@ $pageScripts = ['/assets/js/main.js'];
             <div class="panel-head">
               <h2 class="panel-head__title" id="apply-submit-title">Ready to submit?</h2>
             </div>
-
-            <div class="field apply-cover-letter">
-              <label class="field__label" for="apply-cover-letter">Cover letter <span class="field__optional">(optional)</span></label>
-              <textarea
-                class="field__input field__textarea"
-                id="apply-cover-letter"
-                name="cover_letter"
-                rows="6"
-                maxlength="<?php echo HIREPEAK_COVER_LETTER_MAX; ?>"
-                placeholder="Briefly tell the employer why you're interested in this role."
-                aria-describedby="apply-cover-letter-hint"
-              ><?php echo hirepeak_esc($coverLetter); ?></textarea>
-              <p class="field__hint" id="apply-cover-letter-hint">Optional. Up to <?php echo HIREPEAK_COVER_LETTER_MAX; ?> characters.</p>
-            </div>
-
             <p class="apply-submit__text">
-              Your application, optional cover letter, and profile CV (if uploaded) will be sent to
-              <?php echo hirepeak_esc($companyName); ?> for <?php echo hirepeak_esc($jobTitle); ?>.
+              Your application will be sent to <?php echo hirepeak_esc($companyName); ?> for <?php echo hirepeak_esc($jobTitle); ?>.
               You can track its progress right after submitting.
             </p>
             <div class="apply-actions">
